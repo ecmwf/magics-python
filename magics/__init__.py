@@ -1,1 +1,1 @@
-from Magics import *
+from magics import *
