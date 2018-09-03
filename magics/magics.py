@@ -35,10 +35,10 @@ for directory in os.environ.get("LD_LIBRARY_PATH","").split(":"):
 #
 #  if not overwritten test if instlled version exist and use it
 #
-if lib is None:
-    installname = "@CMAKE_INSTALL_PREFIX@/@INSTALL_LIB_DIR@/libMagPlus@CMAKE_SHARED_LIBRARY_SUFFIX@"
-    if os.path.exists(installname):
-        lib = installname
+#if lib is None:
+#    installname = "@CMAKE_INSTALL_PREFIX@/@INSTALL_LIB_DIR@/libMagPlus@CMAKE_SHARED_LIBRARY_SUFFIX@"
+#    if os.path.exists(installname):
+#        lib = installname
 
 #
 # If LD_LIBRARY_PATH does not contain path to Magics and it is not where you installed,
@@ -492,7 +492,7 @@ def set1r(name,data):
     name = string_to_char(name)
     array_p = (ctypes.c_double * size)(*data)
     return dll.py_set1r(ctypes.c_char_p(name), array_p, size)
-    
+
 
 ####################################################################
 
