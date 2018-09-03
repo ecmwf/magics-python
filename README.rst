@@ -28,7 +28,7 @@ that must be installed on the system and accessible as a shared library.
 Some Linux distributions ship a binary version that may be installed with the standard package manager.
 On Ubuntu 18.04 use the command::
 
-    $ sudo apt-get install libmagplus3
+    $ sudo apt-get install libmagplus3v5
 
 On a MacOS with HomeBrew use::
 
