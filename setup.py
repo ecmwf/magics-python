@@ -31,7 +31,7 @@ version = '0.9.0'
 setuptools.setup(
     name='magics',
     version=version,
-    description='Python interface to plot meterological data in GRIB, NetCDF and BUFR.'
+    description='Python interface to plot meterological data in GRIB, NetCDF and BUFR.',
     long_description=read('README.rst'),
     author='European Centre for Medium-Range Weather Forecasts (ECMWF)',
     author_email='software.support@ecmwf.int',
@@ -44,7 +44,6 @@ setuptools.setup(
     ],
     install_requires=[
         'attrs',
-        'ctypes',
         'future',
         'numpy',
         'typing',

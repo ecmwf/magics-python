@@ -60,152 +60,8 @@ You may try out the high level API in a python interpreter:
 .. code-block: python
 
 >>> import magics-python
->>> ds = magics-python.Dataset.frompath('era5-levels-members.grib')
->>> ds.attributes['GRIB_edition']
-1
->>> sorted(ds.dimensions.items())
-[('air_pressure', 2), ('latitude', 61), ('longitude', 120), ('number', 10), ('time', 4)]
->>> sorted(ds.variables)
-['air_pressure', 'latitude', 'longitude', 'number', 'step', 't', 'time', 'valid_time', 'z']
->>> var = ds.variables['t']
->>> var.dimensions
-('number', 'time', 'air_pressure', 'latitude', 'longitude')
->>> var.data[:, :, :, :, :].mean()
-262.92133
 
 
-Provisional *xarray* GRIB driver
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you have xarray installed ``magics-python`` can open a GRIB file as a ``xarray.Dataset``::
-
-    $ pip install xarray
-
-In a Python interpreter try:
-
-.. code-block: python
-
->>> from magics-python import xarray_store
->>> ds = xarray_store.open_dataset('era5-levels-members.grib')
->>> ds
-<xarray.Dataset>
-Dimensions:       (air_pressure: 2, latitude: 61, longitude: 120, number: 10, time: 4)
-Coordinates:
-  * number        (number) int64 0 1 2 3 4 5 6 7 8 9
-  * time          (time) datetime64[ns] 2017-01-01 2017-01-01T12:00:00 ...
-    step          timedelta64[ns] ...
-  * air_pressure  (air_pressure) float64 850.0 500.0
-  * latitude      (latitude) float64 90.0 87.0 84.0 81.0 78.0 75.0 72.0 69.0 ...
-  * longitude     (longitude) float64 0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 ...
-    valid_time    (time) datetime64[ns] ...
-Data variables:
-    z             (number, time, air_pressure, latitude, longitude) float32 ...
-    t             (number, time, air_pressure, latitude, longitude) float32 ...
-Attributes:
-    GRIB_edition:            1
-    GRIB_centre:             ecmf
-    GRIB_centreDescription:  European Centre for Medium-Range Weather Forecasts
-    GRIB_subCentre:          0
-    history:                 GRIB to CDM+CF via magics-python-0.8.../ecCodes-2...
-
-
-Lower level APIs
-~~~~~~~~~~~~~~~~
-
-Lower level APIs are not stable and should not be considered public yet.
-In particular the internal Python 3 *ecCodes* bindings are not compatible with
-the standard *ecCodes* python module.
-
-
-Advanced usage
---------------
-
-``magics-python.Dataset`` can open a GRIB file only if all the messages
-with the same ``shortName`` can be represented as a single ``magics-python.Variable`` hypercube.
-For example, a variable ``t`` cannot have both ``isobaricInhPa`` and ``hybrid`` ``typeOfLevel``'s,
-as this would result in multiple hypercubes for variable ``t``.
-Opening a non-conformant GRIB file will fail with a ``ValueError: multiple values for unique attribute...``
-error message, see `#2 <https://github.com/ecmwf/magics-python/issues/2>`_.
-
-Furthermore if different ``magics-python.Variable``'s depend on the same coordinate,
-the values of the coordinate must match exactly.
-For example, if variables ``t`` and ``z`` share the same step coordinate,
-they must both have exactly the same set of steps.
-Opening a non-conformant GRIB file will fail with a ``ValueError: key present and new value is different...``
-error message, see `#13 <https://github.com/ecmwf/magics-python/issues/13>`_.
-
-In most cases you can handle complex GRIB files containing heterogeneous messages by using
-the ``filter_by_keys`` keyword to select which GRIB messages belong to a
-well formed set of hypercubes.
-
-For example to open
-`US National Weather Service complex GRIB2 files <http://ftpprd.ncep.noaa.gov/data/nccf/com/nam/prod/>`_
-you can use:
-
-.. code-block: python
-
->>> from magics-python.xarray_store import open_dataset
->>> open_dataset('nam.t00z.awip1200.tm00.grib2',
-...              filter_by_keys={'typeOfLevel': 'surface', 'stepType': 'instant'})
-<xarray.Dataset>
-Dimensions:     (x: 614, y: 428)
-Coordinates:
-    time        datetime64[ns] ...
-    step        timedelta64[ns] ...
-    surface     int64 ...
-    latitude    (y, x) float64 ...
-    longitude   (y, x) float64 ...
-    valid_time  datetime64[ns] ...
-Dimensions without coordinates: x, y
-Data variables:
-    vis         (y, x) float32 ...
-    gust        (y, x) float32 ...
-    hindex      (y, x) float32 ...
-    sp          (y, x) float32 ...
-    orog        (y, x) float32 ...
-    t           (y, x) float32 ...
-    unknown     (y, x) float32 ...
-    sdwe        (y, x) float32 ...
-    sde         (y, x) float32 ...
-    prate       (y, x) float32 ...
-    sr          (y, x) float32 ...
-    veg         (y, x) float32 ...
-    slt         (y, x) float32 ...
-    lsm         (y, x) float32 ...
-    ci          (y, x) float32 ...
-    al          (y, x) float32 ...
-    sst         (y, x) float32 ...
-    shtfl       (y, x) float32 ...
-    lhtfl       (y, x) float32 ...
-Attributes:
-    GRIB_edition:            2
-    GRIB_centre:             kwbc
-    GRIB_centreDescription:  US National Weather Service - NCEP...
-    GRIB_subCentre:          0
-    history:                 GRIB to CDM+CF via magics-python-0.8.../ecCodes-2...
->>> open_dataset('nam.t00z.awip1200.tm00.grib2',
-...              filter_by_keys={'typeOfLevel': 'heightAboveGround', 'topLevel': 2})
-<xarray.Dataset>
-Dimensions:            (x: 614, y: 428)
-Coordinates:
-    time               datetime64[ns] ...
-    step               timedelta64[ns] ...
-    heightAboveGround  int64 ...
-    latitude           (y, x) float64 ...
-    longitude          (y, x) float64 ...
-    valid_time         datetime64[ns] ...
-Dimensions without coordinates: x, y
-Data variables:
-    t2m                (y, x) float32 ...
-    q                  (y, x) float32 ...
-    d2m                (y, x) float32 ...
-    r2                 (y, x) float32 ...
-Attributes:
-    GRIB_edition:            2
-    GRIB_centre:             kwbc
-    GRIB_centreDescription:  US National Weather Service - NCEP...
-    GRIB_subCentre:          0
-    history:                 GRIB to CDM+CF via magics-python-0.8.../ecCodes-2...
 
 
 Contributing
@@ -220,14 +76,12 @@ Please see the CONTRIBUTING.rst document for the best way to help.
 
 Lead developer:
 
-- `Alessandro Amici <https://github.com/alexamici>`_ - B-Open
+- Sylvie Lamy-Thepaut - ECMWF
 
 Main contributors:
 
-- Baudouin Raoult - ECMWF
-- `Aureliana Barghini <https://github.com/aurghs>`_ - B-Open
-- `Iain Russell <https://github.com/iainrussell>`_ - ECMWF
-- `Leonardo Barcaroli <https://github.com/leophys>`_ - B-Open
+- `Stephan Siemen <https://github.com/stephansiemen>`_ - ECMWF
+- `Alessandro Amici <https://github.com/alexamici>`_ - B-Open
 
 See also the list of `contributors <https://github.com/ecmwf/magics-python/contributors>`_ who participated in this project.
 
