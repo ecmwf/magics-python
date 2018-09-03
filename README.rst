@@ -59,7 +59,7 @@ You may try out the high level API in a python interpreter:
 
 .. code-block: python
 
->>> import magics-python
+>>> import magics
 
 
 
