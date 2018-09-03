@@ -43,14 +43,10 @@ setuptools.setup(
         'pytest-runner',
     ],
     install_requires=[
-        'attrs',
-        'future',
         'numpy',
-        'typing',
     ],
     tests_require=[
         'pytest',
-        'xarray',
     ],
     test_suite='tests',
     zip_safe=True,
