@@ -43,7 +43,7 @@ Note that *Magics* support for the Windows operating system is experimental.
 You may run a simple selfcheck command to ensure that your system is set up correctly::
 
     $ python -m magics selfcheck
-    Found: Magics v3.4.0.
+    Found: Magics 'Unknown version'.
     Your system is ready.
 
 
