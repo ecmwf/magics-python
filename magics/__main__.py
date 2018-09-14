@@ -23,7 +23,7 @@ def main(argv=None):
     args = parser.parse_args(args=argv)
     if args.command == 'selfcheck':
         from . import magics
-        print("Found: Magics v%s." % magics.get_version())
+        print("Found: Magics %s." % magics.get_version())
         print("Your system is ready.")
     else:
         raise RuntimeError("Command not recognised %r. See usage with --help." % args.command)

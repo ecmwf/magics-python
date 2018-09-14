@@ -55,6 +55,10 @@ dll  = ctypes.CDLL(lib)
 #libc = ctypes.CDLL(ctypes.util.find_library("c"))
 
 
+def get_version():
+    return 'Unknown version'
+
+
 class FILE(ctypes.Structure):
     pass
 
