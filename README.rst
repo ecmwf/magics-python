@@ -30,10 +30,6 @@ On Ubuntu 18.04 use the command::
 
     $ sudo apt-get install libmagplus3v5
 
-On a MacOS with HomeBrew use::
-
-    $ brew install magics
-
 As an alternative you may install the official source distribution
 by following the instructions at
 https://software.ecmwf.int/magics/Installation+Guide
@@ -43,25 +39,25 @@ Note that *Magics* support for the Windows operating system is experimental.
 You may run a simple selfcheck command to ensure that your system is set up correctly::
 
     $ python -m magics selfcheck
-    Found: Magics v3.4.0.
+    Found: Magics 'Unknown version'.
     Your system is ready.
 
 
 Usage
 -----
 
-ToDo
+First, you need a well-formed GRIB file, if you don't have one at hand you can download our
+`ERA5 on pressure levels sample <http://download.ecmwf.int/test-data/cfgrib/era5-levels-members.grib>`_::
 
-Dataset / Variable API
-~~~~~~~~~~~~~~~~~~~~~~
+    $ wget http://download.ecmwf.int/test-data/cfgrib/era5-levels-members.grib
+
 
 You may try out the high level API in a python interpreter:
 
 .. code-block: python
 
 >>> import magics
-
-
+>>> magics.plot('era5-levels-members.grib')
 
 
 Contributing
