@@ -55,8 +55,8 @@ dll  = ctypes.CDLL(lib)
 #libc = ctypes.CDLL(ctypes.util.find_library("c"))
 
 
-def get_version():
-    return 'Unknown version'
+#def get_version():
+#    return dll.getMagicsVersionString()
 
 
 class FILE(ctypes.Structure):
@@ -196,15 +196,19 @@ def coast():
 def grib():
     return dll.py_grib()
 
+@checked_return_code
+def get_version():
+    return dll.getMagicsVersionString()
 
-metagrib = dll.py_metagrib
-metagrib.restype = ctypes.c_char_p
-metagrib.argtypes = None
+
+#metagrib = dll.py_metagrib
+#metagrib.restype = ctypes.c_char_p
+#metagrib.argtypes = None
 
 
-metanetcdf = dll.py_metanetcdf
-metanetcdf.restype = ctypes.c_char_p
-metanetcdf.argtypes = None
+#metanetcdf = dll.py_metanetcdf
+#metanetcdf.restype = ctypes.c_char_p
+#metanetcdf.argtypes = None
 
 
 ####################################################################
@@ -538,8 +542,9 @@ def set1c(name,data):
 ####################################################################
 
 #enqc = dll.py_enqc
-#enqc.restype = c_char_p
+#enqc.restype = None
 #enqc.argtypes = (c_char_p,)
+#enqc = convert_strings(enqc)
 
 ####################################################################
 

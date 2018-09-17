@@ -25,13 +25,13 @@ def read(fname):
     return io.open(file_path, encoding='utf-8').read()
 
 
-version = '0.9.0.dev0'
+version = '0.9.1.dev0'
 
 
 setuptools.setup(
     name='magics',
     version=version,
-    description='Python interface to plot meterological data in GRIB, NetCDF and BUFR.',
+    description='Python interface to plot meteorological data in GRIB, NetCDF and BUFR.',
     long_description=read('README.rst'),
     author='European Centre for Medium-Range Weather Forecasts (ECMWF)',
     author_email='software.support@ecmwf.int',
