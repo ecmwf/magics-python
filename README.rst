@@ -56,21 +56,21 @@ You may try out the high level API in a python interpreter:
 
 .. code-block: python
 
-from Magics import macro as magics
-
-name = 'magics'
-#Setting of the output file name
-output = magics.output(output_formats = ['png'], 
-		output_name_first_page_number = "off",
-		output_name = "magics")
- 
-#Import the ear data 
-era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
-
-#Define an automatic styling 
-contour = magics.mcont( contour_automatic_styling = "ecmwf", )
-
-magics.plot(output, era, contour, magics.mcont())
+>>>from Magics import macro as magics
+>>>
+>>>name = 'magics'
+>>>#Setting of the output file name
+>>>output = magics.output(output_formats = ['png'], 
+>>>		output_name_first_page_number = "off",
+>>>		output_name = "magics")
+>>> 
+>>>#Import the ear data 
+>>>era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
+>>>
+>>>#Define an automatic styling 
+>>>contour = magics.mcont( contour_automatic_styling = "ecmwf", )
+>>>
+>>>magics.plot(output, era, contour, magics.mcont())
 
 
 You can find notebooks examples :
