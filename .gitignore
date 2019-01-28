@@ -4,3 +4,5 @@ magics/__pycache__
 .pytest_cache
 .tox
 *.pyc
+build
+dist
