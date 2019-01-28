@@ -11,24 +11,30 @@ import os
 import numpy
 import json
 
-from . import magics
+from . import Magics
 
 class Context(object):
     def __init__(self):
         self.tmp = []
         self.silent = False
-
+    
     def set(self) :
         if self.silent :
-            magics.setc("magics_silent", "on")
+            Magics.setc("magics_silent", "on")
             os.environ["MAGPLUS_WARNING"] =  "off"
+        else :
+            os.environ["MAGPLUS_INFO"] =  "on"
 
 global context
 
 context  = Context()
 
 def silent():
-   context.silent = True
+   context.silent = False
+
+def debug():
+    os.environ["MAGPLUS_INFO"] =  "on"
+    os.environ["MAGPLUS_DEBUG"] =  "on"
 
 
 
@@ -93,9 +99,10 @@ class Action(object):
         val="%s("%self.html
 
         for key in list(self.args.keys()):
+
             if isinstance(self.args[key], str):
                 if key == 'odb_data':
-                    magics.setc('odb_filename', self.args[key])
+                    Magics.setc('odb_filename', self.args[key])
                 else:
                     val+= '%s%s = "%s"'%(sep, key, self.args[key])
             elif isinstance(self.args[key], int):
@@ -172,7 +179,7 @@ class Action(object):
         for key in list(self.args.keys()):
             if isinstance(self.args[key], str):
                 if key == 'odb_data':
-                    magics.setc('odb_filename', self.args[key])
+                    Magics.setc('odb_filename', self.args[key])
                 else:
                     val+= '%s%s = %s'%(sep, key.upper(), self.args[key].upper())
             elif isinstance(self.args[key], int):
@@ -223,13 +230,13 @@ class Action(object):
 
 
     def tofortran(self, f):
-        if self.action == magics.new_page :
+        if self.action == Magics.new_page :
             print(f, '\tcall pnew("page")')
             return
         for key in list(self.args.keys()):
             if isinstance(self.args[key], str):
                 if key == 'odb_data':
-                    magics.setc('odb_filename', self.args[key])
+                    Magics.setc('odb_filename', self.args[key])
                 else:
                     print (f, '\tcall psetc("%s", "%s")'%(key, self.args[key]))
             elif isinstance(self.args[key], int):
@@ -299,7 +306,7 @@ class Action(object):
 
     def clean_object(self, obj):
       if sys.version_info[0] < 3:
-        if type(obj) in (int, float, str, bool, numpy.float64):
+        if type(obj) in (int, float, str, bool, numpy.float64, numpy.float32):
             return obj
         elif type(obj) == unicode:
             return str(obj)
@@ -327,45 +334,51 @@ class Action(object):
 
 
     def set(self):
-
         for key in list(self.args.keys()):
-
-            if isinstance(self.args[key], str):
+            
+            if isinstance(self.args[key], dict):
+                Magics.setc(key,  json.dumps(self.args[key]))
+            elif isinstance(self.args[key], bool):
+                if self.args[key]:
+                    Magics.setc(key, "on")
+                else :
+                    Magics.setc(key, "off")
+            elif isinstance(self.args[key], str):
                 if key == 'odb_data':
-                    magics.setc('odb_filename', self.args[key])
+                    Magics.setc('odb_filename', self.args[key])
                 else:
-                    magics.setc(key, self.args[key])
+                    Magics.setc(key, self.args[key])
             elif isinstance(self.args[key], int):
-                magics.seti(key, self.args[key])
+                Magics.seti(key, self.args[key])
             elif isinstance(self.args[key], float):
-                magics.setr(key, self.args[key])
+                Magics.setr(key, self.args[key])
             elif isinstance(self.args[key], list) and len(self.args[key]):
                 if isinstance(self.args[key][0], str):
-                   magics.set1c(key, self.args[key])
+                   Magics.set1c(key, self.args[key])
                 else:
                     type = self.find_type(self.args[key])
                     if type == "int":
-                        magics.set1i(key, numpy.array(self.args[key], dtype='i'))
+                        Magics.set1i(key, numpy.array(self.args[key], dtype='i'))
                     else :
-                        magics.set1r(key, numpy.array(self.args[key]))
+                        Magics.set1r(key, numpy.array(self.args[key]))
             elif isinstance(self.args[key], numpy.ndarray) :
                 type = self.args[key].dtype
-                data = self.args[key].copy()
+                data = self.args[key].copy() 
                 size = data.shape
                 dim  = len(size)
                 type = self.find_type(self.args[key])
                 if type == "int":
                     if (dim == 2) :
-                        magics.set2i(key, numpy.int64(data), size[0], size[1])
+                        Magics.set2i(key, numpy.int64(data), size[0], size[1])
                     else :
-                        magics.set1i(key, numpy.int64(data), size[0])
-                elif type == "float":
-                    if (dim == 2) :
-                        magics.set2r(key, numpy.float64(data), size[1], size[0])
+                        Magics.set1i(key, numpy.int64(data), size[0])
+                elif type == "float": 
+                    if (dim == 2) :                      
+                        Magics.set2r(key, numpy.float64(data), size[1], size[0])
                     else :
-                        magics.set1r(key, numpy.float64(data))
+                        Magics.set1r(key, numpy.float64(data))
                 else :
-                    print("can not interpret type %s for %s ???->", (type, key) )
+                    print("can not interpret type %s for %s ???->", (type, key) ) 
             else:
                 self.args[key].execute(key)
 
@@ -373,39 +386,45 @@ class Action(object):
 
     def execute(self):
 
-        if ( self.action != magics.odb) :
+        if ( self.action != Magics.odb) :
             self.args = self.clean_object(self.args)
-
+        
         self.set()
 
         if self.action != None :
-            if self.action != magics.new_page :
-                if self.action == magics.legend :
-                    magics.setc("legend", "on")
+            if self.action != Magics.new_page :
+                if self.action == Magics.legend :
+                    Magics.setc("legend", "on")
                 self.action()
-                if self.action != magics.obs and self.action != magics.minput:
+                if self.action != Magics.obs and self.action != Magics.minput:
                     for key in list(self.args.keys()):
-                        magics.reset(key)
+                        Magics.reset(key)
             else:
                 self.action("page")
 
     def style(self):
 
-        if self.action not in [magics.grib, magics.netcdf] :
-            return {}
+        if self.action not in [Magics.grib, Magics.netcdf, Magics.minput] :
+            return {}    
 
 
         self.args = self.clean_object(self.args)
-
+        
         self.set()
-        if self.action == magics.grib:
-            return magics.metagrib()
-        if self.action == magics.netcdf:
-            return magics.metanetcdf()
+        if self.action == Magics.grib:
+            return Magics.metagrib()
+        if self.action == Magics.netcdf:
+            return Magics.metanetcdf()
+        if self.action == Magics.minput:
+            return Magics.metainput()
 
 
-
-
+def mxarray(dataset, var):
+    
+    
+    return data
+        
+        
 
 def make_action(verb, action, html="" ):
     def f(_m = None,**kw):
@@ -416,67 +435,65 @@ def make_action(verb, action, html="" ):
         return Action(verb, action, html, args)
     return f
 
-mcoast = make_action("mcoast", magics.coast, "Coastlines")
-pcoast = make_action("pcoast", magics.coast)
-maxis = make_action("maxis", magics.axis, "Axis")
-paxis = make_action("paxis", magics.axis)
-mcont = make_action("mcont", magics.cont, "Contouring")
-pcont = make_action("pcont", magics.cont)
-msymb = make_action("msymb", magics.symb, "Symbol")
-psymb = make_action("psymb", magics.symb)
-pimport = make_action("pimport", magics.mimport)
-mimport = make_action("mimport", magics.mimport)
-mtaylor = make_action("mtaylor", magics.taylor)
-mgeo = make_action("mgeo", magics.geo)
-pgeo = make_action("pgeo", magics.geo)
-pgrib = make_action("pgrib", magics.grib, "Grib+Input")
-mgrib = make_action("mgrib", magics.grib, "Grib+Input")
-pmapgen = make_action("pmapgen", magics.mapgen)
-mmapgen = make_action("mmapgen", magics.mapgen)
-pnetcdf = make_action("pnetcdf", magics.netcdf)
-mnetcdf = make_action("mnetcdf", magics.netcdf)
-odb_geopoints = make_action("odb_geopoints", magics.odb, "Odbviewer")
-odb_geovectors = make_action("odb_geovectors", magics.odb,"Odbviewer" )
-odb_xypoints = make_action("odb_xypoints", magics.odb, "Odbviewer")
-odb_xyvectors = make_action("odb_xyvectors", magics.odb, "Odbviewer")
+mcoast = make_action("mcoast", Magics.coast, "Coastlines")
+pcoast = make_action("pcoast", Magics.coast)
+maxis = make_action("maxis", Magics.axis, "Axis")
+paxis = make_action("paxis", Magics.axis)
+mcont = make_action("mcont", Magics.cont, "Contouring")
+pcont = make_action("pcont", Magics.cont)
+msymb = make_action("msymb", Magics.symb, "Symbol")
+psymb = make_action("psymb", Magics.symb)
+pimport = make_action("pimport", Magics.mimport)
+mimport = make_action("mimport", Magics.mimport)
+mtaylor = make_action("mtaylor", Magics.taylor)
+mgeo = make_action("mgeo", Magics.geo)
+pgeo = make_action("pgeo", Magics.geo)
+pgrib = make_action("pgrib", Magics.grib, "Grib+Input")
+mgrib = make_action("mgrib", Magics.grib, "Grib+Input")
+pmapgen = make_action("pmapgen", Magics.mapgen)
+mmapgen = make_action("mmapgen", Magics.mapgen)
+pnetcdf = make_action("pnetcdf", Magics.netcdf)
+mnetcdf = make_action("mnetcdf", Magics.netcdf)
+odb_geopoints = make_action("odb_geopoints", Magics.odb, "Odbviewer")
+odb_geovectors = make_action("odb_geovectors", Magics.odb,"Odbviewer" )
+odb_xypoints = make_action("odb_xypoints", Magics.odb, "Odbviewer")
+odb_xyvectors = make_action("odb_xyvectors", Magics.odb, "Odbviewer")
 pmap = make_action("pmap", None, "Subpage")
 mmap = make_action("mmap", None, "Subpage")
-plegend = make_action("plegend", magics.legend, "Legend")
-mlegend = make_action("mlegend", magics.legend, "Legend")
-ptext = make_action("mtext", magics.text)
-mtext = make_action("mtext", magics.text)
+plegend = make_action("plegend", Magics.legend, "Legend")
+mlegend = make_action("mlegend", Magics.legend, "Legend")
+ptext = make_action("mtext", Magics.text)
+mtext = make_action("mtext", Magics.text)
 output = make_action("output", None, "PNG Output")
-pwind = make_action("pwind", magics.wind, "Wind+Plotting")
-mwind = make_action("mwind", magics.wind, "Wind+Plotting")
-pline = make_action("pline", magics.line)
-mline = make_action("mline", magics.line)
-pgraph = make_action("pgraph", magics.graph, "Graph+Plotting")
-mgraph = make_action("mgraph", magics.graph, "Graph+Plotting")
-pboxplot = make_action("pboxplot", magics.boxplot)
-mboxplot = make_action("mboxplot", magics.boxplot)
-pobs = make_action("pobs", magics.obs)
-mobs = make_action("mobs", magics.obs)
-page = make_action("page", magics.new_page)
-pinput = make_action("pinput", magics.minput)
-minput = make_action("minput", magics.minput, "Input+Data")
-mtable = make_action("mtable", magics.mtable, "CSV+Table+Decoder")
+pwind = make_action("pwind", Magics.wind, "Wind+Plotting")
+mwind = make_action("mwind", Magics.wind, "Wind+Plotting")
+pline = make_action("pline", Magics.line)
+mline = make_action("mline", Magics.line)
+pgraph = make_action("pgraph", Magics.graph, "Graph+Plotting")
+mgraph = make_action("mgraph", Magics.graph, "Graph+Plotting")
+pboxplot = make_action("pboxplot", Magics.boxplot)
+mboxplot = make_action("mboxplot", Magics.boxplot)
+pobs = make_action("pobs", Magics.obs)
+mobs = make_action("mobs", Magics.obs)
+page = make_action("page", Magics.new_page)
+pinput = make_action("pinput", Magics.minput)
+minput = make_action("minput", Magics.minput, "Input+Data")
+mtable = make_action("mtable", Magics.mtable, "CSV+Table+Decoder")
+mgeojson = make_action("mgeojson", Magics.geojson, "GeoJSon")
+mwrepjson = make_action("mwrepjson", Magics.wrepjson, "WrepJSon")
+mepsinput = make_action("mepsinput", Magics.epsinput, "EpsInput")
+mepscloud = make_action("mepscloud", Magics.epscloud)
+mepslight = make_action("mepslight", Magics.epslight)
+mepsbar = make_action("mepsbar", Magics.epsbar)
+mepswind = make_action("mepswind", Magics.epswind)
+mepswave = make_action("mepswave", Magics.epswave)
+mepsshading = make_action("mepsshading", Magics.epsshading)
+mepsgraph = make_action("mepsgraph", Magics.epsgraph)
+mepsplumes = make_action("mepsplumes", Magics.epsplumes)
+mtephi = make_action("mtephi", Magics.tephi)
 
-
-mgeojson = make_action("mgeojson", magics.geojson, "GeoJSon")
-mwrepjson = make_action("mwrepjson", magics.wrepjson, "WrepJSon")
-mepsinput = make_action("mepsinput", magics.epsinput, "EpsInput")
-mepscloud = make_action("mepscloud", magics.epscloud)
-mepslight = make_action("mepslight", magics.epslight)
-mepsbar = make_action("mepsbar", magics.epsbar)
-mepswind = make_action("mepswind", magics.epswind)
-mepswave = make_action("mepswave", magics.epswave)
-mepsshading = make_action("mepsshading", magics.epsshading)
-mepsgraph = make_action("mepsgraph", magics.epsgraph)
-mepsplumes = make_action("mepsplumes", magics.epsplumes)
-mtephi = make_action("mtephi", magics.tephi)
-
-mmetgraph = make_action("mmetgraph", magics.metgraph)
-mmetbufr = make_action("mmetbufr", magics.metbufr)
+mmetgraph = make_action("mmetgraph", Magics.metgraph)
+mmetbufr = make_action("mmetbufr", Magics.metbufr)
 
 def examine(*args):
     for n in args:
@@ -495,16 +512,20 @@ def _execute(o):
 		o.execute()
 
 def _plot(*args):
+
     context.set()
-    magics.init()
+    #try :
+    Magics.init()
     for n in args:
         _execute(n)
 
     #Collect the drivers!
-    magics.finalize()
+    Magics.finalize()
     for f in context.tmp:
         if os.path.exists(f):
             os.remove(f)
+    #except:
+        #print ("Magics Error")
 
 
 
@@ -551,7 +572,7 @@ class  odb_filter(object):
         if (os.system(cmd)) :
             print("Error in filtering ODB data... Aborting")
             os.abort();
-        magics.setc('odb_filename', odb)
+        Magics.setc('odb_filename', odb)
     def inspect(self):
         cmd = "odbsql -q \"" + self.args["query"] + "\" -i " + self.args["path"] + " -o data.ascii"
         if (os.system(cmd)) :
@@ -566,48 +587,66 @@ class  odb_filter(object):
 import threading
 import tempfile
 
-try:
+
+_MAGICS_LOCK = threading.Lock()
+
+def _jplot(*args):
     from IPython.display import Image
+    
+    with _MAGICS_LOCK:
+        f, tmp = tempfile.mkstemp(".png")
+        os.close(f)
 
-    LOCK = threading.Lock()
+        base, ext = os.path.splitext(tmp)
 
-    def plot(*args):
+        img = output(
+            output_formats=["png"],
+            output_name_first_page_number='off',
+            output_name=base
+        )
+        
+        all = [img]
+        all.extend(args)
+        
+        _plot(all)
 
-        with LOCK:
-            f, tmp = tempfile.mkstemp(".png")
-            os.close(f)
+        image = Image(tmp)
+        os.unlink(tmp)
+        return image
 
-            base, ext = os.path.splitext(tmp)
 
-            img = output(output_formats=["png"],
-                              output_name_first_page_number='off',
-                              output_name=base)
-
-            all = []
-            all.append(img)
-            for i in args :
-              all.append(i)
-            _plot(all)
-
-            image = Image(tmp)
-            os.unlink(tmp)
-            return image
-except ImportError:
+try:
+    # This function only seems to be defined in a Jupyter notebook context.
+    get_ipython()
+    plot = _jplot
+except Exception:
     plot = _plot
-
 
 
 
 
 def wmsstyles(data):
     context.set()
-    magics.init()
-    styles = data.style()
-    magics.finalize()
-    return json.loads(styles.decode())
+    try :
+        Magics.init()
+        styles = data.style()
+        Magics.finalize()
+        styles = json.loads(styles.decode())
+        return styles
+    except :
+        return {} 
 
+def version():
+    version = Magics.version()
+    return version.decode()
 
+def predefined_areas():
+    home = Magics.home()
+    with open("%s/share/magics/projections.json" % ( home.decode() )) as input:
+        projections = json.load(input)
+    return projections.keys()
 
+   
 
 def wmscrs():
     os.environ["MAGPLUS_QUIET"] =  "on"
@@ -650,5 +689,7 @@ def wmscrs():
                     "s_lat" : -90.,
                     "n_lat" : 90.
               }
-
+            
             }
+                
+    
