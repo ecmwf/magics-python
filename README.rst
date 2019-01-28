@@ -39,7 +39,7 @@ Note that *Magics* support for the Windows operating system is experimental.
 You may run a simple selfcheck command to ensure that your system is set up correctly::
 
     $ python -m magics selfcheck
-    Found: Magics 'Unknown version'.
+    Found: Magics '3.4.0.10'.
     Your system is ready.
 
 
@@ -56,9 +56,25 @@ You may try out the high level API in a python interpreter:
 
 .. code-block: python
 
->>> import magics
->>> magics.plot('era5-levels-members.grib')
+>>> from Magics import macro as magics
+>>>
+>>> name = 'magics'
+>>> #Setting of the output file name
+>>> output = magics.output(output_formats = ['png'], 
+>>>		output_name_first_page_number = "off",
+>>>		output_name = "magics")
+>>> 
+>>> #Import the ear data 
+>>> era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
+>>>
+>>> #Define an automatic styling 
+>>> contour = magics.mcont( contour_automatic_styling = "ecmwf", )
+>>>
+>>> magics.plot(output, era, contour, magics.mcont())
 
+
+You can find notebooks examples :
+https://github.com/ecmwf/notebook-examples/tree/master/visualisation
 
 Contributing
 ------------
