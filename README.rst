@@ -52,9 +52,9 @@ First, you need a well-formed GRIB file, if you don't have one at hand you can d
     $ wget http://download.ecmwf.int/test-data/cfgrib/era5-levels-members.grib
 
 
-You may try out the high level API in a python interpreter:
+You may try out the high level API in a python interpreter::
 
-.. code-block: python
+
 
    from Magics import macro as magics
     
@@ -64,7 +64,7 @@ You may try out the high level API in a python interpreter:
     		output_name_first_page_number = "off",
     		output_name = "magics")
      
-    #Import the ear data 
+    #Import the era data 
     era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
     
     #Define an automatic styling 
