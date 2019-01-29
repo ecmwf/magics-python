@@ -29,7 +29,7 @@ version = '0.9.6.dev0'
 
 
 setuptools.setup(
-    name='magics',
+    name='Magics',
     version=version,
     description='Python interface to plot meteorological data in GRIB, NetCDF and BUFR.',
     long_description=read('README.rst'),
