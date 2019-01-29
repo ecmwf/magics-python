@@ -196,7 +196,6 @@ def coast():
 def grib():
     return dll.py_grib()
 
-@checked_return_code
 def version():
     return dll.version()
 
