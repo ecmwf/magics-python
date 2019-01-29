@@ -11,7 +11,7 @@ import os
 import numpy
 import json
 
-from . import magics
+from . import Magics
 
 class Context(object):
     def __init__(self):
