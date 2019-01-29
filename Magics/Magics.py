@@ -196,7 +196,7 @@ def coast():
 def grib():
     return dll.py_grib()
 
-version = dll.py_version
+version = dll.version
 version.restype = ctypes.c_char_p
 version.argtypes = None
 
