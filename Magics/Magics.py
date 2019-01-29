@@ -197,8 +197,8 @@ def grib():
     return dll.mag_grib()
 
 @checked_return_code
-def get_version():
-    return dll.getMagicsVersionString()
+def version():
+    return dll.version()
 
 
 #metagrib = dll.mag_metagrib
