@@ -17,7 +17,7 @@ Installation
 
 The package is installed from PyPI with::
 
-    $ pip install magics
+    $ pip install Magics
 
 
 System dependencies
@@ -38,7 +38,7 @@ Note that *Magics* support for the Windows operating system is experimental.
 
 You may run a simple selfcheck command to ensure that your system is set up correctly::
 
-    $ python -m magics selfcheck
+    $ python -m Magics selfcheck
     Found: Magics '3.4.0.10'.
     Your system is ready.
 
@@ -47,9 +47,9 @@ Usage
 -----
 
 First, you need a well-formed GRIB file, if you don't have one at hand you can download our
-`ERA5 on pressure levels sample <http://download.ecmwf.int/test-data/cfgrib/era5-levels-members.grib>`_::
+a 2m temperature grib file::
 
-    $ wget http://download.ecmwf.int/test-data/cfgrib/era5-levels-members.grib
+    $ wget http://download.ecmwf.int/test-data/magics/2m_temperature.grib
 
 
 You may try out the high level API in a python interpreter::
@@ -65,12 +65,16 @@ You may try out the high level API in a python interpreter::
     		output_name = "magics")
      
    #Import the era data 
-   era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
+   era =  magics.mgrib(grib_input_file_name  = "2m_temperature.grib", )
     
    #Define an automatic styling 
-   contour = magics.mcont( contour_automatic_styling = "ecmwf", )
-   magics.plot(output, era, contour, magics.mcont())
+   contour = magics.mcont( contour_automatic_setting = "ecmwf", )
+   coast = magics.mcoast()
+   magics.plot(output, era, contour, coast)
 
+
+Running the test program will create a png 
+..image:: magics.png
 
 You can find notebooks examples :
 https://github.com/ecmwf/notebook-examples/tree/master/visualisation
@@ -87,7 +91,7 @@ Please see the CONTRIBUTING.rst document for the best way to help.
 
 Lead developer:
 
-- Sylvie Lamy-Thepaut - ECMWF
+- `Sylvie Lamy-Thepaut <https://github.com/sylvielamythepaut` - ECMWF
 
 Main contributors:
 
