@@ -22,8 +22,8 @@ def main(argv=None):
     parser.add_argument('command', help='Supported commands: selfcheck.')
     args = parser.parse_args(args=argv)
     if args.command == 'selfcheck':
-        from . import Magics
-        print("Found: Magics %r." % Magics.version())
+        from . import macro
+        print("Found: Magics %r." % macro.version())
         print("Your system is ready.")
     else:
         raise RuntimeError("Command not recognised %r. See usage with --help." % args.command)
