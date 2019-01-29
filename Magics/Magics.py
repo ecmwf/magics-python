@@ -1,4 +1,4 @@
-# (C) Copyright 2012-2018 ECMWF.
+Ï# (C) Copyright 2012-2018 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -175,38 +175,38 @@ def return_type(fn, ctype):
 
 @checked_return_code
 def init():
-    return dll.mag_open()
+    return dll.py_open()
 
 ####################################################################
 
 
 @checked_return_code
 def finalize():
-    return dll.mag_close()
+    return dll.py_close()
 
 ####################################################################
 
 @checked_return_code
 def coast():
-    return dll.mag_coast()
+    return dll.py_coast()
 
 
 ####################################################################
 @checked_return_code
 def grib():
-    return dll.mag_grib()
+    return dll.py_grib()
 
 @checked_return_code
 def version():
     return dll.version()
 
 
-#metagrib = dll.mag_metagrib
+#metagrib = dll.py_metagrib
 #metagrib.restype = ctypes.c_char_p
 #metagrib.argtypes = None
 
 
-#metanetcdf = dll.mag_metanetcdf
+#metanetcdf = dll.py_metanetcdf
 #metanetcdf.restype = ctypes.c_char_p
 #metanetcdf.argtypes = None
 
@@ -215,148 +215,148 @@ def version():
 
 @checked_return_code
 def cont():
-    return dll.mag_cont()
+    return dll.py_cont()
 
 ####################################################################
 
 @checked_return_code
 def legend():
-    return dll.mag_legend()
+    return dll.py_legend()
 
 
 ####################################################################
 
 @checked_return_code
 def odb():
-    return dll.mag_odb()
+    return dll.py_odb()
 
 
 ####################################################################
 
 @checked_return_code
 def obs():
-    return dll.mag_obs()
+    return dll.py_obs()
 
 
 ####################################################################
 
 @checked_return_code
 def raw():
-    return dll.mag_raw()
+    return dll.py_raw()
 
 
 ####################################################################
 
 @checked_return_code
 def netcdf():
-    return dll.mag_netcdf()
+    return dll.py_netcdf()
 
 ####################################################################
 
 @checked_return_code
 def image():
-    return dll.mag_image()
+    return dll.py_image()
 
 
 ####################################################################
 
 @checked_return_code
 def plot():
-    return dll.mag_plot()
+    return dll.py_plot()
 
 ####################################################################
 
 @checked_return_code
 def text():
-    return dll.mag_text()
+    return dll.py_text()
 
 
 ####################################################################
 
 @checked_return_code
 def wind():
-    return dll.mag_wind()
+    return dll.py_wind()
 
 
 ####################################################################
 
 @checked_return_code
 def line():
-    return dll.mag_line()
+    return dll.py_line()
 
 
 ####################################################################
 
 @checked_return_code
 def symb():
-    return dll.mag_symb()
+    return dll.py_symb()
 
 
 ####################################################################
 
 @checked_return_code
 def boxplot():
-    return dll.mag_boxplot()
+    return dll.py_boxplot()
 
 
 ####################################################################
 
 @checked_return_code
 def taylor():
-    return dll.mag_taylor()
+    return dll.py_taylor()
 
 ####################################################################
 
 @checked_return_code
 def tephi():
-    return dll.mag_tephi()
+    return dll.py_tephi()
 
 ####################################################################
 
 @checked_return_code
 def graph():
-    return dll.mag_graph()
+    return dll.py_graph()
 
 
 ####################################################################
 
 @checked_return_code
 def axis():
-    return dll.mag_axis()
+    return dll.py_axis()
 
 ####################################################################
 
 @checked_return_code
 def geo():
-    return dll.mag_geo()
+    return dll.py_geo()
 
 
 ####################################################################
 
 @checked_return_code
 def mimport():
-    return dll.mag_import()
+    return dll.py_import()
 
 
 ####################################################################
 
 @checked_return_code
 def info():
-    return dll.mag_info()
+    return dll.py_info()
 
 
 ####################################################################
 
 @checked_return_code
 def minput():
-    return dll.mag_input()
+    return dll.py_input()
 
 
 ####################################################################
 
 @checked_return_code
 def eps():
-    return dll.mag_eps()
+    return dll.py_eps()
 
 
 ####################################################################
@@ -365,12 +365,12 @@ def eps():
 ###
 @checked_return_code
 def metgraph():
-    return dll.mag_metgraph()
+    return dll.py_metgraph()
 
 
 @checked_return_code
 def epsinput():
-    return  dll.mag_epsinput()
+    return  dll.py_epsinput()
 
 ####################################################################
 ###
@@ -378,92 +378,92 @@ def epsinput():
 ###
 @checked_return_code
 def metbufr():
-    return dll.mag_metbufr()
+    return dll.py_metbufr()
 
 ####################################################################
 
 @checked_return_code
 def epsgraph():
-    return dll.mag_epsgraph()
+    return dll.py_epsgraph()
 
 
 ####################################################################
 
 @checked_return_code
 def epscloud():
-    return dll.mag_epscloud()
+    return dll.py_epscloud()
 
 ####################################################################
 
 @checked_return_code
 def epslight():
-    return dll.mag_epslight()
+    return dll.py_epslight()
 
 
 ####################################################################
 
 @checked_return_code
 def epsplumes():
-    return dll.mag_epsplumes()
+    return dll.py_epsplumes()
 
 
 ####################################################################
 
 @checked_return_code
 def epswind():
-    return dll.mag_epswind()
+    return dll.py_epswind()
 
 
 ####################################################################
 
 @checked_return_code
 def epswave():
-    return dll.mag_epswave()
+    return dll.py_epswave()
 
 ####################################################################
 
 @checked_return_code
 def epsbar():
-    return dll.mag_epsbar()
+    return dll.py_epsbar()
 
 ####################################################################
 
 @checked_return_code
 def epsshading():
-    return dll.mag_epsshading()
+    return dll.py_epsshading()
 
 
 ####################################################################
 
 @checked_return_code
 def wrepjson():
-    return dll.mag_wrepjson()
+    return dll.py_wrepjson()
 
 ####################################################################
 
 @checked_return_code
 def geojson():
-    return dll.mag_geojson()
+    return dll.py_geojson()
 
 ####################################################################
 
 @checked_return_code
 def mapgen():
-    return dll.mag_mapgen()
+    return dll.py_mapgen()
 
 
 ####################################################################
 
 @checked_return_code
 def mtable():
-    return  dll.mag_table()
+    return  dll.py_table()
 
 ####################################################################
 
 @checked_return_code
 def seti(name, value):
     name = string_to_char(name)
-    return dll.mag_seti(name, value)
+    return dll.py_seti(name, value)
 
 
 ####################################################################
@@ -475,20 +475,20 @@ def set1i(name,data):
     size = len(data)
     name = string_to_char(name)
     array_p = (ctypes.c_int * size)(*data)
-    return dll.mag_set1i(ctypes.c_char_p(name), array_p, size)
+    return dll.py_set1i(ctypes.c_char_p(name), array_p, size)
     return None
 
 ####################################################################
 
 array_2d_int = ndpointer(dtype=np.int,ndim=2, flags='CONTIGUOUS')
-set2i = dll.mag_set2i
+set2i = dll.py_set2i
 set2i.restype = None
 set2i.argtypes = (c_char_p, array_2d_int, c_int, c_int)
 set2i = convert_strings(set2i)
 
 ####################################################################
 
-setr = dll.mag_setr
+setr = dll.py_setr
 setr.restype = None
 setr.argtypes = (c_char_p, c_double)
 setr = convert_strings(setr)
@@ -499,20 +499,20 @@ def set1r(name,data):
     size = len(data)
     name = string_to_char(name)
     array_p = (ctypes.c_double * size)(*data)
-    return dll.mag_set1r(ctypes.c_char_p(name), array_p, size)
+    return dll.py_set1r(ctypes.c_char_p(name), array_p, size)
 
 
 ####################################################################
 
 array_2d_double = ndpointer(dtype=np.double,ndim=2, flags='CONTIGUOUS')
-set2r = dll.mag_set2r
+set2r = dll.py_set2r
 set2r.restype = None
 set2r.argtypes = (c_char_p, array_2d_double, c_int, c_int)
 set2r = convert_strings(set2r)
 
 ####################################################################
 
-setc = dll.mag_setc
+setc = dll.py_setc
 setc.restype = None
 setc.argtypes = (c_char_p, c_char_p)
 setc = convert_strings(setc)
@@ -525,37 +525,37 @@ def set1c(name,data):
        new_data.append(string_to_char(s))
     name = string_to_char(name)
     data_p = (c_char_p * (len(new_data)))(*new_data)
-    return dll.mag_set1c(ctypes.c_char_p(name), data_p, len(new_data))
+    return dll.py_set1c(ctypes.c_char_p(name), data_p, len(new_data))
 
 ####################################################################
 
-#enqi = dll.mag_enqi
+#enqi = dll.py_enqi
 #enqi.restype  = c_int
 #enqi.argtypes = (c_char_p,)
 
 ####################################################################
 
-#enqr = dll.mag_enqr
+#enqr = dll.py_enqr
 #enqr.restype = c_double
 #enqr.argtypes = (c_char_p,)
 
 ####################################################################
 
-#enqc = dll.mag_enqc
+#enqc = dll.py_enqc
 #enqc.restype = None
 #enqc.argtypes = (c_char_p,)
 #enqc = convert_strings(enqc)
 
 ####################################################################
 
-new_page = dll.mag_new
+new_page = dll.py_new
 new_page.restype = None
 new_page.argtypes = (c_char_p,)
 new_page = convert_strings(new_page)
 
 ####################################################################
 
-reset = dll.mag_reset
+reset = dll.py_reset
 reset.restype = None
 reset.argtypes = (c_char_p,)
 reset = convert_strings(reset)
