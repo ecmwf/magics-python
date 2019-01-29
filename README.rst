@@ -74,9 +74,8 @@ You may try out the high level API in a python interpreter::
 
 
 Running the test program will create a png 
-.. image:: magics.png
-  :width: 400
-  :alt: Magics output
+.. image:: ./magics.png
+  
 
 You can find notebooks examples :
 https://github.com/ecmwf/notebook-examples/tree/master/visualisation
@@ -93,7 +92,7 @@ Please see the CONTRIBUTING.rst document for the best way to help.
 
 Lead developer:
 
-- `Sylvie Lamy-Thepaut <https://github.com/sylvielamythepaut`_ - ECMWF
+- `Sylvie Lamy-Thepaut <https://github.com/sylvielamythepaut>`_ - ECMWF
 
 Main contributors:
 
