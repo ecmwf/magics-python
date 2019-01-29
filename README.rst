@@ -64,12 +64,12 @@ You may try out the high level API in a python interpreter::
     		output_name_first_page_number = "off",
     		output_name = "magics")
      
-    #Import the era data 
-    era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
+   #Import the era data 
+   era =  magics.mgrib(grib_input_file_name  = "era5-levels-members.grib", )
     
-    #Define an automatic styling 
-    contour = magics.mcont( contour_automatic_styling = "ecmwf", )
-    magics.plot(output, era, contour, magics.mcont())
+   #Define an automatic styling 
+   contour = magics.mcont( contour_automatic_styling = "ecmwf", )
+   magics.plot(output, era, contour, magics.mcont())
 
 
 You can find notebooks examples :
