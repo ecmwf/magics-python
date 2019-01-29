@@ -64,17 +64,19 @@ You may try out the high level API in a python interpreter::
     		output_name_first_page_number = "off",
     		output_name = "magics")
      
-   #Import the era data 
-   era =  magics.mgrib(grib_input_file_name  = "2m_temperature.grib", )
+   #Import the  data 
+   data =  magics.mgrib(grib_input_file_name  = "2m_temperature.grib", )
     
-   #Define an automatic styling 
+   #Apply an automatic styling 
    contour = magics.mcont( contour_automatic_setting = "ecmwf", )
    coast = magics.mcoast()
-   magics.plot(output, era, contour, coast)
+   magics.plot(output, data, contour, coast)
 
 
 Running the test program will create a png 
-..image:: magics.png
+.. image:: magics.png
+  :width: 400
+  :alt: Magics output
 
 You can find notebooks examples :
 https://github.com/ecmwf/notebook-examples/tree/master/visualisation
@@ -91,7 +93,7 @@ Please see the CONTRIBUTING.rst document for the best way to help.
 
 Lead developer:
 
-- `Sylvie Lamy-Thepaut <https://github.com/sylvielamythepaut` - ECMWF
+- `Sylvie Lamy-Thepaut <https://github.com/sylvielamythepaut`_ - ECMWF
 
 Main contributors:
 
