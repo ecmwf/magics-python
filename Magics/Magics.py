@@ -196,18 +196,19 @@ def coast():
 def grib():
     return dll.py_grib()
 
-def version():
-    return dll.version()
+version = dll.py_version
+version.restype = ctypes.c_char_p
+version.argtypes = None
 
 
-#metagrib = dll.py_metagrib
-#metagrib.restype = ctypes.c_char_p
-#metagrib.argtypes = None
+metagrib = dll.py_metagrib
+metagrib.restype = ctypes.c_char_p
+metagrib.argtypes = None
 
 
-#metanetcdf = dll.py_metanetcdf
-#metanetcdf.restype = ctypes.c_char_p
-#metanetcdf.argtypes = None
+metanetcdf = dll.py_metanetcdf
+metanetcdf.restype = ctypes.c_char_p
+metanetcdf.argtypes = None
 
 
 ####################################################################
