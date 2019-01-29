@@ -73,8 +73,7 @@ You may try out the high level API in a python interpreter::
    magics.plot(output, data, contour, coast)
 
 
-Running the test program will create a png 
-.. image:: ./magics.png
+Running the test program will create a png named magics.png 
   
 
 You can find notebooks examples :
