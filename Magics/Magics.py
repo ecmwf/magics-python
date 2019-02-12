@@ -26,11 +26,36 @@ from functools import partial
 #  on MacOS the DYLD_LIBRARY_PATH or for *.dylib.
 #
 lib = None
-for directory in os.environ.get("LD_LIBRARY_PATH","").split(":"):
+if sys.platform == "darwin":
+  for directory in os.environ.get("DYLD_LIBRARY_PATH","").split(":"):
+    fullname = os.path.join(directory,"libMagPlus.dylib")
+    if os.path.exists(fullname):
+        lib = fullname
+        break
+
+  if lib is None:
+    fullname = os.path.join(os.environ.get("MAGPLUS_HOME",""), "lib/libMagPlus.dylib")
+    if os.path.exists(fullname):
+          lib = fullname
+
+elif sys.platform == "win32":
+  if lib is None:
+    fullname = os.path.join(os.environ.get("MAGPLUS_HOME",""), "lib/libMagPlus.dll")
+    if os.path.exists(fullname):
+          lib = fullname
+
+else:
+  for directory in os.environ.get("LD_LIBRARY_PATH","").split(":"):
     fullname = os.path.join(directory,"libMagPlus.so")
     if os.path.exists(fullname):
         lib = fullname
         break
+
+  if lib is None:
+    fullname = os.path.join(os.environ.get("MAGPLUS_HOME",""), "lib/libMagPlus.so")
+    if os.path.exists(fullname):
+          lib = fullname
+
 
 #
 #  if not overwritten test if instlled version exist and use it
