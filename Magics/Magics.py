@@ -196,9 +196,16 @@ def coast():
 def grib():
     return dll.py_grib()
 
-version = dll.version
-version.restype = ctypes.c_char_p
-version.argtypes = None
+def oldversion():
+    msg = "You are using an old version of magics ( < 4.0.0)"
+    return msg.encode()
+
+try :
+    version = dll.version
+    version.restype = ctypes.c_char_p
+    version.argtypes = None
+except:
+    version = oldversion
 
 
 metagrib = dll.py_metagrib
