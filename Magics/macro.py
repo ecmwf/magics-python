@@ -16,7 +16,7 @@ from . import Magics
 class Context(object):
     def __init__(self):
         self.tmp = []
-        self.silent = False
+        self.silent = True
     
     def set(self) :
         if self.silent :
@@ -32,11 +32,35 @@ context  = Context()
 def silent():
    context.silent = False
 
+
+
+
+@Magics.log
+def warning(int, msg):
+    print (msg.decode())
+
+@Magics.log
+def error(int, msg):
+    print (msg.decode())
+
+@Magics.log
+def info_log(int, msg):
+    print (msg.decode())
+
+@Magics.log
+def debug_log(int, msg):
+    print (msg.decode())
+
+
+Magics.warning_log(3, warning)
+Magics.error_log(3, error)
+
+
 def debug():
-    os.environ["MAGPLUS_INFO"] =  "on"
-    os.environ["MAGPLUS_DEBUG"] =  "on"
+    Magics.debug_log(3, debug_log)
 
-
+def info():
+    Magics.info_log(3, info_log)
 
 actions={
     "mobs": "pobs",
