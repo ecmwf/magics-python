@@ -76,6 +76,10 @@ class Action(object):
     def __init__(self, verb, action, html, args):
         self.verb = verb
         self.action = action
+
+        if verb == "output" and not ("output_formats" in args):
+            args["output_formats"] = ["png"]
+
         self.args = args
         if ( html == "") :
             self.html = verb
