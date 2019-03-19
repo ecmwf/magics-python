@@ -1,0 +1,91 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+sudo: false
+
+branches:
+  only:
+    - dtip-add-ci
+    - master
+
+language: python
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          packages:
+            - libpango1.0-dev
+      env:
+        MINICONDA_FILE="Miniconda3-latest-Linux-x86_64.sh"
+        CONDA=~/miniconda3
+        PROJ4_PATH=~/miniconda3
+
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          packages:
+            - libpango1.0-dev
+      env:
+        MINICONDA_FILE="Miniconda2-latest-Linux-x86_64.sh"
+        CONDA=~/miniconda2
+        PROJ4_PATH=~/miniconda2
+
+    - os: osx 
+      osx_image: xcode10.1
+      addons:
+        homebrew:
+          packages:
+            - pango
+      env:
+        MINICONDA_FILE="Miniconda3-latest-MacOSX-x86_64.sh"
+        CONDA=~/miniconda3
+
+    - os: osx 
+      osx_image: xcode10.1
+      addons:
+        homebrew:
+          packages:
+            - pango
+      env:
+        MINICONDA_FILE="Miniconda2-latest-MacOSX-x86_64.sh"
+        CONDA=~/miniconda2
+
+env:
+  global:
+    - MAGICS_PYTHON_SRC=${TRAVIS_BUILD_DIR}
+    - MAGICS_CXX_SRC=${MAGICS_PYTHON_SRC}/../magics
+    - MAGICS_REGRESSION_GALLERY=${MAGICS_CXX_SRC}/regression/gallery
+
+git:
+  depth: 1
+
+before_install:
+  # install conda
+  - |
+    MINICONDA_URL="https://repo.continuum.io/miniconda"
+    curl -L -O "${MINICONDA_URL}/${MINICONDA_FILE}"
+    bash ${MINICONDA_FILE} -b
+  # activate conda
+  - source $CONDA/bin/activate
+  # auto-yes for conda
+  - conda config --set always_yes yes
+
+install:
+  # get magics-cxx for the regression/gallery test scripts
+  - git clone --depth 1 https://github.com/ecmwf/magics.git ${MAGICS_CXX_SRC}
+  # install deps
+  - conda install pytest
+  - conda install -c conda-forge magics=4
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+script:
+  - cd ${MAGICS_PYTHON_SRC}
+  - pytest
