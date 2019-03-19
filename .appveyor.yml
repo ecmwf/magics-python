@@ -40,6 +40,10 @@ clone_depth: 1
 install:
   # get magics-cxx for the regression/gallery test scripts
   - cmd: git clone --depth 1 https://github.com/ecmwf/magics.git %MAGICS_CXX_SRC%
+  # get regression/gallery grib data
+  - cmd: conda install -c menpo wget
+  - cmd: cd %MAGICS_REGRESSION_GALLERY%
+  - cmd: wget -r -np -nd -q http://download.ecmwf.org/test-data/magics/regression/gallery/
   # install deps
   - cmd: conda install pytest
   - cmd: conda install -c conda-forge magics

@@ -78,6 +78,9 @@ before_install:
 install:
   # get magics-cxx for the regression/gallery test scripts
   - git clone --depth 1 https://github.com/ecmwf/magics.git ${MAGICS_CXX_SRC}
+  # get regression/gallery grib data
+  - cd ${MAGICS_REGRESSION_GALLERY}
+  - wget -r -np -nd http://download.ecmwf.org/test-data/magics/regression/gallery/
   # install deps
   - conda install pytest
   - conda install -c conda-forge magics=4
