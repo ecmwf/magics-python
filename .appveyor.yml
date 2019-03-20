@@ -1,0 +1,62 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+version: 1.0.6-{build}-{branch}
+
+branches:
+  only:
+    - master
+
+image: Visual Studio 2015
+
+environment:
+  matrix:
+    - CONDA: c:\Miniconda37-x64
+    - CONDA: c:\Miniconda-x64
+
+  global:
+    ECMWF: c:\ecmwf
+    GIT_CLONE_DIR: $(ECMWF)\git
+    MAGICS_PYTHON_SRC: $(GIT_CLONE_DIR)\magics-python
+    MAGICS_CXX_SRC: $(GIT_CLONE_DIR)\magics
+    MAGICS_REGRESSION_GALLERY: $(MAGICS_CXX_SRC)\regression\gallery
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  # make sure git clones symlinks as symlinks
+  - cmd: git config --global core.symlinks true
+    # activate conda environment
+  - cmd: call %CONDA%\Scripts\activate.bat
+    # auto-yes for conda
+  - cmd: conda config --set always_yes yes
+
+clone_folder: $(MAGICS_PYTHON_SRC)
+
+clone_depth: 1
+
+# scripts that run after cloning repository
+install:
+  # get magics-cxx for the regression/gallery test scripts
+  - cmd: git clone --depth 1 https://github.com/ecmwf/magics.git %MAGICS_CXX_SRC%
+  # get regression/gallery grib data
+  - cmd: conda install -c menpo wget
+  - cmd: cd %MAGICS_REGRESSION_GALLERY%
+  - cmd: wget -r -np -nd -q http://download.ecmwf.org/test-data/magics/regression/gallery/
+  # install deps
+  - cmd: conda install pytest
+  - cmd: conda install -c conda-forge magics
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+build: off
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+test_script:
+  - cmd: cd %MAGICS_PYTHON_SRC%
+  - cmd: pytest
