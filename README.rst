@@ -97,6 +97,7 @@ Main contributors:
 
 - `Stephan Siemen <https://github.com/stephansiemen>`_ - ECMWF
 - `Alessandro Amici <https://github.com/alexamici>`_ - B-Open
+- `Daniel Tipping <https://github.com/dtip>`_ - `Old Reliable <https://oldreliable.tech>`_
 
 See also the list of `contributors <https://github.com/ecmwf/magics-python/contributors>`_ who participated in this project.
 
