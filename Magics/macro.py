@@ -76,6 +76,10 @@ class Action(object):
     def __init__(self, verb, action, html, args):
         self.verb = verb
         self.action = action
+
+        if verb == "output" and not ("output_formats" in args):
+            args["output_formats"] = ["png"]
+
         self.args = args
         if ( html == "") :
             self.html = verb
@@ -419,11 +423,51 @@ class Action(object):
             return Magics.metainput()
 
 
-def mxarray(dataset, var):
-    
-    
+def mxarray(ds, var, **kwargs):
+    """
+    Convert an xarray dataset containing a variable with latitude and longitude data into
+    magics.minput.
+    """
+    lat = numpy.array([])
+    lon = numpy.array([])
+
+    dims = ds[var].dims
+
+    for dim in dims:
+        if dim == "latitude" or dim == "lat":
+            lat = ds[dim].values.astype(numpy.float64)
+        elif dim == "longitude" or dim == "lon":
+            lon = ds[dim].values.astype(numpy.float64)
+        elif dim in kwargs:
+            if kwargs[dim] not in ds[var][dim]:
+                raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
+                        .format(dim, type(dim), ds[var][dim].values, ds[var][dim].dtype))
+            else:
+                ds = ds.loc[{dim: kwargs[dim]}]
+        elif ds[var][dim].size == 1:
+            # automatically squash this dimension
+            d = ds[var][dim].values[0]
+            print("automatically squashing dimension: {}={}".format(dim, d))
+            ds = ds.loc[{dim: d}]
+        else:
+            raise ValueError("Missing kwarg. Please pick a dimension from which to slice data. "
+                    "dimension={} options={} dtype={}".format(dim, ds[dim].values, ds[dim].dtype))
+    if lat.size == 0 or lon.size == 0:
+        raise ValueError("Lat or lon not found")
+
+    # extract values
+    values = ds[var].values.astype(numpy.float64)
+
+    # expand latitude and longitude arrays into 2D Matrices
+    lat = numpy.matrix.transpose(numpy.matrix(numpy.repeat([lat], lon.size, axis=0)))
+    lon = numpy.matrix(numpy.repeat([lon], lat.size, axis=0))
+
+    data = magics.minput(
+            input_field            = values,
+            input_latitude_values  = lat,
+            input_longitude_values = lon,
+            input_metadata         = dict(ds[var].attrs) )
     return data
-        
         
 
 def make_action(verb, action, html="" ):
