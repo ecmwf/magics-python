@@ -73,6 +73,8 @@ before_install:
   - source $CONDA/bin/activate
   # auto-yes for conda
   - conda config --set always_yes yes
+  # update conda
+  - conda update -n base -c defaults conda
 
 install:
   # get magics-cxx for the test/python test scripts
