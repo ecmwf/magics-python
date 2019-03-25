@@ -58,7 +58,7 @@ env:
   global:
     - MAGICS_PYTHON_SRC=${TRAVIS_BUILD_DIR}
     - MAGICS_CXX_SRC=${MAGICS_PYTHON_SRC}/../magics
-    - MAGICS_REGRESSION_GALLERY=${MAGICS_CXX_SRC}/regression/gallery
+    - MAGICS_PYTHON_TESTS=${MAGICS_CXX_SRC}/test/python
 
 git:
   depth: 1
@@ -75,14 +75,10 @@ before_install:
   - conda config --set always_yes yes
 
 install:
-  # get magics-cxx for the regression/gallery test scripts
+  # get magics-cxx for the test/python test scripts
   - git clone --depth 1 https://github.com/ecmwf/magics.git ${MAGICS_CXX_SRC}
-  # get regression/gallery grib data
-  - cd ${MAGICS_REGRESSION_GALLERY}
-  - wget -r -np -nd http://download.ecmwf.org/test-data/magics/regression/gallery/
   # install deps
-  - conda install pytest
-  - conda install -c conda-forge magics=4
+  - conda install -c conda-forge magics=4 pytest
 
 #---------------------------------#
 #       build configuration       #

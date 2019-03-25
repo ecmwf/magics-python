@@ -20,7 +20,7 @@ environment:
     GIT_CLONE_DIR: $(ECMWF)\git
     MAGICS_PYTHON_SRC: $(GIT_CLONE_DIR)\magics-python
     MAGICS_CXX_SRC: $(GIT_CLONE_DIR)\magics
-    MAGICS_REGRESSION_GALLERY: $(MAGICS_CXX_SRC)\regression\gallery
+    MAGICS_PYTHON_TESTS: $(MAGICS_CXX_SRC)\test\python
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -37,15 +37,10 @@ clone_depth: 1
 
 # scripts that run after cloning repository
 install:
-  # get magics-cxx for the regression/gallery test scripts
+  # get magics-cxx for the test/python test scripts
   - cmd: git clone --depth 1 https://github.com/ecmwf/magics.git %MAGICS_CXX_SRC%
-  # get regression/gallery grib data
-  - cmd: conda install -c menpo wget
-  - cmd: cd %MAGICS_REGRESSION_GALLERY%
-  - cmd: wget -r -np -nd -q http://download.ecmwf.org/test-data/magics/regression/gallery/
   # install deps
-  - cmd: conda install pytest
-  - cmd: conda install -c conda-forge magics
+  - cmd: conda install -c conda-forge magics pytest
 
 #---------------------------------#
 #       build configuration       #

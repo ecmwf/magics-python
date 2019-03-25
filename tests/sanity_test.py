@@ -69,7 +69,7 @@ def generate_test_method(test_name):
 
 # This code needs to be outside of `if __name__ == '__main__'` so the test methods are generated
 # at import time so that pytest can find them
-test_dir = os.getenv("MAGICS_REGRESSION_GALLERY")
+test_dir = os.getenv("MAGICS_PYTHON_TESTS")
 if not test_dir:
     test_dir = "./gallery"
 os.chdir(test_dir)
