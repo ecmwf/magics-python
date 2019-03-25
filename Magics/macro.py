@@ -423,7 +423,7 @@ class Action(object):
             return Magics.metainput()
 
 
-def from_xarray(ds, var, **kwargs):
+def mxarray(ds, var, **kwargs):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
