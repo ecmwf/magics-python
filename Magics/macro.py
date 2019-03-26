@@ -458,17 +458,12 @@ def mxarray(ds, var, **kwargs):
     # extract values
     values = ds[var].values.astype(numpy.float64)
 
-    # expand latitude and longitude arrays into 2D Matrices
-    lat = numpy.matrix.transpose(numpy.matrix(numpy.repeat([lat], lon.size, axis=0)))
-    lon = numpy.matrix(numpy.repeat([lon], lat.size, axis=0))
-
-    data = magics.minput(
+    data = minput(
             input_field            = values,
             input_latitude_values  = lat,
             input_longitude_values = lon,
             input_metadata         = dict(ds[var].attrs) )
     return data
-        
 
 def make_action(verb, action, html="" ):
     def f(_m = None,**kw):
