@@ -462,7 +462,7 @@ def mxarray(ds, var, **kwargs):
     lat = numpy.matrix.transpose(numpy.matrix(numpy.repeat([lat], lon.size, axis=0)))
     lon = numpy.matrix(numpy.repeat([lon], lat.size, axis=0))
 
-    data = magics.minput(
+    data = minput(
             input_field            = values,
             input_latitude_values  = lat,
             input_longitude_values = lon,
