@@ -44,6 +44,8 @@ install:
   # install deps
   - cmd: conda install xarray scipy cftime
   - cmd: conda install -c conda-forge magics pytest
+  # remove python interface bundled with magics
+  - cmd: rm -r %CONDA%\Lib\site-packages\Magics
 
 #---------------------------------#
 #       build configuration       #
@@ -57,4 +59,5 @@ build: off
 
 test_script:
   - cmd: cd %MAGICS_PYTHON_SRC%
+  - cmd: set PYTHONPATH=%PYTHONPATH%;%MAGICS_PYTHON_SRC%
   - cmd: pytest
