@@ -42,6 +42,7 @@ install:
   # get magics-cxx for the test/python test scripts
   - cmd: git clone --depth 1 https://github.com/ecmwf/magics.git %MAGICS_CXX_SRC%
   # install deps
+  - cmd: conda install xarray scipy cftime
   - cmd: conda install -c conda-forge magics pytest
 
 #---------------------------------#
