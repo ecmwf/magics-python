@@ -116,6 +116,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 .. |Travis Build| image:: https://img.shields.io/travis/ecmwf/magics-python/master.svg?logo=travis 
-   :target: https://travis-ci.org/ecmwf/magics/branches
+   :target: https://travis-ci.org/ecmwf/magics-python/branches
 .. |Appveyor Build| image:: https://img.shields.io/appveyor/ci/ecmwf/magics-python/master.svg?logo=appveyor
    :target: https://ci.appveyor.com/project/ecmwf/magics-python/branch/master
