@@ -248,6 +248,7 @@ metanetcdf.argtypes = None
 detect = dll.detect
 detect.restype = ctypes.c_char_p
 detect.argtypes = [ ctypes.c_char_p,  ctypes.c_char_p ]
+detect = convert_strings(detect)
 
 
 ####################################################################
