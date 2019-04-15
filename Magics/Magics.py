@@ -233,7 +233,7 @@ except:
 try :
     tile = dll.py_tile
 except:
-    print "Tile not enabled: You are using an old version of magics ( < 4.1.0)"
+    print ("Tile not enabled: You are using an old version of magics ( < 4.1.0)")
     tile = oldversion
 
 metagrib = dll.py_metagrib
@@ -618,7 +618,7 @@ except:
     warning_log = no_log
     debug_log = no_log
     info_log = no_log
-    
+
 
 @log
 def magics_log(data, msg):
