@@ -446,6 +446,9 @@ class Action(object):
         if self.action == Magics.minput:
             return Magics.metainput()
 
+def detect(attributes, dimension):
+    return Magics.detect(json.dumps(attributes), dimension)
+    
 
 def mxarray(ds, var, **kwargs):
     """
@@ -558,6 +561,7 @@ mepsshading = make_action("mepsshading", Magics.epsshading)
 mepsgraph = make_action("mepsgraph", Magics.epsgraph)
 mepsplumes = make_action("mepsplumes", Magics.epsplumes)
 mtephi = make_action("mtephi", Magics.tephi)
+mtile = make_action("mtile", Magics.tile)
 
 mmetgraph = make_action("mmetgraph", Magics.metgraph)
 mmetbufr = make_action("mmetbufr", Magics.metbufr)

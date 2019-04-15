@@ -230,6 +230,11 @@ try :
 except:
     version = oldversion
 
+try :
+    tile = dll.py_tile
+except:
+    print "Tile not enabled: You are using an old version of magics ( < 4.1.0)"
+    tile = oldversion
 
 metagrib = dll.py_metagrib
 metagrib.restype = ctypes.c_char_p
@@ -239,6 +244,10 @@ metagrib.argtypes = None
 metanetcdf = dll.py_metanetcdf
 metanetcdf.restype = ctypes.c_char_p
 metanetcdf.argtypes = None
+
+detect = dll.detect
+detect.restype = ctypes.c_char_p
+detect.argtypes = [ ctypes.c_char_p,  ctypes.c_char_p ]
 
 
 ####################################################################
