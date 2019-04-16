@@ -447,8 +447,11 @@ class Action(object):
             return Magics.metainput()
 
 def detect(attributes, dimension):
-    return Magics.detect(json.dumps(attributes), dimension)
-    
+    ret = Magics.detect(json.dumps(attributes), dimension)
+    if not ret:
+        raise ValueError("Failed to detect dimension from attributes. dim={} attrs={}"
+                .format(dimension, attributes))
+    return ret
 
 def mxarray(ds, var, **kwargs):
     """
