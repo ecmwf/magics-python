@@ -446,8 +446,20 @@ class Action(object):
         if self.action == Magics.minput:
             return Magics.metainput()
 
+def encode_numpy(object):
+    """
+    Encode numpy objects to their python equivalents.
+    e.g. numpy.int32 -> int
+
+    This is necessary because json is unable to serialize numpy types natively.
+    """
+    if type(object).__module__ == numpy.__name__:
+        return object.item()
+    else:
+        raise TypeError("Object of type '{}' is not JSON serializable".format(type(object)))
+
 def detect(attributes, dimension):
-    ret = Magics.detect(json.dumps(attributes), dimension)
+    ret = Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
     if not ret:
         raise ValueError("Failed to detect dimension from attributes. dim={} attrs={}"
                 .format(dimension, attributes))
