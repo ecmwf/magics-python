@@ -463,11 +463,16 @@ def mxarray(ds, var, **kwargs):
 
     dims = ds[var].dims
 
+    attrs = {}
     for dim in dims:
-        if dim == "latitude" or dim == "lat":
-            lat = ds[dim].values.astype(numpy.float64)
-        elif dim == "longitude" or dim == "lon":
-            lon = ds[dim].values.astype(numpy.float64)
+        attrs[dim] = ds[dim].attrs
+
+    dim_lat = detect(attrs, "latitude")
+    dim_lon = detect(attrs, "longitude")
+
+    for dim in dims:
+        if dim == dim_lat or dim == dim_lon:
+            continue
         elif dim in kwargs:
             if kwargs[dim] not in ds[var][dim]:
                 raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
@@ -482,21 +487,16 @@ def mxarray(ds, var, **kwargs):
         else:
             raise ValueError("Missing kwarg. Please pick a dimension from which to slice data. "
                     "dimension={} options={} dtype={}".format(dim, ds[dim].values, ds[dim].dtype))
-    if lat.size == 0 or lon.size == 0:
-        raise ValueError("Lat or lon not found")
 
-    # extract values
+    lat = ds[dim_lat].values.astype(numpy.float64)
+    lon = ds[dim_lon].values.astype(numpy.float64)
     values = ds[var].values.astype(numpy.float64)
 
-    # expand latitude and longitude arrays into 2D Matrices
-    lat = numpy.matrix.transpose(numpy.matrix(numpy.repeat([lat], lon.size, axis=0)))
-    lon = numpy.matrix(numpy.repeat([lon], lat.size, axis=0))
-
     data = minput(
-            input_field            = values,
-            input_field_latitudes  = lat,
-            input_field_longitudes = lon,
-            input_metadata         = dict(ds[var].attrs) )
+            input_field           = values,
+            input_latitudes_list  = lat,
+            input_longitudes_list = lon,
+            input_metadata        = dict(ds[var].attrs) )
     return data
 
 def make_action(verb, action, html="" ):
