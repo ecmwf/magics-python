@@ -458,9 +458,6 @@ def mxarray(ds, var, **kwargs):
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
     """
-    lat = numpy.array([])
-    lon = numpy.array([])
-
     dims = ds[var].dims
 
     attrs = {}
