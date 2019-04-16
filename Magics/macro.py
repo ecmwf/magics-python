@@ -17,7 +17,7 @@ class Context(object):
     def __init__(self):
         self.tmp = []
         self.silent = True
-    
+
     def set(self) :
         if self.silent :
             Magics.setc("magics_silent", "on")
@@ -363,7 +363,7 @@ class Action(object):
 
     def set(self):
         for key in list(self.args.keys()):
-            
+
             if isinstance(self.args[key], dict):
                 Magics.setc(key,  json.dumps(self.args[key]))
             elif isinstance(self.args[key], bool):
@@ -391,7 +391,7 @@ class Action(object):
                         Magics.set1r(key, numpy.array(self.args[key]))
             elif isinstance(self.args[key], numpy.ndarray) :
                 type = self.args[key].dtype
-                data = self.args[key].copy() 
+                data = self.args[key].copy()
                 size = data.shape
                 dim  = len(size)
                 type = self.find_type(self.args[key])
@@ -400,13 +400,13 @@ class Action(object):
                         Magics.set2i(key, numpy.int64(data), size[0], size[1])
                     else :
                         Magics.set1i(key, numpy.int64(data), size[0])
-                elif type == "float": 
-                    if (dim == 2) :                      
+                elif type == "float":
+                    if (dim == 2) :
                         Magics.set2r(key, numpy.float64(data), size[1], size[0])
                     else :
                         Magics.set1r(key, numpy.float64(data))
                 else :
-                    print("can not interpret type %s for %s ???->", (type, key) ) 
+                    print("can not interpret type %s for %s ???->", (type, key) )
             else:
                 self.args[key].execute(key)
 
@@ -416,7 +416,7 @@ class Action(object):
 
         if ( self.action != Magics.odb) :
             self.args = self.clean_object(self.args)
-        
+
         self.set()
 
         if self.action != None :
@@ -433,11 +433,11 @@ class Action(object):
     def style(self):
 
         if self.action not in [Magics.grib, Magics.netcdf, Magics.minput] :
-            return {}    
+            return {}
 
 
         self.args = self.clean_object(self.args)
-        
+
         self.set()
         if self.action == Magics.grib:
             return Magics.metagrib()
@@ -663,7 +663,7 @@ _MAGICS_LOCK = threading.Lock()
 
 def _jplot(*args):
     from IPython.display import Image
-    
+
     with _MAGICS_LOCK:
         f, tmp = tempfile.mkstemp(".png")
         os.close(f)
@@ -675,10 +675,10 @@ def _jplot(*args):
             output_name_first_page_number='off',
             output_name=base
         )
-        
+
         all = [img]
         all.extend(args)
-        
+
         _plot(all)
 
         image = Image(tmp)
@@ -705,7 +705,7 @@ def wmsstyles(data):
         styles = json.loads(styles.decode())
         return styles
     except :
-        return {} 
+        return {}
 
 def version():
     version = Magics.version()
@@ -717,7 +717,7 @@ def predefined_areas():
         projections = json.load(input)
     return projections.keys()
 
-   
+
 
 def wmscrs():
     os.environ["MAGPLUS_QUIET"] =  "on"
@@ -760,7 +760,7 @@ def wmscrs():
                     "s_lat" : -90.,
                     "n_lat" : 90.
               }
-            
+
             }
-                
-    
+
+
