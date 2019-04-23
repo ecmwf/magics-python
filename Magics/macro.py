@@ -459,11 +459,8 @@ def encode_numpy(object):
         raise TypeError("Object of type '{}' is not JSON serializable".format(type(object)))
 
 def detect(attributes, dimension):
-    ret = Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
-    if not ret:
-        raise ValueError("Failed to detect dimension from attributes. dim={} attrs={}"
-                .format(dimension, attributes))
-    return ret
+    return Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
+
 
 def mxarray(ds, var, **kwargs):
     """
