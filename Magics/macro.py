@@ -507,8 +507,10 @@ def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
 
 def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs):
 
-    lat = _mxarray_flatten(ds[dim_lat], kwargs, []).values.astype(numpy.float64)
-    lon = _mxarray_flatten(ds[dim_lon], kwargs, []).values.astype(numpy.float64)
+    assert len(ds[dim_lat].dims) == 2
+    lat = ds[dim_lat].values.astype(numpy.float64)
+    assert len(ds[dim_lon].dims) == 2
+    lon = ds[dim_lon].values.astype(numpy.float64)
     values = _mxarray_flatten(ds[var], kwargs).values.astype(numpy.float64)
 
     data = minput(
