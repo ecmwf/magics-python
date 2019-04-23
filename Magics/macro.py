@@ -509,7 +509,7 @@ def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs):
 
     lat = _mxarray_flatten(ds[dim_lat], kwargs, []).values.astype(numpy.float64)
     lon = _mxarray_flatten(ds[dim_lon], kwargs, []).values.astype(numpy.float64)
-    values = _mxarray_flatten(ds[var], kwargs, [dim_lat, dim_lon]).values.astype(numpy.float64)
+    values = _mxarray_flatten(ds[var], kwargs).values.astype(numpy.float64)
 
     data = minput(
             input_field              = values,
@@ -519,7 +519,7 @@ def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs):
             input_metadata           = dict(ds[var].attrs) )
     return data
 
-def _mxarray_flatten(ds, dims_to_flatten, dims_to_ignore):
+def _mxarray_flatten(ds, dims_to_flatten, dims_to_ignore=[]):
     for dim in ds.dims:
         if dim in dims_to_ignore:
             continue
