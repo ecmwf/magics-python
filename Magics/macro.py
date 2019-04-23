@@ -461,32 +461,29 @@ def encode_numpy(object):
 def detect(attributes, dimension):
     return Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
 
+def detect_lat_lon(ds, ds_attributes):
+    attrs = {ds_attribute: ds[ds_attribute].attrs for ds_attribute in ds_attributes}
+    dim_lat = detect(attrs, "latitude")
+    dim_lon = detect(attrs, "longitude")
+    return dim_lat, dim_lon
+
 def mxarray(ds, var, **kwargs):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
     """
     # search for 1d lat/lon
-    attrs = {dim: ds[dim].attrs for dim in ds[var].dims}
-    dim_lat = detect(attrs, "latitude")
-    dim_lon = detect(attrs, "longitude")
-
+    dim_lat, dim_lon = detect_lat_lon(ds, ds[var].dims)
     if dim_lat and dim_lon:
         return _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs)
 
     # search for 2d lat/lon in ds.coords
-    attrs = {coord: ds[coord].attrs for coord in ds.coords}
-    dim_lat = detect(attrs, "latitude")
-    dim_lon = detect(attrs, "longitude")
-
+    dim_lat, dim_lon = detect_lat_lon(ds, ds.coords)
     if dim_lat and dim_lon:
         return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs)
 
     # search for 2d lat/lon in ds.data_vars
-    attrs = {data_var: ds[data_var].attrs for data_var in ds.data_vars}
-    dim_lat = detect(attrs, "latitude")
-    dim_lon = detect(attrs, "longitude")
-
+    dim_lat, dim_lon = detect_lat_lon(ds, ds.data_vars)
     if dim_lat and dim_lon:
         return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs)
 
