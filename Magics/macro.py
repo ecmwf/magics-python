@@ -469,9 +469,7 @@ def mxarray(ds, var, **kwargs):
     """
     dims = ds[var].dims
 
-    attrs = {}
-    for dim in dims:
-        attrs[dim] = ds[dim].attrs
+    attrs = {dim: ds[dim].attrs for dim in ds[var].dims}
 
     dim_lat = detect(attrs, "latitude")
     dim_lon = detect(attrs, "longitude")
