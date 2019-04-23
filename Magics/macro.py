@@ -478,29 +478,10 @@ def mxarray(ds, var, **kwargs):
     raise ValueError("Could not find latitude and longitude in dataset")
 
 def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
-    dims = ds[var].dims
-
-    for dim in dims:
-        if dim == dim_lat or dim == dim_lon:
-            continue
-        elif dim in kwargs:
-            if kwargs[dim] not in ds[var][dim]:
-                raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
-                        .format(dim, type(dim), ds[var][dim].values, ds[var][dim].dtype))
-            else:
-                ds = ds.loc[{dim: kwargs[dim]}]
-        elif ds[var][dim].size == 1:
-            # automatically squash this dimension
-            d = ds[var][dim].values[0]
-            print("automatically squashing dimension: {}={}".format(dim, d))
-            ds = ds.loc[{dim: d}]
-        else:
-            raise ValueError("Missing kwarg. Please pick a dimension from which to slice data. "
-                    "dimension={} options={} dtype={}".format(dim, ds[dim].values, ds[dim].dtype))
 
     lat = ds[dim_lat].values.astype(numpy.float64)
     lon = ds[dim_lon].values.astype(numpy.float64)
-    values = ds[var].values.astype(numpy.float64)
+    values = _mxarray_flatten(ds[var], [dim_lat, dim_lon], kwargs).values.astype(numpy.float64)
 
     data = minput(
             input_field           = values,
@@ -508,6 +489,27 @@ def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
             input_longitudes_list = lon,
             input_metadata        = dict(ds[var].attrs) )
     return data
+
+def _mxarray_flatten(ds, dims_to_ignore, dims_to_flatten):
+    for dim in ds.dims:
+        if dim in dims_to_ignore:
+            continue
+        elif dim in dims_to_flatten:
+            if dims_to_flatten[dim] not in ds[dim]:
+                raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
+                        .format(dim, type(dim), ds[dim].values, ds[dim].dtype))
+            else:
+                ds = ds.loc[{dim: dims_to_flatten[dim]}]
+        elif ds[dim].size == 1:
+            # automatically squash this dimension
+            d = ds[dim].values[0]
+            print("automatically squashing dimension: {}={}".format(dim, d))
+            ds = ds.loc[{dim: d}]
+        else:
+            raise ValueError("Missing dimension to flatten. "
+                    "Please pick a dimension from which to slice data. "
+                    "dimension={} options={} dtype={}".format(dim, ds[dim].values, ds[dim].dtype))
+    return ds
 
 def make_action(verb, action, html="" ):
     def f(_m = None,**kw):
