@@ -461,18 +461,24 @@ def encode_numpy(object):
 def detect(attributes, dimension):
     return Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
 
-
 def mxarray(ds, var, **kwargs):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
     """
-    dims = ds[var].dims
-
+    # search for 1d lat/lon
     attrs = {dim: ds[dim].attrs for dim in ds[var].dims}
-
     dim_lat = detect(attrs, "latitude")
     dim_lon = detect(attrs, "longitude")
+
+    if dim_lat and dim_lon:
+        return _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs)
+
+
+    raise ValueError("Could not find latitude and longitude in dataset")
+
+def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
+    dims = ds[var].dims
 
     for dim in dims:
         if dim == dim_lat or dim == dim_lon:
