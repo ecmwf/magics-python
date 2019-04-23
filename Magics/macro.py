@@ -474,6 +474,21 @@ def mxarray(ds, var, **kwargs):
     if dim_lat and dim_lon:
         return _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs)
 
+    # search for 2d lat/lon in ds.coords
+    attrs = {coord: ds[coord].attrs for coord in ds.coords}
+    dim_lat = detect(attrs, "latitude")
+    dim_lon = detect(attrs, "longitude")
+
+    if dim_lat and dim_lon:
+        return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs)
+
+    # search for 2d lat/lon in ds.data_vars
+    attrs = {data_var: ds[data_var].attrs for data_var in ds.data_vars}
+    dim_lat = detect(attrs, "latitude")
+    dim_lon = detect(attrs, "longitude")
+
+    if dim_lat and dim_lon:
+        return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs)
 
     raise ValueError("Could not find latitude and longitude in dataset")
 
@@ -488,6 +503,20 @@ def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
             input_latitudes_list  = lat,
             input_longitudes_list = lon,
             input_metadata        = dict(ds[var].attrs) )
+    return data
+
+def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs):
+
+    lat = _mxarray_flatten(ds[dim_lat], [], kwargs).values.astype(numpy.float64)
+    lon = _mxarray_flatten(ds[dim_lon], [], kwargs).values.astype(numpy.float64)
+    values = _mxarray_flatten(ds[var], [dim_lat, dim_lon], kwargs).values.astype(numpy.float64)
+
+    data = minput(
+            input_field              = values,
+            input_field_organization = "nonregular",
+            input_field_latitudes    = lat,
+            input_field_longitudes   = lon,
+            input_metadata           = dict(ds[var].attrs) )
     return data
 
 def _mxarray_flatten(ds, dims_to_ignore, dims_to_flatten):
