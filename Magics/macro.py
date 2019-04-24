@@ -490,7 +490,7 @@ def _mxarray(ds, var, ds_attributes, kwargs):
         n_lat_dims = len(lat_dims)
         n_lon_dims = len(lon_dims)
 
-        if lat_dims != lon_dims:
+        if n_lat_dims != n_lon_dims:
             raise ValueError("Dimension mismatch for latitude and longitude. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
         elif n_lat_dims == 1:
