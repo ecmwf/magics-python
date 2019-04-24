@@ -504,9 +504,16 @@ def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
 
 def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs):
 
-    assert len(ds[dim_lat].dims) == 2
+    lat_dims = sorted(ds[dim_lat].dims)
+    lon_dims = sorted(ds[dim_lon].dims)
+    assert len(lat_dims) == 2
+    assert len(lon_dims) == 2
+
+    if lat_dims != lon_dims:
+        raise ValueError("Dimension mismatch for latitude and longitude. "
+                "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
+
     lat = ds[dim_lat].values.astype(numpy.float64)
-    assert len(ds[dim_lon].dims) == 2
     lon = ds[dim_lon].values.astype(numpy.float64)
     values = _mxarray_flatten(ds[var], kwargs).values.astype(numpy.float64)
 
