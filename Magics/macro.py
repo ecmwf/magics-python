@@ -467,7 +467,7 @@ def detect_lat_lon(xarray_dataset, ds_attributes):
     dim_lon = detect(attrs, "longitude")
     return dim_lat, dim_lon
 
-def mxarray(xarray_dataset, var, **kwargs):
+def mxarray(xarray_dataset, xarray_variable_name, **kwargs):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
@@ -475,13 +475,13 @@ def mxarray(xarray_dataset, var, **kwargs):
     # usually we find latitude and longitude in xarray_dataset.coords, but we sometimes see 2d
     # lat/lon data in xarray_dataset.data_vars instead.
     for ds_attributes in [xarray_dataset.coords, xarray_dataset.data_vars]:
-        ret = _mxarray(xarray_dataset, var, ds_attributes, kwargs)
+        ret = _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, kwargs)
         if ret:
             return ret
 
     raise ValueError("Could not find latitude and longitude in dataset")
 
-def _mxarray(xarray_dataset, var, ds_attributes, kwargs):
+def _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, kwargs):
     dim_lat, dim_lon = detect_lat_lon(xarray_dataset, ds_attributes)
 
     if dim_lat and dim_lon:
@@ -494,36 +494,39 @@ def _mxarray(xarray_dataset, var, ds_attributes, kwargs):
             raise ValueError("Dimension mismatch for latitude and longitude. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
         elif n_lat_dims == 1:
-            return _mxarray_1d(xarray_dataset, var, dim_lat, dim_lon, kwargs)
+            return _mxarray_1d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon, kwargs)
         elif n_lat_dims == 2:
-            return _mxarray_2d(xarray_dataset, var, dim_lat, dim_lon, kwargs, lat_dims)
+            return _mxarray_2d(xarray_dataset, xarray_variable_name,
+                    dim_lat, dim_lon, kwargs, lat_dims)
         else:
             raise ValueError("Found latitude and longitude with more than 2 dimensions. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
 
-def _mxarray_1d(xarray_dataset, var, dim_lat, dim_lon, kwargs):
+def _mxarray_1d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon, kwargs):
     lat = xarray_dataset[dim_lat].values.astype(numpy.float64)
     lon = xarray_dataset[dim_lon].values.astype(numpy.float64)
-    values = _mxarray_flatten(xarray_dataset[var], kwargs, [dim_lat, dim_lon]).values.astype(numpy.float64)
+    values = _mxarray_flatten(xarray_dataset[xarray_variable_name], kwargs, [dim_lat, dim_lon])
+    values = values.values.astype(numpy.float64)
 
     data = minput(
             input_field           = values,
             input_latitudes_list  = lat,
             input_longitudes_list = lon,
-            input_metadata        = dict(xarray_dataset[var].attrs) )
+            input_metadata        = dict(xarray_dataset[xarray_variable_name].attrs) )
     return data
 
-def _mxarray_2d(xarray_dataset, var, dim_lat, dim_lon, kwargs, dims_to_ignore):
+def _mxarray_2d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon, kwargs, dims_to_ignore):
     lat = xarray_dataset[dim_lat].values.astype(numpy.float64)
     lon = xarray_dataset[dim_lon].values.astype(numpy.float64)
-    values = _mxarray_flatten(xarray_dataset[var], kwargs, dims_to_ignore).values.astype(numpy.float64)
+    values = _mxarray_flatten(xarray_dataset[xarray_variable_name], kwargs, dims_to_ignore)
+    values = values.values.astype(numpy.float64)
 
     data = minput(
             input_field              = values,
             input_field_organization = "nonregular",
             input_field_latitudes    = lat,
             input_field_longitudes   = lon,
-            input_metadata           = dict(xarray_dataset[var].attrs) )
+            input_metadata           = dict(xarray_dataset[xarray_variable_name].attrs) )
     return data
 
 def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
