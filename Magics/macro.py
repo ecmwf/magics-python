@@ -461,32 +461,32 @@ def encode_numpy(object):
 def detect(attributes, dimension):
     return Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
 
-def detect_lat_lon(ds, ds_attributes):
-    attrs = {ds_attribute: ds[ds_attribute].attrs for ds_attribute in ds_attributes}
+def detect_lat_lon(xarray_dataset, ds_attributes):
+    attrs = {ds_attribute: xarray_dataset[ds_attribute].attrs for ds_attribute in ds_attributes}
     dim_lat = detect(attrs, "latitude")
     dim_lon = detect(attrs, "longitude")
     return dim_lat, dim_lon
 
-def mxarray(ds, var, **kwargs):
+def mxarray(xarray_dataset, var, **kwargs):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
     """
-    # usually we find latitude and longitude in ds.coords, but we sometimes see 2d lat/lon data in
-    # ds.data_vars instead.
-    for ds_attributes in [ds.coords, ds.data_vars]:
-        ret = _mxarray(ds, var, ds_attributes, kwargs)
+    # usually we find latitude and longitude in xarray_dataset.coords, but we sometimes see 2d
+    # lat/lon data in xarray_dataset.data_vars instead.
+    for ds_attributes in [xarray_dataset.coords, xarray_dataset.data_vars]:
+        ret = _mxarray(xarray_dataset, var, ds_attributes, kwargs)
         if ret:
             return ret
 
     raise ValueError("Could not find latitude and longitude in dataset")
 
-def _mxarray(ds, var, ds_attributes, kwargs):
-    dim_lat, dim_lon = detect_lat_lon(ds, ds_attributes)
+def _mxarray(xarray_dataset, var, ds_attributes, kwargs):
+    dim_lat, dim_lon = detect_lat_lon(xarray_dataset, ds_attributes)
 
     if dim_lat and dim_lon:
-        lat_dims = sorted(ds[dim_lat].dims)
-        lon_dims = sorted(ds[dim_lon].dims)
+        lat_dims = sorted(xarray_dataset[dim_lat].dims)
+        lon_dims = sorted(xarray_dataset[dim_lon].dims)
         n_lat_dims = len(lat_dims)
         n_lon_dims = len(lon_dims)
 
@@ -494,58 +494,60 @@ def _mxarray(ds, var, ds_attributes, kwargs):
             raise ValueError("Dimension mismatch for latitude and longitude. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
         elif n_lat_dims == 1:
-            return _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs)
+            return _mxarray_1d(xarray_dataset, var, dim_lat, dim_lon, kwargs)
         elif n_lat_dims == 2:
-            return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs, lat_dims)
+            return _mxarray_2d(xarray_dataset, var, dim_lat, dim_lon, kwargs, lat_dims)
         else:
             raise ValueError("Found latitude and longitude with more than 2 dimensions. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
 
-def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
-    lat = ds[dim_lat].values.astype(numpy.float64)
-    lon = ds[dim_lon].values.astype(numpy.float64)
-    values = _mxarray_flatten(ds[var], kwargs, [dim_lat, dim_lon]).values.astype(numpy.float64)
+def _mxarray_1d(xarray_dataset, var, dim_lat, dim_lon, kwargs):
+    lat = xarray_dataset[dim_lat].values.astype(numpy.float64)
+    lon = xarray_dataset[dim_lon].values.astype(numpy.float64)
+    values = _mxarray_flatten(xarray_dataset[var], kwargs, [dim_lat, dim_lon]).values.astype(numpy.float64)
 
     data = minput(
             input_field           = values,
             input_latitudes_list  = lat,
             input_longitudes_list = lon,
-            input_metadata        = dict(ds[var].attrs) )
+            input_metadata        = dict(xarray_dataset[var].attrs) )
     return data
 
-def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs, dims_to_ignore):
-    lat = ds[dim_lat].values.astype(numpy.float64)
-    lon = ds[dim_lon].values.astype(numpy.float64)
-    values = _mxarray_flatten(ds[var], kwargs, dims_to_ignore).values.astype(numpy.float64)
+def _mxarray_2d(xarray_dataset, var, dim_lat, dim_lon, kwargs, dims_to_ignore):
+    lat = xarray_dataset[dim_lat].values.astype(numpy.float64)
+    lon = xarray_dataset[dim_lon].values.astype(numpy.float64)
+    values = _mxarray_flatten(xarray_dataset[var], kwargs, dims_to_ignore).values.astype(numpy.float64)
 
     data = minput(
             input_field              = values,
             input_field_organization = "nonregular",
             input_field_latitudes    = lat,
             input_field_longitudes   = lon,
-            input_metadata           = dict(ds[var].attrs) )
+            input_metadata           = dict(xarray_dataset[var].attrs) )
     return data
 
-def _mxarray_flatten(ds, dims_to_flatten, dims_to_ignore):
-    for dim in ds.dims:
+def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
+    for dim in xarray_dataset.dims:
         if dim in dims_to_ignore:
             continue
         elif dim in dims_to_flatten:
-            if dims_to_flatten[dim] not in ds[dim]:
+            if dims_to_flatten[dim] not in xarray_dataset[dim]:
                 raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
-                        .format(dim, type(dim), ds[dim].values, ds[dim].dtype))
+                        .format(dim, type(dim), xarray_dataset[dim].values,
+                            xarray_dataset[dim].dtype))
             else:
-                ds = ds.loc[{dim: dims_to_flatten[dim]}]
-        elif ds[dim].size == 1:
+                xarray_dataset = xarray_dataset.loc[{dim: dims_to_flatten[dim]}]
+        elif xarray_dataset[dim].size == 1:
             # automatically squash this dimension
-            d = ds[dim].values[0]
+            d = xarray_dataset[dim].values[0]
             print("automatically squashing dimension: {}={}".format(dim, d))
-            ds = ds.loc[{dim: d}]
+            xarray_dataset = xarray_dataset.loc[{dim: d}]
         else:
             raise ValueError("Missing dimension to flatten. "
                     "Please pick a dimension from which to slice data. "
-                    "dimension={} options={} dtype={}".format(dim, ds[dim].values, ds[dim].dtype))
-    return ds
+                    "dimension={} options={} dtype={}"
+                    .format(dim, xarray_dataset[dim].values, xarray_dataset[dim].dtype))
+    return xarray_dataset
 
 def make_action(verb, action, html="" ):
     def f(_m = None,**kw):
