@@ -536,6 +536,8 @@ def _mxarray_2d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
     return data
 
 def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
+    # flatten an nD matrix into a 2d matrix by slicing the matrix based on the values given to
+    # dimensions in dims_to_flatten.
     for dim in xarray_dataset.dims:
         if dim in dims_to_ignore:
             continue
