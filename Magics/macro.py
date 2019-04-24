@@ -467,7 +467,7 @@ def detect_lat_lon(xarray_dataset, ds_attributes):
     lon_name = detect(attrs, "longitude")
     return lat_name, lon_name
 
-def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings):
+def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings={}):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
