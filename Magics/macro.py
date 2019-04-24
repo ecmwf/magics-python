@@ -463,9 +463,9 @@ def detect(attributes, dimension):
 
 def detect_lat_lon(xarray_dataset, ds_attributes):
     attrs = {ds_attribute: xarray_dataset[ds_attribute].attrs for ds_attribute in ds_attributes}
-    dim_lat = detect(attrs, "latitude")
-    dim_lon = detect(attrs, "longitude")
-    return dim_lat, dim_lon
+    lat_name = detect(attrs, "latitude")
+    lon_name = detect(attrs, "longitude")
+    return lat_name, lon_name
 
 def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings):
     """
@@ -483,11 +483,11 @@ def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings):
     raise ValueError("Could not find latitude and longitude in dataset")
 
 def _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimension_settings):
-    dim_lat, dim_lon = detect_lat_lon(xarray_dataset, ds_attributes)
+    lat_name, lon_name = detect_lat_lon(xarray_dataset, ds_attributes)
 
-    if dim_lat and dim_lon:
-        lat_dims = sorted(xarray_dataset[dim_lat].dims)
-        lon_dims = sorted(xarray_dataset[dim_lon].dims)
+    if lat_name and lon_name:
+        lat_dims = sorted(xarray_dataset[lat_name].dims)
+        lon_dims = sorted(xarray_dataset[lon_name].dims)
         n_lat_dims = len(lat_dims)
         n_lon_dims = len(lon_dims)
 
@@ -495,20 +495,21 @@ def _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimensi
             raise ValueError("Dimension mismatch for latitude and longitude. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
         elif n_lat_dims == 1:
-            return _mxarray_1d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon,
-                    xarray_dimension_settings)
+            return _mxarray_1d(xarray_dataset, xarray_variable_name,
+                    lat_name, lon_name, xarray_dimension_settings)
         elif n_lat_dims == 2:
             return _mxarray_2d(xarray_dataset, xarray_variable_name,
-                    dim_lat, dim_lon, xarray_dimension_settings, lat_dims)
+                    lat_name, lon_name, xarray_dimension_settings, lat_dims)
         else:
             raise ValueError("Found latitude and longitude with more than 2 dimensions. "
                     "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
 
-def _mxarray_1d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon, xarray_dimension_settings):
-    lat = xarray_dataset[dim_lat].values.astype(numpy.float64)
-    lon = xarray_dataset[dim_lon].values.astype(numpy.float64)
+def _mxarray_1d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
+        xarray_dimension_settings):
+    lat = xarray_dataset[lat_name].values.astype(numpy.float64)
+    lon = xarray_dataset[lon_name].values.astype(numpy.float64)
     values = _mxarray_flatten(xarray_dataset[xarray_variable_name], xarray_dimension_settings,
-            [dim_lat, dim_lon])
+            [lat_name, lon_name])
     values = values.values.astype(numpy.float64)
 
     data = minput(
@@ -518,10 +519,10 @@ def _mxarray_1d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon, xarray_d
             input_metadata        = dict(xarray_dataset[xarray_variable_name].attrs) )
     return data
 
-def _mxarray_2d(xarray_dataset, xarray_variable_name, dim_lat, dim_lon,
+def _mxarray_2d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
         xarray_dimension_settings, dims_to_ignore):
-    lat = xarray_dataset[dim_lat].values.astype(numpy.float64)
-    lon = xarray_dataset[dim_lon].values.astype(numpy.float64)
+    lat = xarray_dataset[lat_name].values.astype(numpy.float64)
+    lon = xarray_dataset[lon_name].values.astype(numpy.float64)
     values = _mxarray_flatten(xarray_dataset[xarray_variable_name], xarray_dimension_settings,
             dims_to_ignore)
     values = values.values.astype(numpy.float64)
