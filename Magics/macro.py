@@ -508,12 +508,11 @@ def _mxarray_1d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
         xarray_dimension_settings):
     lat = xarray_dataset[lat_name].values.astype(numpy.float64)
     lon = xarray_dataset[lon_name].values.astype(numpy.float64)
-    values = _mxarray_flatten(xarray_dataset[xarray_variable_name], xarray_dimension_settings,
-            [lat_name, lon_name])
-    values = values.values.astype(numpy.float64)
+    input_field_values = _mxarray_flatten(xarray_dataset[xarray_variable_name],
+            xarray_dimension_settings, [lat_name, lon_name]).values.astype(numpy.float64)
 
     data = minput(
-            input_field           = values,
+            input_field           = input_field_values,
             input_latitudes_list  = lat,
             input_longitudes_list = lon,
             input_metadata        = dict(xarray_dataset[xarray_variable_name].attrs) )
@@ -523,12 +522,11 @@ def _mxarray_2d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
         xarray_dimension_settings, dims_to_ignore):
     lat = xarray_dataset[lat_name].values.astype(numpy.float64)
     lon = xarray_dataset[lon_name].values.astype(numpy.float64)
-    values = _mxarray_flatten(xarray_dataset[xarray_variable_name], xarray_dimension_settings,
-            dims_to_ignore)
-    values = values.values.astype(numpy.float64)
+    input_field_values = _mxarray_flatten(xarray_dataset[xarray_variable_name],
+            xarray_dimension_settings, dims_to_ignore).values.astype(numpy.float64)
 
     data = minput(
-            input_field              = values,
+            input_field              = input_field_values,
             input_field_organization = "nonregular",
             input_field_latitudes    = lat,
             input_field_longitudes   = lon,
