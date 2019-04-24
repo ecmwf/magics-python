@@ -472,25 +472,36 @@ def mxarray(ds, var, **kwargs):
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
     """
-    # search for 1d lat/lon
-    dim_lat, dim_lon = detect_lat_lon(ds, ds[var].dims)
-    if dim_lat and dim_lon:
-        return _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs)
-
-    # search for 2d lat/lon in ds.coords
-    dim_lat, dim_lon = detect_lat_lon(ds, ds.coords)
-    if dim_lat and dim_lon:
-        return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs)
-
-    # search for 2d lat/lon in ds.data_vars
-    dim_lat, dim_lon = detect_lat_lon(ds, ds.data_vars)
-    if dim_lat and dim_lon:
-        return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs)
+    # usually we find latitude and longitude in ds.coords, but we sometimes see 2d lat/lon data in
+    # ds.data_vars instead.
+    for ds_attributes in [ds.coords, ds.data_vars]:
+        ret = _mxarray(ds, var, ds_attributes, kwargs)
+        if ret:
+            return ret
 
     raise ValueError("Could not find latitude and longitude in dataset")
 
-def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
+def _mxarray(ds, var, ds_attributes, kwargs):
+    dim_lat, dim_lon = detect_lat_lon(ds, ds_attributes)
 
+    if dim_lat and dim_lon:
+        lat_dims = sorted(ds[dim_lat].dims)
+        lon_dims = sorted(ds[dim_lon].dims)
+        n_lat_dims = len(lat_dims)
+        n_lon_dims = len(lon_dims)
+
+        if lat_dims != lon_dims:
+            raise ValueError("Dimension mismatch for latitude and longitude. "
+                    "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
+        elif n_lat_dims == 1:
+            return _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs)
+        elif n_lat_dims == 2:
+            return _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs, lat_dims)
+        else:
+            raise ValueError("Found latitude and longitude with more than 2 dimensions. "
+                    "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
+
+def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
     lat = ds[dim_lat].values.astype(numpy.float64)
     lon = ds[dim_lon].values.astype(numpy.float64)
     values = _mxarray_flatten(ds[var], kwargs, [dim_lat, dim_lon]).values.astype(numpy.float64)
@@ -502,20 +513,10 @@ def _mxarray_1d(ds, var, dim_lat, dim_lon, kwargs):
             input_metadata        = dict(ds[var].attrs) )
     return data
 
-def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs):
-
-    lat_dims = sorted(ds[dim_lat].dims)
-    lon_dims = sorted(ds[dim_lon].dims)
-    assert len(lat_dims) == 2
-    assert len(lon_dims) == 2
-
-    if lat_dims != lon_dims:
-        raise ValueError("Dimension mismatch for latitude and longitude. "
-                "lat_dims={} lon_dims={}".format(lat_dims, lon_dims))
-
+def _mxarray_2d(ds, var, dim_lat, dim_lon, kwargs, dims_to_ignore):
     lat = ds[dim_lat].values.astype(numpy.float64)
     lon = ds[dim_lon].values.astype(numpy.float64)
-    values = _mxarray_flatten(ds[var], kwargs, lat_dims).values.astype(numpy.float64)
+    values = _mxarray_flatten(ds[var], kwargs, dims_to_ignore).values.astype(numpy.float64)
 
     data = minput(
             input_field              = values,
