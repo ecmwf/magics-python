@@ -77,11 +77,9 @@ if lib is None:
     raise Exception("Magics library could not be found")
 
 dll  = ctypes.CDLL(lib)
-#libc = ctypes.CDLL(ctypes.util.find_library("c"))
 
 
-#def get_version():
-#    return dll.getMagicsVersionString()
+
 
 
 class FILE(ctypes.Structure):
@@ -232,6 +230,11 @@ try :
 except:
     version = oldversion
 
+try :
+    tile = dll.py_tile
+except:
+    print ("Tile not enabled: You are using an old version of magics ( < 4.1.0)")
+    tile = oldversion
 
 metagrib = dll.py_metagrib
 metagrib.restype = ctypes.c_char_p
@@ -241,6 +244,11 @@ metagrib.argtypes = None
 metanetcdf = dll.py_metanetcdf
 metanetcdf.restype = ctypes.c_char_p
 metanetcdf.argtypes = None
+
+detect = dll.detect
+detect.restype = ctypes.c_char_p
+detect.argtypes = [ ctypes.c_char_p,  ctypes.c_char_p ]
+detect = convert_strings(detect)
 
 
 ####################################################################
@@ -559,24 +567,6 @@ def set1c(name,data):
     data_p = (c_char_p * (len(new_data)))(*new_data)
     return dll.py_set1c(ctypes.c_char_p(name), data_p, len(new_data))
 
-####################################################################
-
-#enqi = dll.py_enqi
-#enqi.restype  = c_int
-#enqi.argtypes = (c_char_p,)
-
-####################################################################
-
-#enqr = dll.py_enqr
-#enqr.restype = c_double
-#enqr.argtypes = (c_char_p,)
-
-####################################################################
-
-#enqc = dll.py_enqc
-#enqc.restype = None
-#enqc.argtypes = (c_char_p,)
-#enqc = convert_strings(enqc)
 
 ####################################################################
 
@@ -600,6 +590,43 @@ class MagicsError(Exception):
         super(MagicsError, self).__init__("Magics Error - No Plot Produced!!! (%s)" % err)
 
 ####################################################################
+
+
+def no_log(a, b):
+    print ("Log listeners not handled in this version, consider using a version > 4.0.0 " )
+
+
+log = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, c_char_p)
+
+try :
+    warning_log = dll.mag_add_warning_listener
+    warning_log.restype=None
+    warning_log.argtypes = (ctypes.c_void_p, log)
+
+    error_log = dll.mag_add_error_listener
+    error_log.restype=None
+    error_log.argtypes = (ctypes.c_void_p, log)
+
+    info_log = dll.mag_add_info_listener
+    info_log.restype=None
+    info_log.argtypes = (ctypes.c_void_p, log)
+
+    debug_log = dll.mag_add_debug_listener
+    debug_log.restype=None
+    debug_log.argtypes = (ctypes.c_void_p, log)
+except:
+    error_log = no_log
+    warning_log = no_log
+    debug_log = no_log
+    info_log = no_log
+
+
+@log
+def magics_log(data, msg):
+   print("SUPER-->", msg.decode())
+   return 0
+
+
 
 
 #if __name__ == "__main__":

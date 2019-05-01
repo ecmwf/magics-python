@@ -16,8 +16,8 @@ from . import Magics
 class Context(object):
     def __init__(self):
         self.tmp = []
-        self.silent = False
-    
+        self.silent = True
+
     def set(self) :
         if self.silent :
             Magics.setc("magics_silent", "on")
@@ -32,11 +32,35 @@ context  = Context()
 def silent():
    context.silent = False
 
+
+
+
+@Magics.log
+def warning(int, msg):
+    print (msg.decode())
+
+@Magics.log
+def error(int, msg):
+    print (msg.decode())
+
+@Magics.log
+def info_log(int, msg):
+    print (msg.decode())
+
+@Magics.log
+def debug_log(int, msg):
+    print (msg.decode())
+
+
+Magics.warning_log(3, warning)
+Magics.error_log(3, error)
+
+
 def debug():
-    os.environ["MAGPLUS_INFO"] =  "on"
-    os.environ["MAGPLUS_DEBUG"] =  "on"
+    Magics.debug_log(3, debug_log)
 
-
+def info():
+    Magics.info_log(3, info_log)
 
 actions={
     "mobs": "pobs",
@@ -339,7 +363,7 @@ class Action(object):
 
     def set(self):
         for key in list(self.args.keys()):
-            
+
             if isinstance(self.args[key], dict):
                 Magics.setc(key,  json.dumps(self.args[key]))
             elif isinstance(self.args[key], bool):
@@ -367,7 +391,7 @@ class Action(object):
                         Magics.set1r(key, numpy.array(self.args[key]))
             elif isinstance(self.args[key], numpy.ndarray) :
                 type = self.args[key].dtype
-                data = self.args[key].copy() 
+                data = self.args[key].copy()
                 size = data.shape
                 dim  = len(size)
                 type = self.find_type(self.args[key])
@@ -376,13 +400,13 @@ class Action(object):
                         Magics.set2i(key, numpy.int64(data), size[0], size[1])
                     else :
                         Magics.set1i(key, numpy.int64(data), size[0])
-                elif type == "float": 
-                    if (dim == 2) :                      
+                elif type == "float":
+                    if (dim == 2) :
                         Magics.set2r(key, numpy.float64(data), size[1], size[0])
                     else :
                         Magics.set1r(key, numpy.float64(data))
                 else :
-                    print("can not interpret type %s for %s ???->", (type, key) ) 
+                    print("can not interpret type %s for %s ???->", (type, key) )
             else:
                 self.args[key].execute(key)
 
@@ -392,7 +416,7 @@ class Action(object):
 
         if ( self.action != Magics.odb) :
             self.args = self.clean_object(self.args)
-        
+
         self.set()
 
         if self.action != None :
@@ -409,11 +433,11 @@ class Action(object):
     def style(self):
 
         if self.action not in [Magics.grib, Magics.netcdf, Magics.minput] :
-            return {}    
+            return {}
 
 
         self.args = self.clean_object(self.args)
-        
+
         self.set()
         if self.action == Magics.grib:
             return Magics.metagrib()
@@ -422,52 +446,117 @@ class Action(object):
         if self.action == Magics.minput:
             return Magics.metainput()
 
+def encode_numpy(object):
+    """
+    Encode numpy objects to their python equivalents.
+    e.g. numpy.int32 -> int
 
-def mxarray(ds, var, **kwargs):
+    This is necessary because json is unable to serialize numpy types natively.
+    """
+    if type(object).__module__ == numpy.__name__:
+        return object.item()
+    else:
+        raise TypeError("Object of type '{}' is not JSON serializable".format(type(object)))
+
+def detect(attributes, dimension):
+    return Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
+
+def detect_lat_lon(xarray_dataset, ds_attributes):
+    attrs = {ds_attribute: xarray_dataset[ds_attribute].attrs for ds_attribute in ds_attributes}
+    lat_name = detect(attrs, "latitude")
+    lon_name = detect(attrs, "longitude")
+    return lat_name, lon_name
+
+def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings={}):
     """
     Convert an xarray dataset containing a variable with latitude and longitude data into
     magics.minput.
     """
-    lat = numpy.array([])
-    lon = numpy.array([])
+    # usually we find latitude and longitude in xarray_dataset.coords, but we sometimes see 2d
+    # lat/lon data in xarray_dataset.data_vars instead.
+    for ds_attributes in [xarray_dataset.coords, xarray_dataset.data_vars]:
+        ret = _mxarray(xarray_dataset, xarray_variable_name, ds_attributes,
+                xarray_dimension_settings)
+        if ret:
+            return ret
 
-    dims = ds[var].dims
+    raise ValueError("Could not find latitude and longitude in dataset")
 
-    for dim in dims:
-        if dim == "latitude" or dim == "lat":
-            lat = ds[dim].values.astype(numpy.float64)
-        elif dim == "longitude" or dim == "lon":
-            lon = ds[dim].values.astype(numpy.float64)
-        elif dim in kwargs:
-            if kwargs[dim] not in ds[var][dim]:
-                raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
-                        .format(dim, type(dim), ds[var][dim].values, ds[var][dim].dtype))
-            else:
-                ds = ds.loc[{dim: kwargs[dim]}]
-        elif ds[var][dim].size == 1:
-            # automatically squash this dimension
-            d = ds[var][dim].values[0]
-            print("automatically squashing dimension: {}={}".format(dim, d))
-            ds = ds.loc[{dim: d}]
+def _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimension_settings):
+    lat_name, lon_name = detect_lat_lon(xarray_dataset, ds_attributes)
+
+    if lat_name and lon_name:
+        lat_dim_names = sorted(xarray_dataset[lat_name].dims)
+        lon_dim_names = sorted(xarray_dataset[lon_name].dims)
+        n_lat_dims = len(lat_dim_names)
+        n_lon_dims = len(lon_dim_names)
+
+        if n_lat_dims != n_lon_dims:
+            raise ValueError("Dimension mismatch for latitude and longitude. "
+                    "lat_dim_names={} lon_dim_names={}".format(lat_dim_names, lon_dim_names))
+        elif n_lat_dims == 1:
+            return _mxarray_1d(xarray_dataset, xarray_variable_name,
+                    lat_name, lon_name, xarray_dimension_settings)
+        elif n_lat_dims == 2:
+            return _mxarray_2d(xarray_dataset, xarray_variable_name,
+                    lat_name, lon_name, xarray_dimension_settings, lat_dim_names)
         else:
-            raise ValueError("Missing kwarg. Please pick a dimension from which to slice data. "
-                    "dimension={} options={} dtype={}".format(dim, ds[dim].values, ds[dim].dtype))
-    if lat.size == 0 or lon.size == 0:
-        raise ValueError("Lat or lon not found")
+            raise ValueError("Found latitude and longitude with more than 2 dimensions. "
+                    "lat_dim_names={} lon_dim_names={}".format(lat_dim_names, lon_dim_names))
 
-    # extract values
-    values = ds[var].values.astype(numpy.float64)
-
-    # expand latitude and longitude arrays into 2D Matrices
-    lat = numpy.matrix.transpose(numpy.matrix(numpy.repeat([lat], lon.size, axis=0)))
-    lon = numpy.matrix(numpy.repeat([lon], lat.size, axis=0))
+def _mxarray_1d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
+        xarray_dimension_settings):
+    lat = xarray_dataset[lat_name].values.astype(numpy.float64)
+    lon = xarray_dataset[lon_name].values.astype(numpy.float64)
+    input_field_values = _mxarray_flatten(xarray_dataset[xarray_variable_name],
+            xarray_dimension_settings, [lat_name, lon_name]).values.astype(numpy.float64)
 
     data = minput(
-            input_field            = values,
-            input_field_latitudes  = lat,
-            input_field_longitudes = lon,
-            input_metadata         = dict(ds[var].attrs) )
+            input_field           = input_field_values,
+            input_latitudes_list  = lat,
+            input_longitudes_list = lon,
+            input_metadata        = dict(xarray_dataset[xarray_variable_name].attrs) )
     return data
+
+def _mxarray_2d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
+        xarray_dimension_settings, dims_to_ignore):
+    lat = xarray_dataset[lat_name].values.astype(numpy.float64)
+    lon = xarray_dataset[lon_name].values.astype(numpy.float64)
+    input_field_values = _mxarray_flatten(xarray_dataset[xarray_variable_name],
+            xarray_dimension_settings, dims_to_ignore).values.astype(numpy.float64)
+
+    data = minput(
+            input_field              = input_field_values,
+            input_field_organization = "nonregular",
+            input_field_latitudes    = lat,
+            input_field_longitudes   = lon,
+            input_metadata           = dict(xarray_dataset[xarray_variable_name].attrs) )
+    return data
+
+def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
+    # flatten an nD matrix into a 2d matrix by slicing the matrix based on the values given to
+    # dimensions in dims_to_flatten.
+    for dim in xarray_dataset.dims:
+        if dim in dims_to_ignore:
+            continue
+        elif dim in dims_to_flatten:
+            if dims_to_flatten[dim] not in xarray_dataset[dim]:
+                raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
+                        .format(dim, type(dim), xarray_dataset[dim].values,
+                            xarray_dataset[dim].dtype))
+            else:
+                xarray_dataset = xarray_dataset.loc[{dim: dims_to_flatten[dim]}]
+        elif xarray_dataset[dim].size == 1:
+            # automatically squash this dimension
+            d = xarray_dataset[dim].values[0]
+            print("automatically squashing dimension: {}={}".format(dim, d))
+            xarray_dataset = xarray_dataset.loc[{dim: d}]
+        else:
+            raise ValueError("Missing dimension to flatten. "
+                    "Please pick a dimension from which to slice data. "
+                    "dimension={} options={} dtype={}"
+                    .format(dim, xarray_dataset[dim].values, xarray_dataset[dim].dtype))
+    return xarray_dataset
 
 def make_action(verb, action, html="" ):
     def f(_m = None,**kw):
@@ -534,6 +623,7 @@ mepsshading = make_action("mepsshading", Magics.epsshading)
 mepsgraph = make_action("mepsgraph", Magics.epsgraph)
 mepsplumes = make_action("mepsplumes", Magics.epsplumes)
 mtephi = make_action("mtephi", Magics.tephi)
+mtile = make_action("mtile", Magics.tile)
 
 mmetgraph = make_action("mmetgraph", Magics.metgraph)
 mmetbufr = make_action("mmetbufr", Magics.metbufr)
@@ -635,7 +725,7 @@ _MAGICS_LOCK = threading.Lock()
 
 def _jplot(*args):
     from IPython.display import Image
-    
+
     with _MAGICS_LOCK:
         f, tmp = tempfile.mkstemp(".png")
         os.close(f)
@@ -647,10 +737,10 @@ def _jplot(*args):
             output_name_first_page_number='off',
             output_name=base
         )
-        
+
         all = [img]
         all.extend(args)
-        
+
         _plot(all)
 
         image = Image(tmp)
@@ -677,7 +767,7 @@ def wmsstyles(data):
         styles = json.loads(styles.decode())
         return styles
     except :
-        return {} 
+        return {}
 
 def version():
     version = Magics.version()
@@ -689,7 +779,7 @@ def predefined_areas():
         projections = json.load(input)
     return projections.keys()
 
-   
+
 
 def wmscrs():
     os.environ["MAGPLUS_QUIET"] =  "on"
@@ -732,7 +822,7 @@ def wmscrs():
                     "s_lat" : -90.,
                     "n_lat" : 90.
               }
-            
+
             }
-                
-    
+
+

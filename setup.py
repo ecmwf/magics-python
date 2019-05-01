@@ -25,7 +25,7 @@ def read(fname):
     return io.open(file_path, encoding='utf-8').read()
 
 
-version = '1.0.1'
+version = '1.0.3'
 
 
 setuptools.setup(
@@ -39,9 +39,6 @@ setuptools.setup(
     url='https://github.com/ecmwf/magics-python',
     packages=setuptools.find_packages(),
     include_package_data=True,
-    setup_requires=[
-        'pytest-runner',
-    ],
     install_requires=[
         'numpy',
     ],
