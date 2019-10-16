@@ -35,7 +35,7 @@ before_install:
     curl -L -O "${MINICONDA_URL}/${MINICONDA_FILE}"
     bash ${MINICONDA_FILE} -b
   # activate conda
-  - source $CONDA/bin/activate
+  - source ~/miniconda3/bin/activate
   # auto-yes for conda
   - conda config --set always_yes yes
   # update conda
