@@ -9,7 +9,7 @@ branches:
     - master
     - /^\d+\.\d+\.\d+$/
 
-language: generic
+language: python
 
 matrix:
   include:
