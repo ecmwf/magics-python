@@ -59,24 +59,24 @@ You may try out the high level API in a python interpreter::
 
 
    from Magics import macro as magics
-    
+
    name = 'magics'
    #Setting of the output file name
-   output = magics.output(output_formats = ['png'], 
+   output = magics.output(output_formats = ['png'],
     		output_name_first_page_number = "off",
     		output_name = "magics")
-     
-   #Import the  data 
+
+   #Import the  data
    data =  magics.mgrib(grib_input_file_name  = "2m_temperature.grib", )
-    
-   #Apply an automatic styling 
+
+   #Apply an automatic styling
    contour = magics.mcont( contour_automatic_setting = "ecmwf", )
    coast = magics.mcoast()
    magics.plot(output, data, contour, coast)
 
 
-Running the test program will create a png named magics.png 
-  
+Running the test program will create a png named magics.png
+
 
 You can find notebooks examples :
 https://github.com/ecmwf/notebook-examples/tree/master/visualisation
@@ -100,6 +100,7 @@ Main contributors:
 - `Stephan Siemen <https://github.com/stephansiemen>`_ - ECMWF
 - `Alessandro Amici <https://github.com/alexamici>`_ - B-Open
 - `Daniel Tipping <https://github.com/dtip>`_ - `Old Reliable <https://oldreliable.tech>`_
+- `Ian Vermes <https://github.com/IanVermes>`_ - `Old Reliable <https://oldreliable.tech>`_
 
 License
 -------
@@ -115,7 +116,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-.. |Travis Build| image:: https://img.shields.io/travis/ecmwf/magics-python/master.svg?logo=travis 
+.. |Travis Build| image:: https://img.shields.io/travis/ecmwf/magics-python/master.svg?logo=travis
    :target: https://travis-ci.org/ecmwf/magics-python/branches
 .. |Appveyor Build| image:: https://img.shields.io/appveyor/ci/ecmwf/magics-python/master.svg?logo=appveyor
    :target: https://ci.appveyor.com/project/ecmwf/magics-python/branch/master
