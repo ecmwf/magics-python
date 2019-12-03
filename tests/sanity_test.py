@@ -14,11 +14,14 @@ import glob
 import unittest
 import subprocess
 
+
 class MagicsSanityTest(unittest.TestCase):
     """
     A class with dynamically-generated test methods.
     """
+
     pass
+
 
 def cleanup_backup(backup_name, original_name):
     """
@@ -28,12 +31,14 @@ def cleanup_backup(backup_name, original_name):
     if os.path.isfile(backup_name):
         os.rename(backup_name, original_name)
 
+
 def cleanup_output(output_name):
     """
     Delete a file created by running a test script.
     """
     print("Removing {}".format(output_name))
     os.remove(output_name)
+
 
 def generate_test_method(test_name):
     """
@@ -42,6 +47,7 @@ def generate_test_method(test_name):
     The test is simply to run a test script 'test_name.py' and check that an output file with the
     name 'test_name.png' is generated.
     """
+
     def run_test(self):
         # backup any existing files with our expected output_name
         output_name = "{}.png".format(test_name)
@@ -49,7 +55,7 @@ def generate_test_method(test_name):
         if os.path.isfile(output_name):
             os.rename(output_name, backup_name)
             self.addCleanup(cleanup_backup, backup_name, output_name)
-        
+
         # run the test
         ret = subprocess.call("python {}.py".format(test_name), shell=True)
         self.assertEqual(ret, 0)
@@ -67,6 +73,7 @@ def generate_test_method(test_name):
 
     return run_test
 
+
 # This code needs to be outside of `if __name__ == '__main__'` so the test methods are generated
 # at import time so that pytest can find them
 test_dir = os.getenv("MAGICS_PYTHON_TESTS")
@@ -80,5 +87,5 @@ for file_name in glob.glob("*.py"):
     method_name = "test_{}".format(test_name)
     setattr(MagicsSanityTest, method_name, generate_test_method(test_name))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
