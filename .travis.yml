@@ -1,4 +1,3 @@
----
 #---------------------------------#
 #      general configuration      #
 #---------------------------------#
@@ -46,7 +45,7 @@ install:
   - git clone --depth 1 https://github.com/ecmwf/magics.git ${MAGICS_CXX_SRC}
   # install deps
   - conda install xarray scipy cftime
-  - conda install -c conda-forge magics pytest
+  - conda install -c conda-forge magics pytest black
   # remove python interface bundled with magics
   - rm -r ${CONDA_PREFIX}/lib/python*/site-packages/Magics
 
