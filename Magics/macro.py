@@ -13,43 +13,47 @@ import json
 
 from . import Magics
 
+
 class Context(object):
     def __init__(self):
         self.tmp = []
         self.silent = True
 
-    def set(self) :
-        if self.silent :
+    def set(self):
+        if self.silent:
             Magics.setc("magics_silent", "on")
-            os.environ["MAGPLUS_WARNING"] =  "off"
-        else :
-            os.environ["MAGPLUS_INFO"] =  "on"
+            os.environ["MAGPLUS_WARNING"] = "off"
+        else:
+            os.environ["MAGPLUS_INFO"] = "on"
+
 
 global context
 
-context  = Context()
+context = Context()
+
 
 def silent():
-   context.silent = False
-
-
+    context.silent = False
 
 
 @Magics.log
 def warning(int, msg):
-    print (msg.decode())
+    print(msg.decode())
+
 
 @Magics.log
 def error(int, msg):
-    print (msg.decode())
+    print(msg.decode())
+
 
 @Magics.log
 def info_log(int, msg):
-    print (msg.decode())
+    print(msg.decode())
+
 
 @Magics.log
 def debug_log(int, msg):
-    print (msg.decode())
+    print(msg.decode())
 
 
 Magics.warning_log(3, warning)
@@ -59,10 +63,12 @@ Magics.error_log(3, error)
 def debug():
     Magics.debug_log(3, debug_log)
 
+
 def info():
     Magics.info_log(3, info_log)
 
-actions={
+
+actions = {
     "mobs": "pobs",
     "mcoast": "pcoast",
     "pcoast": "pcoast",
@@ -90,10 +96,8 @@ actions={
     "ptable": "ptable",
     "pboxplot": "pboxplot",
     "mboxplot": "pboxplot",
-    "pinput": "pinput"
-    }
-
-
+    "pinput": "pinput",
+}
 
 
 class Action(object):
@@ -105,10 +109,13 @@ class Action(object):
             args["output_formats"] = ["png"]
 
         self.args = args
-        if ( html == "") :
+        if html == "":
             self.html = verb
-        else :
-            self.html = "<a href=/wiki/display/MAGP/%s target='_blank'>%s</a>" % (html, verb)
+        else:
+            self.html = "<a href=/wiki/display/MAGP/%s target='_blank'>%s</a>" % (
+                html,
+                verb,
+            )
 
     def __repr__(self):
         x = ""
@@ -120,176 +127,207 @@ class Action(object):
         print(self)
 
     def quote(self, v):
-        return "\"" + v + "\""
+        return '"' + v + '"'
 
     def tohtml(self, file):
-        sep=""
-        val="%s("%self.html
+        sep = ""
+        val = "%s(" % self.html
 
         for key in list(self.args.keys()):
 
             if isinstance(self.args[key], str):
-                if key == 'odb_data':
-                    Magics.setc('odb_filename', self.args[key])
+                if key == "odb_data":
+                    Magics.setc("odb_filename", self.args[key])
                 else:
-                    val+= '%s%s = "%s"'%(sep, key, self.args[key])
+                    val += '%s%s = "%s"' % (sep, key, self.args[key])
             elif isinstance(self.args[key], int):
-                val +=  '%s%s = %d'%(sep, key, self.args[key])
+                val += "%s%s = %d" % (sep, key, self.args[key])
             elif isinstance(self.args[key], float):
-                val += '%s%s = %0.2f'%(sep, key, self.args[key])
-            elif isinstance(self.args[key], list) :
-                if isinstance (self.args[key][0], str):
-                   vval = ""
-                   vsep = ""
-                   if (len(self.args[key]) < 5 ):
+                val += "%s%s = %0.2f" % (sep, key, self.args[key])
+            elif isinstance(self.args[key], list):
+                if isinstance(self.args[key][0], str):
+                    vval = ""
+                    vsep = ""
+                    if len(self.args[key]) < 5:
                         for v in self.args[key]:
                             vval += vsep + self.quote(v)
                             vsep = ", "
-                   else :
-                        vval = self.quote(self.args[key][0]) + ", " + self.quote(self.args[key][1]) + ",...," + self.quote(self.args[key][-2]) +  ", " + self.quote(self.args[key][-1])
-                   vval += ""
-                   val+= '%s%s = [%s]'%(sep, key, vval)
+                    else:
+                        vval = (
+                            self.quote(self.args[key][0])
+                            + ", "
+                            + self.quote(self.args[key][1])
+                            + ",...,"
+                            + self.quote(self.args[key][-2])
+                            + ", "
+                            + self.quote(self.args[key][-1])
+                        )
+                    vval += ""
+                    val += "%s%s = [%s]" % (sep, key, vval)
                 elif isinstance(self.args[key][0], int):
-                   vval = ""
-                   vsep = ""
-                   if (len(self.args[key]) < 5 ):
+                    vval = ""
+                    vsep = ""
+                    if len(self.args[key]) < 5:
                         for v in self.args[key]:
-                            vval += vsep + ("%df"%v)
+                            vval += vsep + ("%df" % v)
                             vsep = ", "
-                   else :
-                            vval = ("%d"%self.args[key][0]) + ", " + ("%d"%self.args[key][1]) + ",...," + ("%d"%self.args[key][-2]) +  ", " + ("%d"%self.args[key][-1])
-                   vval += ""
-                   val+= '%s%s = %s'%(sep, key, vval)
+                    else:
+                        vval = (
+                            ("%d" % self.args[key][0])
+                            + ", "
+                            + ("%d" % self.args[key][1])
+                            + ",...,"
+                            + ("%d" % self.args[key][-2])
+                            + ", "
+                            + ("%d" % self.args[key][-1])
+                        )
+                    vval += ""
+                    val += "%s%s = %s" % (sep, key, vval)
                 elif isinstance(self.args[key][0], float):
-                   vval = ""
-                   vsep = ""
-                   if (len(self.args[key]) < 5 ):
+                    vval = ""
+                    vsep = ""
+                    if len(self.args[key]) < 5:
                         for v in self.args[key]:
-                            vval += vsep + ("%0.2f"%v)
+                            vval += vsep + ("%0.2f" % v)
                             vsep = ", "
-                   else :
-                        vval = ("%0.2f"%self.args[key][0]) + ", " + ("%0.2f"%self.args[key][1]) + ",...," + ("%0.2f"%self.args[key][-2]) +  ", " + ("%0.2f"%self.args[key][-1])
+                    else:
+                        vval = (
+                            ("%0.2f" % self.args[key][0])
+                            + ", "
+                            + ("%0.2f" % self.args[key][1])
+                            + ",...,"
+                            + ("%0.2f" % self.args[key][-2])
+                            + ", "
+                            + ("%0.2f" % self.args[key][-1])
+                        )
 
-                   vval += ""
-                   val+= '%s%s = [%s]'%(sep, key, vval)
-            elif isinstance(self.args[key], numpy.ndarray) :
+                    vval += ""
+                    val += "%s%s = [%s]" % (sep, key, vval)
+            elif isinstance(self.args[key], numpy.ndarray):
                 type = self.args[key].dtype
-                dim  = len(self.args[key].shape)
+                dim = len(self.args[key].shape)
                 if isinstance(self.args[key][0], int):
-                    if (dim == 2) :
+                    if dim == 2:
                         print("pset2i")
-                    else :
+                    else:
                         print("pset1i")
-                elif ( type == 'float64' or type == 'float32') :
-                    if (dim == 2) :
+                elif type == "float64" or type == "float32":
+                    if dim == 2:
                         print("pset2r")
-                    else :
+                    else:
                         vval = ""
                         vsep = ""
-                        if (len(self.args[key]) < 5 ):
+                        if len(self.args[key]) < 5:
                             for v in self.args[key]:
-                                vval += vsep + ("%0.2f"%v)
+                                vval += vsep + ("%0.2f" % v)
                                 vsep = ", "
-                        else :
-                            vval = ("%0.2f"%self.args[key][0]) + ", " + ("%0.2f"%self.args[key][1]) + ",...," + ("%0.2f"%self.args[key][-2]) +  ", " + ("%0.2f"%self.args[key][-1])
+                        else:
+                            vval = (
+                                ("%0.2f" % self.args[key][0])
+                                + ", "
+                                + ("%0.2f" % self.args[key][1])
+                                + ",...,"
+                                + ("%0.2f" % self.args[key][-2])
+                                + ", "
+                                + ("%0.2f" % self.args[key][-1])
+                            )
                         vval += ""
-                        val+= '%s%s = [%s]'%(sep, key, vval)
-                else :
+                        val += "%s%s = [%s]" % (sep, key, vval)
+                else:
                     print("type???->", key)
-            sep=",\n\t"
+            sep = ",\n\t"
 
         print(file, val + ")\n")
 
     def tomv4(self, file):
-        sep="\t"
-        val="%s,\n"%self.verb.upper()
+        sep = "\t"
+        val = "%s,\n" % self.verb.upper()
 
         for key in list(self.args.keys()):
             if isinstance(self.args[key], str):
-                if key == 'odb_data':
-                    Magics.setc('odb_filename', self.args[key])
+                if key == "odb_data":
+                    Magics.setc("odb_filename", self.args[key])
                 else:
-                    val+= '%s%s = %s'%(sep, key.upper(), self.args[key].upper())
+                    val += "%s%s = %s" % (sep, key.upper(), self.args[key].upper())
             elif isinstance(self.args[key], int):
-                val +=  '%s%s = %d'%(sep, key.upper(), self.args[key])
+                val += "%s%s = %d" % (sep, key.upper(), self.args[key])
             elif isinstance(self.args[key], float):
-                val += '%s%s = %0.2f'%(sep, key.upper(), self.args[key])
-            elif isinstance(self.args[key], list) :
-                if isinstance (self.args[key][0], str):
-                   vval = "["
-                   vsep = ""
-                   for v in self.args[key]:
+                val += "%s%s = %0.2f" % (sep, key.upper(), self.args[key])
+            elif isinstance(self.args[key], list):
+                if isinstance(self.args[key][0], str):
+                    vval = "["
+                    vsep = ""
+                    for v in self.args[key]:
                         vval += vsep + v
                         vsep = ", "
-                   vval += "]"
-                   val+= '%s%s = %s'%(sep, key.upper(), vval)
+                    vval += "]"
+                    val += "%s%s = %s" % (sep, key.upper(), vval)
                 elif isinstance(self.args[key][0], int):
-                   print("pset1i")
+                    print("pset1i")
                 elif isinstance(self.args[key][0], float):
-                   print("pset1r")
-            elif isinstance(self.args[key], numpy.ndarray) :
+                    print("pset1r")
+            elif isinstance(self.args[key], numpy.ndarray):
                 type = self.args[key].dtype
-                dim  = len(self.args[key].shape)
+                dim = len(self.args[key].shape)
                 if isinstance(self.args[key][0], int):
-                    if (dim == 2) :
+                    if dim == 2:
                         print("pset2i")
-                    else :
+                    else:
                         print("pset1i")
-                elif ( type == 'float64' or type == 'float32') :
-                    if (dim == 2) :
+                elif type == "float64" or type == "float32":
+                    if dim == 2:
                         print("pset2r")
-                    else :
+                    else:
                         vval = "["
                         vsep = ""
                         for v in self.args[key]:
-                                vval += vsep + ("%0.2f"%v)
-                                vsep = ", "
+                            vval += vsep + ("%0.2f" % v)
+                            vsep = ", "
                         vval += "]"
-                        val+= '%s%s = %s'%(sep, key.upper(), vval)
+                        val += "%s%s = %s" % (sep, key.upper(), vval)
 
-                else :
+                else:
                     print("type???->", key)
-            sep=",\n\t"
+            sep = ",\n\t"
 
         print(file, val + "\n")
 
-
-
-
-
     def tofortran(self, f):
-        if self.action == Magics.new_page :
+        if self.action == Magics.new_page:
             print(f, '\tcall pnew("page")')
             return
         for key in list(self.args.keys()):
             if isinstance(self.args[key], str):
-                if key == 'odb_data':
-                    Magics.setc('odb_filename', self.args[key])
+                if key == "odb_data":
+                    Magics.setc("odb_filename", self.args[key])
                 else:
-                    print (f, '\tcall psetc("%s", "%s")'%(key, self.args[key]))
+                    print(f, '\tcall psetc("%s", "%s")' % (key, self.args[key]))
             elif isinstance(self.args[key], int):
-                print (f, '\tcall pseti("%s", %d)'%(key, self.args[key]))
+                print(f, '\tcall pseti("%s", %d)' % (key, self.args[key]))
             elif isinstance(self.args[key], float):
-                print (f, '\tcall psetr("%s", %0.2f)'%(key, self.args[key]))
-            elif isinstance(self.args[key], list) :
-                if isinstance (self.args[key][0], str):
-                   nb = 0
-                   for v in self.args[key]:
+                print(f, '\tcall psetr("%s", %0.2f)' % (key, self.args[key]))
+            elif isinstance(self.args[key], list):
+                if isinstance(self.args[key][0], str):
+                    nb = 0
+                    for v in self.args[key]:
                         nb = max(nb, len(v))
 
-                   val = "(/"
-                   sep = ""
-                   newline = 70
-                   for v in self.args[key]:
+                    val = "(/"
+                    sep = ""
+                    newline = 70
+                    for v in self.args[key]:
                         val += sep + self.quote(v.ljust(nb))
                         sep = ", "
-                        if len(val) > newline  :
+                        if len(val) > newline:
                             sep = ",&\n\t\t"
                             newline = newline + 70
-                   val += "/)"
-                   print (f, '\tcall pset1c("%s", %s, %d)'%(key, val, len(self.args[key])))
+                    val += "/)"
+                    print(
+                        f,
+                        '\tcall pset1c("%s", %s, %d)' % (key, val, len(self.args[key])),
+                    )
                 elif isinstance(self.args[key][0], int):
-                   print("pset1i")
+                    print("pset1i")
                 elif isinstance(self.args[key][0], float):
                     val = "(/"
                     sep = ""
@@ -297,61 +335,71 @@ class Action(object):
                         val += sep + ("%0.2f" % v)
                         sep = ", "
                     val += "/)"
-                    print (f, '\tcall pset1r("%s", %s, %d)'%(key, val, len(self.args[key])))
-            elif isinstance(self.args[key], numpy.ndarray) :
+                    print(
+                        f,
+                        '\tcall pset1r("%s", %s, %d)' % (key, val, len(self.args[key])),
+                    )
+            elif isinstance(self.args[key], numpy.ndarray):
                 type = self.args[key].dtype
-                dim  = len(self.args[key].shape)
+                dim = len(self.args[key].shape)
                 if isinstance(self.args[key][0], int):
-                    if (dim == 2) :
+                    if dim == 2:
                         print("pset2i")
-                    else :
+                    else:
                         print("pset1i")
-                elif ( type == 'float64' or type == 'float32') :
-                    if (dim == 2) :
+                elif type == "float64" or type == "float32":
+                    if dim == 2:
                         print("pset2r")
-                    else :
+                    else:
                         val = "(/"
                         sep = ""
                         for v in self.args[key]:
                             val += sep + ("%0.2f" % v)
                             sep = ", "
                         val += "/)"
-                        print (f, '\tcall pset1r("%s", %s, %d)'%(key, val, len(self.args[key])))
+                        print(
+                            f,
+                            '\tcall pset1r("%s", %s, %d)'
+                            % (key, val, len(self.args[key])),
+                        )
                 elif isinstance(self.args[key][0], int):
-                        print("pset1r")
-                else :
+                    print("pset1r")
+                else:
                     print("type???->", key)
 
-        if self.action != None and actions[self.verb] != "" and actions[self.verb] != "pinput":
-            print (f, "\tcall %s\n"%actions[self.verb])
+        if (
+            self.action != None
+            and actions[self.verb] != ""
+            and actions[self.verb] != "pinput"
+        ):
+            print(f, "\tcall %s\n" % actions[self.verb])
             for key in list(self.args.keys()):
-                print (f, "\tcall preset('%s')"%key)
-            print (f, "")
+                print(f, "\tcall preset('%s')" % key)
+            print(f, "")
 
         else:
-            print (f, "")
-
+            print(f, "")
 
     def clean_object(self, obj):
-      if sys.version_info[0] < 3:
-        if type(obj) in (int, float, str, bool, numpy.float64, numpy.float32):
-            return obj
-        elif type(obj) == unicode:
-            return str(obj)
-        elif type(obj) in (list, tuple, set, numpy.ndarray) and len(obj):
-            if type(obj[0]) != unicode:
+        if sys.version_info[0] < 3:
+            if type(obj) in (int, float, str, bool, numpy.float64, numpy.float32):
                 return obj
-            obj = list(obj)
-            for i,v in enumerate(obj):
-                obj[i] = self.clean_object(v)
-        elif type(obj) == dict:
-            for i,v in list(obj.items()):
-                obj[i] = self.clean_object(v)
-        else:
-            print("Invalid object in data, converting to string: ")
-            print(type(obj))
-            obj = str(obj)
-      return obj
+            elif type(obj) == unicode:
+                return str(obj)
+            elif type(obj) in (list, tuple, set, numpy.ndarray) and len(obj):
+                if type(obj[0]) != unicode:
+                    return obj
+                obj = list(obj)
+                for i, v in enumerate(obj):
+                    obj[i] = self.clean_object(v)
+            elif type(obj) == dict:
+                for i, v in list(obj.items()):
+                    obj[i] = self.clean_object(v)
+            else:
+                print("Invalid object in data, converting to string: ")
+                print(type(obj))
+                obj = str(obj)
+        return obj
 
     def find_type(self, data):
         for v in data:
@@ -359,21 +407,19 @@ class Action(object):
                 return "float"
         return "int"
 
-
-
     def set(self):
         for key in list(self.args.keys()):
 
             if isinstance(self.args[key], dict):
-                Magics.setc(key,  json.dumps(self.args[key]))
+                Magics.setc(key, json.dumps(self.args[key]))
             elif isinstance(self.args[key], bool):
                 if self.args[key]:
                     Magics.setc(key, "on")
-                else :
+                else:
                     Magics.setc(key, "off")
             elif isinstance(self.args[key], str):
-                if key == 'odb_data':
-                    Magics.setc('odb_filename', self.args[key])
+                if key == "odb_data":
+                    Magics.setc("odb_filename", self.args[key])
                 else:
                     Magics.setc(key, self.args[key])
             elif isinstance(self.args[key], int):
@@ -382,46 +428,44 @@ class Action(object):
                 Magics.setr(key, self.args[key])
             elif isinstance(self.args[key], list) and len(self.args[key]):
                 if isinstance(self.args[key][0], str):
-                   Magics.set1c(key, self.args[key])
+                    Magics.set1c(key, self.args[key])
                 else:
                     type = self.find_type(self.args[key])
                     if type == "int":
-                        Magics.set1i(key, numpy.array(self.args[key], dtype='i'))
-                    else :
+                        Magics.set1i(key, numpy.array(self.args[key], dtype="i"))
+                    else:
                         Magics.set1r(key, numpy.array(self.args[key]))
-            elif isinstance(self.args[key], numpy.ndarray) :
+            elif isinstance(self.args[key], numpy.ndarray):
                 type = self.args[key].dtype
                 data = self.args[key].copy()
                 size = data.shape
-                dim  = len(size)
+                dim = len(size)
                 type = self.find_type(self.args[key])
                 if type == "int":
-                    if (dim == 2) :
+                    if dim == 2:
                         Magics.set2i(key, numpy.int64(data), size[0], size[1])
-                    else :
+                    else:
                         Magics.set1i(key, numpy.int64(data), size[0])
                 elif type == "float":
-                    if (dim == 2) :
+                    if dim == 2:
                         Magics.set2r(key, numpy.float64(data), size[1], size[0])
-                    else :
+                    else:
                         Magics.set1r(key, numpy.float64(data))
-                else :
-                    print("can not interpret type %s for %s ???->", (type, key) )
+                else:
+                    print("can not interpret type %s for %s ???->", (type, key))
             else:
                 self.args[key].execute(key)
 
-
-
     def execute(self):
 
-        if ( self.action != Magics.odb) :
+        if self.action != Magics.odb:
             self.args = self.clean_object(self.args)
 
         self.set()
 
-        if self.action != None :
-            if self.action != Magics.new_page :
-                if self.action == Magics.legend :
+        if self.action != None:
+            if self.action != Magics.new_page:
+                if self.action == Magics.legend:
                     Magics.setc("legend", "on")
                 self.action()
                 if self.action != Magics.obs and self.action != Magics.minput:
@@ -432,9 +476,8 @@ class Action(object):
 
     def style(self):
 
-        if self.action not in [Magics.grib, Magics.netcdf, Magics.minput] :
+        if self.action not in [Magics.grib, Magics.netcdf, Magics.minput]:
             return {}
-
 
         self.args = self.clean_object(self.args)
 
@@ -446,6 +489,7 @@ class Action(object):
         if self.action == Magics.minput:
             return Magics.metainput()
 
+
 def encode_numpy(object):
     """
     Encode numpy objects to their python equivalents.
@@ -456,16 +500,24 @@ def encode_numpy(object):
     if type(object).__module__ == numpy.__name__:
         return object.item()
     else:
-        raise TypeError("Object of type '{}' is not JSON serializable".format(type(object)))
+        raise TypeError(
+            "Object of type '{}' is not JSON serializable".format(type(object))
+        )
+
 
 def detect(attributes, dimension):
     return Magics.detect(json.dumps(attributes, default=encode_numpy), dimension)
 
+
 def detect_lat_lon(xarray_dataset, ds_attributes):
-    attrs = {ds_attribute: xarray_dataset[ds_attribute].attrs for ds_attribute in ds_attributes}
+    attrs = {
+        ds_attribute: xarray_dataset[ds_attribute].attrs
+        for ds_attribute in ds_attributes
+    }
     lat_name = detect(attrs, "latitude")
     lon_name = detect(attrs, "longitude")
     return lat_name, lon_name
+
 
 def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings={}):
     """
@@ -475,14 +527,21 @@ def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings={}):
     # usually we find latitude and longitude in xarray_dataset.coords, but we sometimes see 2d
     # lat/lon data in xarray_dataset.data_vars instead.
     for ds_attributes in [xarray_dataset.coords, xarray_dataset.data_vars]:
-        ret = _mxarray(xarray_dataset, xarray_variable_name, ds_attributes,
-                xarray_dimension_settings)
+        ret = _mxarray(
+            xarray_dataset,
+            xarray_variable_name,
+            ds_attributes,
+            xarray_dimension_settings,
+        )
         if ret:
             return ret
 
     raise ValueError("Could not find latitude and longitude in dataset")
 
-def _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimension_settings):
+
+def _mxarray(
+    xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimension_settings
+):
     lat_name, lon_name = detect_lat_lon(xarray_dataset, ds_attributes)
 
     if lat_name and lon_name:
@@ -492,46 +551,77 @@ def _mxarray(xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimensi
         n_lon_dims = len(lon_dim_names)
 
         if n_lat_dims != n_lon_dims:
-            raise ValueError("Dimension mismatch for latitude and longitude. "
-                    "lat_dim_names={} lon_dim_names={}".format(lat_dim_names, lon_dim_names))
+            raise ValueError(
+                "Dimension mismatch for latitude and longitude. "
+                "lat_dim_names={} lon_dim_names={}".format(lat_dim_names, lon_dim_names)
+            )
         elif n_lat_dims == 1:
-            return _mxarray_1d(xarray_dataset, xarray_variable_name,
-                    lat_name, lon_name, xarray_dimension_settings)
+            return _mxarray_1d(
+                xarray_dataset,
+                xarray_variable_name,
+                lat_name,
+                lon_name,
+                xarray_dimension_settings,
+            )
         elif n_lat_dims == 2:
-            return _mxarray_2d(xarray_dataset, xarray_variable_name,
-                    lat_name, lon_name, xarray_dimension_settings, lat_dim_names)
+            return _mxarray_2d(
+                xarray_dataset,
+                xarray_variable_name,
+                lat_name,
+                lon_name,
+                xarray_dimension_settings,
+                lat_dim_names,
+            )
         else:
-            raise ValueError("Found latitude and longitude with more than 2 dimensions. "
-                    "lat_dim_names={} lon_dim_names={}".format(lat_dim_names, lon_dim_names))
+            raise ValueError(
+                "Found latitude and longitude with more than 2 dimensions. "
+                "lat_dim_names={} lon_dim_names={}".format(lat_dim_names, lon_dim_names)
+            )
 
-def _mxarray_1d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
-        xarray_dimension_settings):
+
+def _mxarray_1d(
+    xarray_dataset, xarray_variable_name, lat_name, lon_name, xarray_dimension_settings
+):
     lat = xarray_dataset[lat_name].values.astype(numpy.float64)
     lon = xarray_dataset[lon_name].values.astype(numpy.float64)
-    input_field_values = _mxarray_flatten(xarray_dataset[xarray_variable_name],
-            xarray_dimension_settings, [lat_name, lon_name]).values.astype(numpy.float64)
+    input_field_values = _mxarray_flatten(
+        xarray_dataset[xarray_variable_name],
+        xarray_dimension_settings,
+        [lat_name, lon_name],
+    ).values.astype(numpy.float64)
 
     data = minput(
-            input_field           = input_field_values,
-            input_latitudes_list  = lat,
-            input_longitudes_list = lon,
-            input_metadata        = dict(xarray_dataset[xarray_variable_name].attrs) )
+        input_field=input_field_values,
+        input_latitudes_list=lat,
+        input_longitudes_list=lon,
+        input_metadata=dict(xarray_dataset[xarray_variable_name].attrs),
+    )
     return data
 
-def _mxarray_2d(xarray_dataset, xarray_variable_name, lat_name, lon_name,
-        xarray_dimension_settings, dims_to_ignore):
+
+def _mxarray_2d(
+    xarray_dataset,
+    xarray_variable_name,
+    lat_name,
+    lon_name,
+    xarray_dimension_settings,
+    dims_to_ignore,
+):
     lat = xarray_dataset[lat_name].values.astype(numpy.float64)
     lon = xarray_dataset[lon_name].values.astype(numpy.float64)
-    input_field_values = _mxarray_flatten(xarray_dataset[xarray_variable_name],
-            xarray_dimension_settings, dims_to_ignore).values.astype(numpy.float64)
+    input_field_values = _mxarray_flatten(
+        xarray_dataset[xarray_variable_name], xarray_dimension_settings, dims_to_ignore
+    ).values.astype(numpy.float64)
 
     data = minput(
-            input_field              = input_field_values,
-            input_field_organization = "nonregular",
-            input_field_latitudes    = lat,
-            input_field_longitudes   = lon,
-            input_metadata           = dict(xarray_dataset[xarray_variable_name].attrs) )
+        input_field=input_field_values,
+        input_field_organization="nonregular",
+        input_field_latitudes=lat,
+        input_field_longitudes=lon,
+        input_metadata=dict(xarray_dataset[xarray_variable_name].attrs),
+    )
     return data
+
 
 def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
     # flatten an nD matrix into a 2d matrix by slicing the matrix based on the values given to
@@ -541,9 +631,14 @@ def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
             continue
         elif dim in dims_to_flatten:
             if dims_to_flatten[dim] not in xarray_dataset[dim]:
-                raise ValueError("Dimension not valid. dimension={} dtype={} options={} dtype={}"
-                        .format(dim, type(dim), xarray_dataset[dim].values,
-                            xarray_dataset[dim].dtype))
+                raise ValueError(
+                    "Dimension not valid. dimension={} dtype={} options={} dtype={}".format(
+                        dim,
+                        type(dim),
+                        xarray_dataset[dim].values,
+                        xarray_dataset[dim].dtype,
+                    )
+                )
             else:
                 xarray_dataset = xarray_dataset.loc[{dim: dims_to_flatten[dim]}]
         elif xarray_dataset[dim].size == 1:
@@ -552,20 +647,26 @@ def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):
             print("automatically squashing dimension: {}={}".format(dim, d))
             xarray_dataset = xarray_dataset.loc[{dim: d}]
         else:
-            raise ValueError("Missing dimension to flatten. "
-                    "Please pick a dimension from which to slice data. "
-                    "dimension={} options={} dtype={}"
-                    .format(dim, xarray_dataset[dim].values, xarray_dataset[dim].dtype))
+            raise ValueError(
+                "Missing dimension to flatten. "
+                "Please pick a dimension from which to slice data. "
+                "dimension={} options={} dtype={}".format(
+                    dim, xarray_dataset[dim].values, xarray_dataset[dim].dtype
+                )
+            )
     return xarray_dataset
 
-def make_action(verb, action, html="" ):
-    def f(_m = None,**kw):
+
+def make_action(verb, action, html=""):
+    def f(_m=None, **kw):
         args = {}
         if _m is not None:
             args.update(_m)
         args.update(kw)
         return Action(verb, action, html, args)
+
     return f
+
 
 mcoast = make_action("mcoast", Magics.coast, "Coastlines")
 pcoast = make_action("pcoast", Magics.coast)
@@ -587,7 +688,7 @@ mmapgen = make_action("mmapgen", Magics.mapgen)
 pnetcdf = make_action("pnetcdf", Magics.netcdf)
 mnetcdf = make_action("mnetcdf", Magics.netcdf)
 odb_geopoints = make_action("odb_geopoints", Magics.odb, "Odbviewer")
-odb_geovectors = make_action("odb_geovectors", Magics.odb,"Odbviewer" )
+odb_geovectors = make_action("odb_geovectors", Magics.odb, "Odbviewer")
 odb_xypoints = make_action("odb_xypoints", Magics.odb, "Odbviewer")
 odb_xyvectors = make_action("odb_xyvectors", Magics.odb, "Odbviewer")
 pmap = make_action("pmap", None, "Subpage")
@@ -628,45 +729,45 @@ mtile = make_action("mtile", Magics.tile)
 mmetgraph = make_action("mmetgraph", Magics.metgraph)
 mmetbufr = make_action("mmetbufr", Magics.metbufr)
 
+
 def examine(*args):
     for n in args:
-        try :
+        try:
             n.inspect()
         except:
             break
 
+
 def _execute(o):
-	if isinstance(o, list) or isinstance(o, tuple):
-		for x in o:
-			_execute(x)
+    if isinstance(o, list) or isinstance(o, tuple):
+        for x in o:
+            _execute(x)
 
-	else:
+    else:
 
-		o.execute()
+        o.execute()
+
 
 def _plot(*args):
 
     context.set()
-    #try :
+    # try :
     Magics.init()
     for n in args:
         _execute(n)
 
-    #Collect the drivers!
+    # Collect the drivers!
     Magics.finalize()
     for f in context.tmp:
         if os.path.exists(f):
             os.remove(f)
-    #except:
-        #print ("Magics Error")
-
-
-
+    # except:
+    # print ("Magics Error")
 
 
 def tofortran(file, *args):
     return
-    f = open(file+".f90",'w')
+    f = open(file + ".f90", "w")
     print(f, "\tprogram magics\n")
     print(f, "\tcall popen\n")
     for n in args:
@@ -677,44 +778,61 @@ def tofortran(file, *args):
 
 def tohtml(file, *args):
     return
-    f = open(file+".html",'w')
-    print (f, "<html>")
+    f = open(file + ".html", "w")
+    print(f, "<html>")
     for n in args:
         n.tohtml(f)
-    print (f, "</html>")
+    print(f, "</html>")
+
 
 def tomv4(file, *args):
     return
-    f = open(file+".mv4",'w')
+    f = open(file + ".mv4", "w")
     for n in args:
         n.tomv4(f)
 
-class  odb_filter(object):
-    def __init__(self, _m = None,**kw):
+
+class odb_filter(object):
+    def __init__(self, _m=None, **kw):
         args = {}
         self.verb = "odbfilter"
         if _m is not None:
             args.update(_m)
         self.args = args
+
     def execute(self, key):
-        file = "data%d" % numpy.random.randint(1,1000)
+        file = "data%d" % numpy.random.randint(1, 1000)
         odb = "%s.odb" % file
         context.tmp.append(odb)
-        cmd = "odbsql -q \"" + self.args["query"] + "\" -i " + self.args["path"] + " -f newodb -o " + odb
+        cmd = (
+            'odbsql -q "'
+            + self.args["query"]
+            + '" -i '
+            + self.args["path"]
+            + " -f newodb -o "
+            + odb
+        )
         print(cmd)
-        if (os.system(cmd)) :
+        if os.system(cmd):
             print("Error in filtering ODB data... Aborting")
-            os.abort();
-        Magics.setc('odb_filename', odb)
+            os.abort()
+        Magics.setc("odb_filename", odb)
+
     def inspect(self):
-        cmd = "odbsql -q \"" + self.args["query"] + "\" -i " + self.args["path"] + " -o data.ascii"
-        if (os.system(cmd)) :
+        cmd = (
+            'odbsql -q "'
+            + self.args["query"]
+            + '" -i '
+            + self.args["path"]
+            + " -o data.ascii"
+        )
+        if os.system(cmd):
             print("Error in filtering ODB data... Aborting")
-            os.abort();
-        cmd =  os.environ['ODB_REPORTER'] + " %s" % "data.ascii"
-        if (os.system(cmd)) :
+            os.abort()
+        cmd = os.environ["ODB_REPORTER"] + " %s" % "data.ascii"
+        if os.system(cmd):
             print("Error in viewing ODB data... Aborting")
-            os.abort();
+            os.abort()
 
 
 import threading
@@ -722,6 +840,7 @@ import tempfile
 
 
 _MAGICS_LOCK = threading.Lock()
+
 
 def _jplot(*args):
     from IPython.display import Image
@@ -734,8 +853,8 @@ def _jplot(*args):
 
         img = output(
             output_formats=["png"],
-            output_name_first_page_number='off',
-            output_name=base
+            output_name_first_page_number="off",
+            output_name=base,
         )
 
         all = [img]
@@ -756,73 +875,68 @@ except Exception:
     plot = _plot
 
 
-
-
 def wmsstyles(data):
     context.set()
-    try :
+    try:
         Magics.init()
         styles = data.style()
         Magics.finalize()
         styles = json.loads(styles.decode())
         return styles
-    except :
+    except:
         return {}
+
 
 def version():
     version = Magics.version()
     return version.decode()
 
+
 def predefined_areas():
     home = Magics.home()
-    with open("%s/share/magics/projections.json" % ( home.decode() )) as input:
+    with open("%s/share/magics/projections.json" % (home.decode())) as input:
         projections = json.load(input)
     return projections.keys()
 
 
-
 def wmscrs():
-    os.environ["MAGPLUS_QUIET"] =  "on"
-    os.environ["MAGPLUS_WARNING"] =  "off"
-    return { "crss" : [
-                {
-                    "name" : "EPSG:4326",
-                    "w_lon" : -180.,
-                    "s_lat" : -90.,
-                    "e_lon" : 180.,
-                    "n_lat" : 90.
-                },
-                 {
-                    "name" : "EPSG:3857",
-                    "w_lon" : -20026376.39,
-                    "s_lat" : -20048966.10,
-                    "e_lon" : 20026376.39,
-                    "n_lat" : 20048966.10
-                },
-                {
-                    "name" : "EPSG:3857",
-                    "w_lon" : -20026376.39,
-                    "s_lat" : -20048966.10,
-                    "e_lon" : 20026376.39,
-                    "n_lat" : 20048966.10
-                },
-                {
-                    "name" : "EPSG:32661",
-                    "w_lon" : 1994055.62,
-                    "s_lat" : 5405875.53,
-                    "e_lon" : 2000969.46,
-                    "n_lat" : 2555456.55
-                },
-                ],
-
-
-              "geographic_bounding_box" : {
-                    "w_lon" : -180.,
-                    "e_lon" : 180.,
-                    "s_lat" : -90.,
-                    "n_lat" : 90.
-              }
-
-            }
-
-
+    os.environ["MAGPLUS_QUIET"] = "on"
+    os.environ["MAGPLUS_WARNING"] = "off"
+    return {
+        "crss": [
+            {
+                "name": "EPSG:4326",
+                "w_lon": -180.0,
+                "s_lat": -90.0,
+                "e_lon": 180.0,
+                "n_lat": 90.0,
+            },
+            {
+                "name": "EPSG:3857",
+                "w_lon": -20026376.39,
+                "s_lat": -20048966.10,
+                "e_lon": 20026376.39,
+                "n_lat": 20048966.10,
+            },
+            {
+                "name": "EPSG:3857",
+                "w_lon": -20026376.39,
+                "s_lat": -20048966.10,
+                "e_lon": 20026376.39,
+                "n_lat": 20048966.10,
+            },
+            {
+                "name": "EPSG:32661",
+                "w_lon": 1994055.62,
+                "s_lat": 5405875.53,
+                "e_lon": 2000969.46,
+                "n_lat": 2555456.55,
+            },
+        ],
+        "geographic_bounding_box": {
+            "w_lon": -180.0,
+            "e_lon": 180.0,
+            "s_lat": -90.0,
+            "n_lat": 90.0,
+        },
+    }

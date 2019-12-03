@@ -27,40 +27,44 @@ from functools import partial
 #
 lib = None
 if sys.platform == "darwin":
-  for directory in os.environ.get("DYLD_LIBRARY_PATH","").split(":"):
-    fullname = os.path.join(directory,"libMagPlus.dylib")
-    if os.path.exists(fullname):
-        lib = fullname
-        break
+    for directory in os.environ.get("DYLD_LIBRARY_PATH", "").split(":"):
+        fullname = os.path.join(directory, "libMagPlus.dylib")
+        if os.path.exists(fullname):
+            lib = fullname
+            break
 
-  if lib is None:
-    fullname = os.path.join(os.environ.get("MAGPLUS_HOME",""), "lib/libMagPlus.dylib")
-    if os.path.exists(fullname):
-          lib = fullname
+    if lib is None:
+        fullname = os.path.join(
+            os.environ.get("MAGPLUS_HOME", ""), "lib/libMagPlus.dylib"
+        )
+        if os.path.exists(fullname):
+            lib = fullname
 
 elif sys.platform == "win32":
-  if lib is None:
-    fullname = os.path.join(os.environ.get("MAGPLUS_HOME",""), "lib/libMagPlus.dll")
-    if os.path.exists(fullname):
-          lib = fullname
+    if lib is None:
+        fullname = os.path.join(
+            os.environ.get("MAGPLUS_HOME", ""), "lib/libMagPlus.dll"
+        )
+        if os.path.exists(fullname):
+            lib = fullname
 
 else:
-  for directory in os.environ.get("LD_LIBRARY_PATH","").split(":"):
-    fullname = os.path.join(directory,"libMagPlus.so")
-    if os.path.exists(fullname):
-        lib = fullname
-        break
+    for directory in os.environ.get("LD_LIBRARY_PATH", "").split(":"):
+        fullname = os.path.join(directory, "libMagPlus.so")
+        if os.path.exists(fullname):
+            lib = fullname
+            break
 
-  if lib is None:
-    fullname = os.path.join(os.environ.get("MAGPLUS_HOME",""), "lib/libMagPlus.so")
-    if os.path.exists(fullname):
-          lib = fullname
+    if lib is None:
+        fullname = os.path.join(os.environ.get("MAGPLUS_HOME", ""), "lib/libMagPlus.so")
+        if os.path.exists(fullname):
+            lib = fullname
 
 
 #
 #  if not overwritten test if instlled version exist and use it
 #
-#if lib is None:
+# if lib is None:
 #    installname = "@CMAKE_INSTALL_PREFIX@/@INSTALL_LIB_DIR@/libMagPlus@CMAKE_SHARED_LIBRARY_SUFFIX@"
 #    if os.path.exists(installname):
 #        lib = installname
@@ -76,10 +80,7 @@ if lib is None:
 if lib is None:
     raise Exception("Magics library could not be found")
 
-dll  = ctypes.CDLL(lib)
-
-
-
+dll = ctypes.CDLL(lib)
 
 
 class FILE(ctypes.Structure):
@@ -89,6 +90,7 @@ class FILE(ctypes.Structure):
 FILE_p = ctypes.POINTER(FILE)
 
 ######################## String conversions ##########################
+
 
 def _string_to_char(x):
     return x.encode()
@@ -127,6 +129,7 @@ def _convert_strings(fn):
 
     return wrapped
 
+
 if sys.version_info[0] > 2:
     convert_strings = _convert_strings
     char_to_string = _char_to_string
@@ -135,9 +138,6 @@ else:
     convert_strings = lambda x: x
     char_to_string = lambda x: x
     string_to_char = lambda x: x
-
-
-
 
 
 ####################################################################
@@ -155,7 +155,6 @@ c_void_p = ctypes.c_void_p
 
 ####################################################################
 def checked_error_in_last_paramater(fn):
-
     def wrapped(*args):
         err = c_int(0)
         err_p = ctypes.cast(ctypes.addressof(err), c_int_p)
@@ -171,7 +170,6 @@ def checked_error_in_last_paramater(fn):
 
 
 def checked_return_code(fn):
-
     def wrapped(*args):
         err = fn(*args)
         if err:
@@ -182,8 +180,8 @@ def checked_return_code(fn):
 
 ####################################################################
 
-def return_type(fn, ctype):
 
+def return_type(fn, ctype):
     def wrapped(*args):
         result = ctype()
         result_p = ctypes.cast(ctypes.addressof(result), ctypes.POINTER(ctype))
@@ -194,11 +192,14 @@ def return_type(fn, ctype):
 
     return wrapped
 
+
 ####################################################################
+
 
 @checked_return_code
 def init():
     return dll.py_open()
+
 
 ####################################################################
 
@@ -207,7 +208,9 @@ def init():
 def finalize():
     return dll.py_close()
 
+
 ####################################################################
+
 
 @checked_return_code
 def coast():
@@ -219,21 +222,23 @@ def coast():
 def grib():
     return dll.py_grib()
 
+
 def oldversion():
     msg = "You are using an old version of magics ( < 4.0.0)"
     return msg.encode()
 
-try :
+
+try:
     version = dll.version
     version.restype = ctypes.c_char_p
     version.argtypes = None
 except:
     version = oldversion
 
-try :
+try:
     tile = dll.py_tile
 except:
-    print ("Tile not enabled: You are using an old version of magics ( < 4.1.0)")
+    print("Tile not enabled: You are using an old version of magics ( < 4.1.0)")
     tile = oldversion
 
 metagrib = dll.py_metagrib
@@ -247,17 +252,20 @@ metanetcdf.argtypes = None
 
 detect = dll.detect
 detect.restype = ctypes.c_char_p
-detect.argtypes = [ ctypes.c_char_p,  ctypes.c_char_p ]
+detect.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 detect = convert_strings(detect)
 
 
 ####################################################################
 
+
 @checked_return_code
 def cont():
     return dll.py_cont()
 
+
 ####################################################################
+
 
 @checked_return_code
 def legend():
@@ -266,12 +274,14 @@ def legend():
 
 ####################################################################
 
+
 @checked_return_code
 def odb():
     return dll.py_odb()
 
 
 ####################################################################
+
 
 @checked_return_code
 def obs():
@@ -280,6 +290,7 @@ def obs():
 
 ####################################################################
 
+
 @checked_return_code
 def raw():
     return dll.py_raw()
@@ -287,11 +298,14 @@ def raw():
 
 ####################################################################
 
+
 @checked_return_code
 def netcdf():
     return dll.py_netcdf()
 
+
 ####################################################################
+
 
 @checked_return_code
 def image():
@@ -300,11 +314,14 @@ def image():
 
 ####################################################################
 
+
 @checked_return_code
 def plot():
     return dll.py_plot()
 
+
 ####################################################################
+
 
 @checked_return_code
 def text():
@@ -313,12 +330,14 @@ def text():
 
 ####################################################################
 
+
 @checked_return_code
 def wind():
     return dll.py_wind()
 
 
 ####################################################################
+
 
 @checked_return_code
 def line():
@@ -327,12 +346,14 @@ def line():
 
 ####################################################################
 
+
 @checked_return_code
 def symb():
     return dll.py_symb()
 
 
 ####################################################################
+
 
 @checked_return_code
 def boxplot():
@@ -341,17 +362,22 @@ def boxplot():
 
 ####################################################################
 
+
 @checked_return_code
 def taylor():
     return dll.py_taylor()
 
+
 ####################################################################
+
 
 @checked_return_code
 def tephi():
     return dll.py_tephi()
 
+
 ####################################################################
+
 
 @checked_return_code
 def graph():
@@ -360,11 +386,14 @@ def graph():
 
 ####################################################################
 
+
 @checked_return_code
 def axis():
     return dll.py_axis()
 
+
 ####################################################################
+
 
 @checked_return_code
 def geo():
@@ -373,12 +402,14 @@ def geo():
 
 ####################################################################
 
+
 @checked_return_code
 def mimport():
     return dll.py_import()
 
 
 ####################################################################
+
 
 @checked_return_code
 def info():
@@ -387,12 +418,14 @@ def info():
 
 ####################################################################
 
+
 @checked_return_code
 def minput():
     return dll.py_input()
 
 
 ####################################################################
+
 
 @checked_return_code
 def eps():
@@ -410,7 +443,8 @@ def metgraph():
 
 @checked_return_code
 def epsinput():
-    return  dll.py_epsinput()
+    return dll.py_epsinput()
+
 
 ####################################################################
 ###
@@ -420,7 +454,9 @@ def epsinput():
 def metbufr():
     return dll.py_metbufr()
 
+
 ####################################################################
+
 
 @checked_return_code
 def epsgraph():
@@ -429,11 +465,14 @@ def epsgraph():
 
 ####################################################################
 
+
 @checked_return_code
 def epscloud():
     return dll.py_epscloud()
 
+
 ####################################################################
+
 
 @checked_return_code
 def epslight():
@@ -442,12 +481,14 @@ def epslight():
 
 ####################################################################
 
+
 @checked_return_code
 def epsplumes():
     return dll.py_epsplumes()
 
 
 ####################################################################
+
 
 @checked_return_code
 def epswind():
@@ -456,17 +497,22 @@ def epswind():
 
 ####################################################################
 
+
 @checked_return_code
 def epswave():
     return dll.py_epswave()
 
+
 ####################################################################
+
 
 @checked_return_code
 def epsbar():
     return dll.py_epsbar()
 
+
 ####################################################################
+
 
 @checked_return_code
 def epsshading():
@@ -475,17 +521,22 @@ def epsshading():
 
 ####################################################################
 
+
 @checked_return_code
 def wrepjson():
     return dll.py_wrepjson()
 
+
 ####################################################################
+
 
 @checked_return_code
 def geojson():
     return dll.py_geojson()
 
+
 ####################################################################
+
 
 @checked_return_code
 def mapgen():
@@ -494,11 +545,14 @@ def mapgen():
 
 ####################################################################
 
+
 @checked_return_code
 def mtable():
-    return  dll.py_table()
+    return dll.py_table()
+
 
 ####################################################################
+
 
 @checked_return_code
 def seti(name, value):
@@ -508,19 +562,20 @@ def seti(name, value):
 
 ####################################################################
 @checked_return_code
-def set1i(name,data):
-#    array = np.empty((size,), dtype=np.float64)
-#    array_p = array.ctypes.data_as(c_double_p)
-#    _set1r(name, array_p, size)
+def set1i(name, data):
+    #    array = np.empty((size,), dtype=np.float64)
+    #    array_p = array.ctypes.data_as(c_double_p)
+    #    _set1r(name, array_p, size)
     size = len(data)
     name = string_to_char(name)
     array_p = (ctypes.c_int * size)(*data)
     return dll.py_set1i(ctypes.c_char_p(name), array_p, size)
     return None
 
+
 ####################################################################
 
-array_2d_int = ndpointer(dtype=np.int,ndim=2, flags='CONTIGUOUS')
+array_2d_int = ndpointer(dtype=np.int, ndim=2, flags="CONTIGUOUS")
 set2i = dll.py_set2i
 set2i.restype = None
 set2i.argtypes = (c_char_p, array_2d_int, c_int, c_int)
@@ -535,7 +590,7 @@ setr = convert_strings(setr)
 
 ####################################################################
 @checked_return_code
-def set1r(name,data):
+def set1r(name, data):
     size = len(data)
     name = string_to_char(name)
     array_p = (ctypes.c_double * size)(*data)
@@ -544,7 +599,7 @@ def set1r(name,data):
 
 ####################################################################
 
-array_2d_double = ndpointer(dtype=np.double,ndim=2, flags='CONTIGUOUS')
+array_2d_double = ndpointer(dtype=np.double, ndim=2, flags="CONTIGUOUS")
 set2r = dll.py_set2r
 set2r.restype = None
 set2r.argtypes = (c_char_p, array_2d_double, c_int, c_int)
@@ -559,10 +614,10 @@ setc = convert_strings(setc)
 
 ####################################################################
 @checked_return_code
-def set1c(name,data):
-    new_data=[]
+def set1c(name, data):
+    new_data = []
     for s in data:
-       new_data.append(string_to_char(s))
+        new_data.append(string_to_char(s))
     name = string_to_char(name)
     data_p = (c_char_p * (len(new_data)))(*new_data)
     return dll.py_set1c(ctypes.c_char_p(name), data_p, len(new_data))
@@ -584,35 +639,40 @@ reset = convert_strings(reset)
 
 ####################################################################
 
-class MagicsError(Exception):
 
+class MagicsError(Exception):
     def __init__(self, err):
-        super(MagicsError, self).__init__("Magics Error - No Plot Produced!!! (%s)" % err)
+        super(MagicsError, self).__init__(
+            "Magics Error - No Plot Produced!!! (%s)" % err
+        )
+
 
 ####################################################################
 
 
 def no_log(a, b):
-    print ("Log listeners not handled in this version, consider using a version > 4.0.0 " )
+    print(
+        "Log listeners not handled in this version, consider using a version > 4.0.0 "
+    )
 
 
 log = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, c_char_p)
 
-try :
+try:
     warning_log = dll.mag_add_warning_listener
-    warning_log.restype=None
+    warning_log.restype = None
     warning_log.argtypes = (ctypes.c_void_p, log)
 
     error_log = dll.mag_add_error_listener
-    error_log.restype=None
+    error_log.restype = None
     error_log.argtypes = (ctypes.c_void_p, log)
 
     info_log = dll.mag_add_info_listener
-    info_log.restype=None
+    info_log.restype = None
     info_log.argtypes = (ctypes.c_void_p, log)
 
     debug_log = dll.mag_add_debug_listener
-    debug_log.restype=None
+    debug_log.restype = None
     debug_log.argtypes = (ctypes.c_void_p, log)
 except:
     error_log = no_log
@@ -623,11 +683,9 @@ except:
 
 @log
 def magics_log(data, msg):
-   print("SUPER-->", msg.decode())
-   return 0
+    print("SUPER-->", msg.decode())
+    return 0
 
 
-
-
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    print "..."
