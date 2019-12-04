@@ -1,0 +1,2 @@
+# Ensure a directory exists in the repo even if empty, version control the structure
+!.gitignore
