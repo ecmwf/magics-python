@@ -36,11 +36,7 @@ master_doc = (
     "index"  # Changed in version 2.0: The default is changed to 'index' from 'contents'
 )
 
-extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinxcontrib.restbuilder",
-]
+extensions = ["sphinx.ext.autodoc"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
