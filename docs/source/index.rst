@@ -4,24 +4,23 @@
    contain the root `toctree` directive.
 
 Welcome to Magics-Python's documentation!
-=========================================
+-----------------------------------------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Table of Contents
 
-   minimal_test
-   modules/magics_magics
-   modules/magics_macro
-   modules/magics_metgram
-   modules/magics_toolbox
+   readme
+   contributing
 
-Modules
-=======
+
+.. toctree:: modules/Magics
+   :caption: API
+   :maxdepth: 3
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
