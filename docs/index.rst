@@ -11,6 +11,13 @@ Welcome to Magics-Python's documentation!
    :caption: Contents:
 
    minimal_test
+   modules/magics_magics
+   modules/magics_macro
+   modules/magics_metgram
+   modules/magics_toolbox
+
+Modules
+=======
 
 
 Indices and tables
