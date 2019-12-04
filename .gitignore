@@ -6,3 +6,14 @@ magics/__pycache__
 *.pyc
 build
 dist
+
+# Ignore local virtual environment
+venv/
+
+# Ignore static typing
+.pytype
+
+
+# Docs
+docs/build
+docs/_build
