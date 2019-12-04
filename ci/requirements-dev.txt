@@ -12,3 +12,4 @@ tox-pyenv
 wheel
 zest.releaser
 black
+sphinx_rtd_theme
