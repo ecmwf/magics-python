@@ -12,3 +12,4 @@ tox-pyenv
 wheel
 zest.releaser
 black
+sphinxcontrib-restbuilder
