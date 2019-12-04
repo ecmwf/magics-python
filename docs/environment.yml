@@ -1,4 +1,7 @@
+name: magicsenv
 channels:
+  - defaults
   - conda-forge
 dependencies:
   - magics
+  - sphinx_rtd_theme
