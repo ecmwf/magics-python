@@ -78,15 +78,19 @@ you already have `virtualenv` and `Git` installed and ready to go.
 
     $ tox
 
-8. If your contribution is a bug fix or new feature, you should add a test to the existing test suite.
+9. If your contribution is a bug fix or new feature, you should add a test to the existing test suite.
 
-9. Commit your changes and push your branch to GitHub::
+10. Format your Python code with the Black auto-formatter, to ensure the code is uses the library's style. We use the default Black configuration (88 lines per character and `"` instead of `'` for string encapsulation)::
+
+    $ black .
+
+11. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-10. Submit a pull request through the GitHub website.
+12. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
