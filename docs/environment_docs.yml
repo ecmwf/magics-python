@@ -1,6 +1,7 @@
-name: magicsenv
+name: magics
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - magics
   - sphinx
