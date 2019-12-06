@@ -19,6 +19,3 @@ sphinx:
 # Conda is a build requirement for the docs
 conda:
   environment: docs/environment_docs.yml
-
-# Optionally build your docs in additional formats such as PDF and ePub
-formats: all
