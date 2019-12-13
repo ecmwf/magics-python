@@ -490,18 +490,21 @@ class Action(object):
             return Magics.metainput()
 
 
-def encode_numpy(object):
+def encode_numpy(np_obj):
     """
     Encode numpy objects to their python equivalents.
     e.g. numpy.int32 -> int
 
     This is necessary because json is unable to serialize numpy types natively.
     """
-    if type(object).__module__ == numpy.__name__:
-        return object.item()
+    if isinstance(np_obj, numpy.ndarray):
+        # Nested array elements are cast from numpy.generic to Python object
+        return np_obj.tolist()
+    elif isinstance(np_obj, numpy.generic):
+        return np_obj.item()
     else:
         raise TypeError(
-            "Object of type '{}' is not JSON serializable".format(type(object))
+            "Object of type '{}' is not JSON serializable".format(type(np_obj))
         )
 
 
