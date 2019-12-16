@@ -2,7 +2,7 @@
 Magics is the latest generation of the ECMWF's meteorological plotting software and can be either
 accessed directly through its Python or Fortran interfaces or by using Metview.
 
-|Travis Build| |Appveyor Build|
+|Travis Build| |Appveyor Build| |ReadTheDocs Build|
 
 Features:
 
@@ -120,3 +120,6 @@ limitations under the License.
    :target: https://travis-ci.org/ecmwf/magics-python/branches
 .. |Appveyor Build| image:: https://img.shields.io/appveyor/ci/ecmwf/magics-python/master.svg?logo=appveyor
    :target: https://ci.appveyor.com/project/ecmwf/magics-python/branch/master
+.. |ReadTheDocs Build| image:: https://readthedocs.org/projects/magics-python/badge/?version=latest
+    :target: https://magics-python.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
