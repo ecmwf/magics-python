@@ -217,7 +217,6 @@ def coast():
     return dll.py_coast()
 
 
-
 ####################################################################
 @checked_return_code
 def grib():
