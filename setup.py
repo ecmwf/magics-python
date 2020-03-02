@@ -25,7 +25,7 @@ def read(fname):
     return io.open(file_path, encoding="utf-8").read()
 
 
-version = "1.1.1"
+version = "1.1.2"
 
 
 setuptools.setup(
@@ -43,7 +43,7 @@ setuptools.setup(
     tests_require=["pytest",],
     test_suite="tests",
     zip_safe=True,
-    keywords="magics grib",
+    keywords="magics visualisation meteorology grib netcdf bufr",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
