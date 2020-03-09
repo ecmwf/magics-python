@@ -7,6 +7,7 @@ sudo: false
 branches:
   only:
     - master
+    - /^\d+\.\d+\.\d+$/
 
 language: python
 

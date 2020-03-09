@@ -1,0 +1,765 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/sylvie/git/magics",
+		"/Users/sylvie/build/magics"
+	],
+	"file_history":
+	[
+		"/Users/sylvie/git/magics/requirements.txt",
+		"/Users/sylvie/git/magics/Makefile",
+		"/Users/sylvie/git/magics/hooks/env",
+		"/Users/sylvie/git/magics/hooks/build",
+		"/Users/sylvie/git/magics/Dockerfile",
+		"/Users/sylvie/git/cds-puppet/modules/cds/manifests/profiles/dask/jupyterhub.pp",
+		"/Users/sylvie/git/magics-bundle/CMakeLists.txt",
+		"/Users/sylvie/git/magics/python/CMakeLists.txt",
+		"/Users/sylvie/git/magics/CMakeLists.txt",
+		"/Users/sylvie/git/magics/cmake/FindJinja2.cmake",
+		"/Users/sylvie/git/magics/cmake/Find Results",
+		"/Users/sylvie/git/magics/tools/xml2cc_mv.py",
+		"/Users/sylvie/git/magics/tools/xml2cc.py"
+	],
+	"find":
+	{
+		"height": 28.0
+	},
+	"find_in_files":
+	{
+		"height": 104.0,
+		"where_history":
+		[
+			"*.cc, *.h",
+			"CMak*",
+			"*.h, *.cc",
+			"*.h",
+			"Net*.h, Net*.cc",
+			"*.h, *.cc",
+			"Netcdf*.cc",
+			"*.cc",
+			"params/*.xml",
+			"Legend*.cc, Legen*.h",
+			"Legend*.cc, *.h",
+			"*.cc, *.h",
+			"params/Con*.xml",
+			"Con*.xml",
+			"*.xml",
+			"sty*.json",
+			"*.json",
+			"*.h",
+			"*.cc",
+			"*.cc, *.h",
+			"*.xml",
+			"*.cc",
+			"*.xml",
+			"styles*.json",
+			"*.json",
+			"*.py",
+			"params/*",
+			"regression/*",
+			"gallery/*.py"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"polar",
+			"polat",
+			"cout",
+			"!helper_",
+			"helper_.",
+			"helper_.va",
+			"helper",
+			"valid",
+			"ProjP",
+			"proj4",
+			"DEG",
+			"ProjP",
+			"ProjP.h",
+			"projP.h",
+			"proj_api.h",
+			"proj4",
+			"latlon",
+			"ProjPolar",
+			"ProjP",
+			"ProjProjection",
+			"Proj4P",
+			"DEG",
+			"pj_t",
+			"pj_c",
+			"pj_init",
+			"DEG_TO_RAD",
+			"DEG",
+			"Proj4",
+			"Proj4P",
+			"proj",
+			"Proj",
+			"proj_api.h",
+			"PROJ",
+			"proj4",
+			"TILE",
+			"::find",
+			"firsrt",
+			"firts(",
+			"first(",
+			" method_",
+			"method_",
+			"Method_",
+			"Netcdfdata",
+			"::first(",
+			"setFirstPoint(",
+			"first(",
+			"first_",
+			"first",
+			"::setDimension",
+			"setDimension",
+			"get",
+			"Dimension",
+			"ECCODES_VERSION",
+			"catch",
+			"value",
+			"mtile",
+			"frequency",
+			"fre",
+			"label",
+			"lavel",
+			"freq",
+			"fre",
+			"frequency",
+			"fre",
+			"font_dimension",
+			"font_size",
+			"ratio_",
+			"ratio",
+			"text_font",
+			"text",
+			"automatic",
+			"automating",
+			"sh_all_fM48t56i4",
+			"MagDef",
+			"SKINNY",
+			"static ",
+			"skinny",
+			"popen",
+			"opoen",
+			"cout",
+			"adding ",
+			"adding Pa",
+			"\"adding Paper",
+			"magics.h",
+			"popen ",
+			"MagicsGlobal",
+			"silent",
+			"silent_",
+			"legend_text",
+			"contour_legend_text",
+			"lcc",
+			"total",
+			"Can not open",
+			"Can not open Shapefile",
+			"coordinates",
+			"projection_coor",
+			"mnet",
+			"mcont",
+			"netcdf",
+			"Netcdf",
+			"::decode"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"ProjP.h",
+			"Proj4Polar",
+			"Proj4Projection",
+			"ProjP"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"default_dir": "/Users/sylvie/git/magics",
+							"git_gutter_is_enabled": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "magics-python.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"magics/src/params/SimplePolyline.xml"
+			],
+			[
+				"p",
+				"magics/project_summary.cmake"
+			],
+			[
+				"Orca",
+				"magics/src/decoders/NetcdfOrcaInterpretor.cc"
+			],
+			[
+				"Simplexml",
+				"magics/src/params/SimplePolyline.xml"
+			],
+			[
+				"Proj4",
+				"magics/src/common/Proj4Projection.cc"
+			],
+			[
+				"polar",
+				"magics/toolsjs/polar.html"
+			],
+			[
+				"epsg",
+				"magics/share/magics/epsg.json"
+			],
+			[
+				"Proj",
+				"magics/src/common/ProjP.cc"
+			],
+			[
+				"Proj4P",
+				"magics/src/common/Proj4Projection.cc"
+			],
+			[
+				"Projj",
+				"magics/src/common/Proj4Projection.cc"
+			],
+			[
+				"Projp",
+				"magics/src/common/Proj4Projection.h"
+			],
+			[
+				"epsg.",
+				"magics/share/magics/epsg.json"
+			],
+			[
+				"ProjP",
+				"magics/src/common/ProjP.cc"
+			],
+			[
+				"Cmake",
+				"magics/CMakeLists.txt"
+			],
+			[
+				"eckitC",
+				"magics/src/eckit_readers/CMakeLists.txt"
+			],
+			[
+				"NetcdfG",
+				"magics/src/decoders/NetcdfGeoMatrixInterpretor.h"
+			],
+			[
+				"NetcdfGeM",
+				"magics/src/decoders/NetcdfGeoMatrixInterpretor.cc"
+			],
+			[
+				"GribRe",
+				"magics/src/decoders/GribRegularInterpretor.cc"
+			],
+			[
+				"Geo",
+				"magics/src/decoders/GeoPointsDecoder.cc"
+			],
+			[
+				"GeoP",
+				"magics/src/decoders/GeoPointsDecoder.h"
+			],
+			[
+				"POlar",
+				"magics/src/common/PolarStereographicProjection.cc"
+			],
+			[
+				"WebF",
+				"magics/src/basic/WebFormat.h"
+			],
+			[
+				"Matr",
+				"magics/src/common/MatrixHandler.h"
+			],
+			[
+				"Matrix",
+				"magics/src/common/Matrix.h"
+			],
+			[
+				"mag",
+				"magics/src/magics.h"
+			],
+			[
+				"Matrix.cc",
+				"magics/src/common/Matrix.cc"
+			],
+			[
+				"Pr4P",
+				"magics/src/params/Proj4Projection.xml"
+			],
+			[
+				"Projcc",
+				"magics/src/common/ProjP.cc"
+			],
+			[
+				"Fortxml",
+				"magics/src/params/FortranViewNode.xml"
+			],
+			[
+				"GribR",
+				"magics/src/decoders/GribRegularInterpretor.cc"
+			],
+			[
+				"GeoPoint",
+				"magics/src/decoders/GeoPointsDecoder.h"
+			],
+			[
+				"magics",
+				"magics/src/magics.h"
+			],
+			[
+				"Polar",
+				"magics/src/common/PolarStereographicProjection.cc"
+			],
+			[
+				"NetcdGe",
+				"magics/src/decoders/NetcdfGeoMatrixInterpretor.h"
+			],
+			[
+				"NetcdG",
+				"magics/src/params/NetcdfGuessInterpretor.xml"
+			],
+			[
+				"commCma",
+				"magics/src/common/CMakeLists.txt"
+			],
+			[
+				"commonCMa",
+				"magics/src/common/CMakeLists.txt"
+			],
+			[
+				"Tile",
+				"magics/src/params/TileDecoder.xml"
+			],
+			[
+				"Net",
+				"magics/src/decoders/NetcdfData.cc"
+			],
+			[
+				"NetcdfDa",
+				"magics/src/decoders/NetcdfData.h"
+			],
+			[
+				"NetcdfDecoder.h",
+				"magics/src/decoders/NetcdfDecoder.h"
+			],
+			[
+				"NetcdfD",
+				"magics/src/decoders/NetcdfData.cc"
+			],
+			[
+				"Netcdf",
+				"magics/src/decoders/NetcdfDecoder.cc"
+			],
+			[
+				"tile",
+				"magics/src/decoders/TileDecoder.cc"
+			],
+			[
+				"Transf",
+				"magics/src/common/Transformation.h"
+			],
+			[
+				"Transformation.cc",
+				"magics/src/common/Transformation.cc"
+			],
+			[
+				"CMake",
+				"magics/CMakeLists.txt"
+			],
+			[
+				"Ge",
+				"magics/src/web/GeoJSon.cc"
+			],
+			[
+				"GeoJS",
+				"magics/src/web/GeoJSon.cc"
+			],
+			[
+				"Simple",
+				"magics/src/visualisers/SimplePolylineVisualiser.cc"
+			],
+			[
+				"gallege",
+				"magics/regression/gallery/geojson_multilines.py"
+			],
+			[
+				"galleryge",
+				"magics/regression/gallery/geojson_input.py"
+			],
+			[
+				"Do",
+				"magics/Dockerfile"
+			],
+			[
+				"D",
+				"magics/Dockerfile"
+			],
+			[
+				"Tilede",
+				"magics/src/decoders/TileDecoder.cc"
+			],
+			[
+				"netcdfda",
+				"magics/src/decoders/NetcdfData.h"
+			],
+			[
+				"gradients",
+				"magics/regression/gallery/gradients.py"
+			],
+			[
+				"Le",
+				"magics/src/params/LegendVisitor.xml"
+			],
+			[
+				"Ver",
+				"magics/VERSION.cmake"
+			],
+			[
+				"LegendV",
+				"magics/src/params/LegendVisitorAttributes.cc"
+			],
+			[
+				"LegendVa",
+				"magics/src/params/LegendVisitorAttributes.h"
+			],
+			[
+				"LegendVisitor",
+				"magics/src/basic/LegendVisitor.h"
+			],
+			[
+				"Contour",
+				"magics/src/visualisers/Contour.cc"
+			],
+			[
+				"Legend",
+				"magics/src/params/LegendVisitor.xml"
+			],
+			[
+				"Pol",
+				"magics/src/common/Polyline.h"
+			],
+			[
+				"Sce",
+				"magics/src/basic/SceneNode.cc"
+			],
+			[
+				"P",
+				"magics/src/common/Polyline.cc"
+			],
+			[
+				"Cont",
+				"magics/src/visualisers/Contour.h"
+			],
+			[
+				"Poly",
+				"magics/src/common/Polyline.cc"
+			],
+			[
+				"Polyline.h",
+				"magics/src/common/Polyline.h"
+			],
+			[
+				"Fortran",
+				"magics/src/basic/FortranMagics.h"
+			],
+			[
+				"magics.h",
+				"magics/src/magics.h"
+			],
+			[
+				"FortranMa",
+				"magics/src/basic/FortranMagics.cc"
+			],
+			[
+				"Scene",
+				"magics/src/basic/SceneNode.cc"
+			],
+			[
+				"FortranN",
+				"magics/src/params/FortranSceneNode.xml"
+			],
+			[
+				"LegendVis",
+				"magics/src/basic/LegendVisitor.cc"
+			],
+			[
+				"contour",
+				"magics/src/visualisers/Contour.cc"
+			],
+			[
+				"C",
+				"magics/CMakeLists.txt"
+			],
+			[
+				"Shape",
+				"magics/src/decoders/ShapeDecoder.cc"
+			],
+			[
+				"CoastPl",
+				"magics/src/visualisers/CoastPlotting.cc"
+			],
+			[
+				"Sha",
+				"magics/src/decoders/ShapeDecoder.cc"
+			],
+			[
+				"gallery",
+				"magics/regression/gallery/contour16.py"
+			],
+			[
+				"NetcdfM",
+				"magics/src/decoders/NetcdfMatrixInterpretor.cc"
+			],
+			[
+				"NetcdfI",
+				"magics/src/decoders/NetcdfInterpretor.cc"
+			],
+			[
+				"build",
+				"modules/mars/manifests/client/build.pp"
+			],
+			[
+				"daskrequ",
+				"modules/cds/files/dask/requirements.txt"
+			],
+			[
+				"eccod",
+				"modules/cds/manifests/profiles/compute/ecmwf/eccodes.pp"
+			],
+			[
+				"magcs",
+				"modules/cds/manifests/profiles/compute/ecmwf/magics.pp"
+			],
+			[
+				"magi",
+				"modules/cds/manifests/profiles/compute/ecmwf/magics.pp"
+			],
+			[
+				"keys",
+				"modules/cds/manifests/profiles/common/sshkeys.pp"
+			],
+			[
+				"macro",
+				"python/Magics/macro.py"
+			],
+			[
+				"InputMatrix",
+				"src/decoders/InputMatrix.cc"
+			],
+			[
+				"t250",
+				"share/magics/styles/ecmwf/t250.json"
+			],
+			[
+				"macr",
+				"python/Magics/macro.py"
+			],
+			[
+				"Magics",
+				"src/common/MagicsCalls.cc"
+			],
+			[
+				"magics.",
+				"python/Magics.py.in"
+			],
+			[
+				"Magics.py",
+				"python/Magics.py.in"
+			],
+			[
+				"MagicsC",
+				"src/common/MagicsCalls.cc"
+			],
+			[
+				"Fortra",
+				"src/basic/FortranMagics.h"
+			],
+			[
+				"magicsa",
+				"src/common/magics_api.h"
+			],
+			[
+				"pythoCMa",
+				"python/CMakeLists.txt"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/git/magics/magics.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 235.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
