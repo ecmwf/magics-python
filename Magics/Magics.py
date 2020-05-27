@@ -217,6 +217,10 @@ def coast():
     return dll.py_coast()
 
 
+
+
+
+
 ####################################################################
 @checked_return_code
 def grib():
@@ -654,6 +658,22 @@ def no_log(a, b):
     print(
         "Log listeners not handled in this version, consider using a version > 4.0.0 "
     )
+def not_implemented():
+    print(
+        "Not Implemented, consider upgrading a version > 4.4.0 "
+    )
+
+try:
+    set_python = dll.py_set_python()
+    keep_compatibility = dll.py_keep_compatibility()
+    mute = dll.py_mute()
+    unmute = dll.py_unmute()
+except:
+    set_python = not_implemented
+    keep_compatibility = not_implemented
+    mute = not_implemented
+    unmute = not_implemented
+
 
 
 log = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, c_char_p)

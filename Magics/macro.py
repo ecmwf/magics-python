@@ -17,12 +17,13 @@ from . import Magics
 class Context(object):
     def __init__(self):
         self.tmp = []
+        Magics.set_python()
         self.silent = True
 
     def set(self):
         if self.silent:
-            Magics.setc("magics_silent", "on")
             os.environ["MAGPLUS_WARNING"] = "off"
+            Magics.mute()
         else:
             os.environ["MAGPLUS_INFO"] = "on"
 
@@ -32,8 +33,14 @@ global context
 context = Context()
 
 
-def silent():
+def unmute():
     context.silent = False
+
+def mute():
+    context.silent = True
+
+def keep_compatibility():
+    Magics.keep_compatibility()
 
 
 @Magics.log
