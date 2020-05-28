@@ -665,9 +665,20 @@ def not_implemented():
 
 try:
     set_python = dll.py_set_python()
+    set_python.restype = None
+    set_python.argtypes = None
+
     keep_compatibility = dll.py_keep_compatibility()
+    keep_compatibility.restype = None
+    keep_compatibility.argtypes = None
+
     mute = dll.py_mute()
+    mute.restype = None
+    mute.argtypes = None
+    
     unmute = dll.py_unmute()
+    unmute.restype = None
+    unmute.argtypes = None
 except:
     set_python = not_implemented
     keep_compatibility = not_implemented
