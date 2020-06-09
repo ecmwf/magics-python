@@ -33,6 +33,9 @@ global context
 context = Context()
 
 
+def silent():
+    context.silent = False
+
 def unmute():
     context.silent = False
 

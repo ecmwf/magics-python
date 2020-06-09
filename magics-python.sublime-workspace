@@ -13,6 +13,33 @@
 				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "Magics/macro.py",
+			"settings":
+			{
+				"buffer_size": 30952,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Magics/Magics.py",
+			"settings":
+			{
+				"buffer_size": 15392,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 10 files for \"xarray\"\n\n/Users/sylvie/git/magics-python/Magics/macro.py:\n  513  \n  514  \n  515: def detect_lat_lon(xarray_dataset, ds_attributes):\n  516      attrs = {\n  517:         ds_attribute: xarray_dataset[ds_attribute].attrs\n  518          for ds_attribute in ds_attributes\n  519      }\n  ...\n  523  \n  524  \n  525: def mxarray(xarray_dataset, xarray_variable_name, xarray_dimension_settings={}):\n  526      \"\"\"\n  527:     Convert an xarray dataset containing a variable with latitude and longitude data into\n  528      magics.minput.\n  529      \"\"\"\n  530:     # usually we find latitude and longitude in xarray_dataset.coords, but we sometimes see 2d\n  531:     # lat/lon data in xarray_dataset.data_vars instead.\n  532:     for ds_attributes in [xarray_dataset.coords, xarray_dataset.data_vars]:\n  533:         ret = _mxarray(\n  534:             xarray_dataset,\n  535:             xarray_variable_name,\n  536              ds_attributes,\n  537:             xarray_dimension_settings,\n  538          )\n  539          if ret:\n  ...\n  543  \n  544  \n  545: def _mxarray(\n  546:     xarray_dataset, xarray_variable_name, ds_attributes, xarray_dimension_settings\n  547  ):\n  548:     lat_name, lon_name = detect_lat_lon(xarray_dataset, ds_attributes)\n  549  \n  550      if lat_name and lon_name:\n  551:         lat_dim_names = sorted(xarray_dataset[lat_name].dims)\n  552:         lon_dim_names = sorted(xarray_dataset[lon_name].dims)\n  553          n_lat_dims = len(lat_dim_names)\n  554          n_lon_dims = len(lon_dim_names)\n  ...\n  560              )\n  561          elif n_lat_dims == 1:\n  562:             return _mxarray_1d(\n  563:                 xarray_dataset,\n  564:                 xarray_variable_name,\n  565                  lat_name,\n  566                  lon_name,\n  567:                 xarray_dimension_settings,\n  568              )\n  569          elif n_lat_dims == 2:\n  570:             return _mxarray_2d(\n  571:                 xarray_dataset,\n  572:                 xarray_variable_name,\n  573                  lat_name,\n  574                  lon_name,\n  575:                 xarray_dimension_settings,\n  576                  lat_dim_names,\n  577              )\n  ...\n  583  \n  584  \n  585: def _mxarray_1d(\n  586:     xarray_dataset, xarray_variable_name, lat_name, lon_name, xarray_dimension_settings\n  587  ):\n  588:     lat = xarray_dataset[lat_name].values.astype(numpy.float64)\n  589:     lon = xarray_dataset[lon_name].values.astype(numpy.float64)\n  590:     input_field_values = _mxarray_flatten(\n  591:         xarray_dataset[xarray_variable_name],\n  592:         xarray_dimension_settings,\n  593          [lat_name, lon_name],\n  594      ).values.astype(numpy.float64)\n  ...\n  598          input_latitudes_list=lat,\n  599          input_longitudes_list=lon,\n  600:         input_metadata=dict(xarray_dataset[xarray_variable_name].attrs),\n  601      )\n  602      return data\n  603  \n  604  \n  605: def _mxarray_2d(\n  606:     xarray_dataset,\n  607:     xarray_variable_name,\n  608      lat_name,\n  609      lon_name,\n  610:     xarray_dimension_settings,\n  611      dims_to_ignore,\n  612  ):\n  613:     lat = xarray_dataset[lat_name].values.astype(numpy.float64)\n  614:     lon = xarray_dataset[lon_name].values.astype(numpy.float64)\n  615:     input_field_values = _mxarray_flatten(\n  616:         xarray_dataset[xarray_variable_name], xarray_dimension_settings, dims_to_ignore\n  617      ).values.astype(numpy.float64)\n  618  \n  ...\n  622          input_field_latitudes=lat,\n  623          input_field_longitudes=lon,\n  624:         input_metadata=dict(xarray_dataset[xarray_variable_name].attrs),\n  625      )\n  626      return data\n  627  \n  628  \n  629: def _mxarray_flatten(xarray_dataset, dims_to_flatten, dims_to_ignore):\n  630      # flatten an nD matrix into a 2d matrix by slicing the matrix based on the values given to\n  631      # dimensions in dims_to_flatten.\n  632:     for dim in xarray_dataset.dims:\n  633          if dim in dims_to_ignore:\n  634              continue\n  635          elif dim in dims_to_flatten:\n  636:             if dims_to_flatten[dim] not in xarray_dataset[dim]:\n  637                  raise ValueError(\n  638                      \"Dimension not valid. dimension={} dtype={} options={} dtype={}\".format(\n  639                          dim,\n  640                          type(dim),\n  641:                         xarray_dataset[dim].values,\n  642:                         xarray_dataset[dim].dtype,\n  643                      )\n  644                  )\n  645              else:\n  646:                 xarray_dataset = xarray_dataset.loc[{dim: dims_to_flatten[dim]}]\n  647:         elif xarray_dataset[dim].size == 1:\n  648              # automatically squash this dimension\n  649:             d = xarray_dataset[dim].values[0]\n  650              print(\"automatically squashing dimension: {}={}\".format(dim, d))\n  651:             xarray_dataset = xarray_dataset.loc[{dim: d}]\n  652          else:\n  653              raise ValueError(\n  ...\n  655                  \"Please pick a dimension from which to slice data. \"\n  656                  \"dimension={} options={} dtype={}\".format(\n  657:                     dim, xarray_dataset[dim].values, xarray_dataset[dim].dtype\n  658                  )\n  659              )\n  660:     return xarray_dataset\n  661  \n  662  \n\n69 matches in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 5370,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
 		}
 	],
 	"build_system": "",
@@ -51,8 +78,8 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/sylvie/git/magics",
-		"/Users/sylvie/build/magics"
+		"/Users/sylvie/git/magics-python",
+		"/Users/sylvie/git/magics-python/Magics"
 	],
 	"file_history":
 	[
@@ -72,13 +99,14 @@
 	],
 	"find":
 	{
-		"height": 28.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
 		"height": 104.0,
 		"where_history":
 		[
+			"*.py",
 			"*.cc, *.h",
 			"CMak*",
 			"*.h, *.cc",
@@ -115,6 +143,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"NotIM",
+			"metada",
+			"xarray",
 			"polar",
 			"polat",
 			"cout",
@@ -237,7 +268,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -266,7 +297,391 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Magics/macro.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 30952,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20710,
+								20716
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Magics/Magics.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15392,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14079,
+								14079
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 11302.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"file": "x.py.png",
+					"semi_transient": true,
+					"stack_index": 2,
+					"type": "image"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5370,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										124,
+										130
+									],
+									[
+										206,
+										212
+									],
+									[
+										337,
+										343
+									],
+									[
+										344,
+										350
+									],
+									[
+										360,
+										366
+									],
+									[
+										382,
+										388
+									],
+									[
+										450,
+										456
+									],
+									[
+										621,
+										627
+									],
+									[
+										697,
+										703
+									],
+									[
+										764,
+										770
+									],
+									[
+										787,
+										793
+									],
+									[
+										837,
+										843
+									],
+									[
+										864,
+										870
+									],
+									[
+										899,
+										905
+									],
+									[
+										974,
+										980
+									],
+									[
+										1076,
+										1082
+									],
+									[
+										1095,
+										1101
+									],
+									[
+										1111,
+										1117
+									],
+									[
+										1148,
+										1154
+									],
+									[
+										1231,
+										1237
+									],
+									[
+										1345,
+										1351
+									],
+									[
+										1414,
+										1420
+									],
+									[
+										1631,
+										1637
+									],
+									[
+										1665,
+										1671
+									],
+									[
+										1704,
+										1710
+									],
+									[
+										1815,
+										1821
+									],
+									[
+										1928,
+										1934
+									],
+									[
+										1962,
+										1968
+									],
+									[
+										2001,
+										2007
+									],
+									[
+										2112,
+										2118
+									],
+									[
+										2233,
+										2239
+									],
+									[
+										2255,
+										2261
+									],
+									[
+										2271,
+										2277
+									],
+									[
+										2313,
+										2319
+									],
+									[
+										2366,
+										2372
+									],
+									[
+										2437,
+										2443
+									],
+									[
+										2525,
+										2531
+									],
+									[
+										2556,
+										2562
+									],
+									[
+										2571,
+										2577
+									],
+									[
+										2609,
+										2615
+									],
+									[
+										2839,
+										2845
+									],
+									[
+										2854,
+										2860
+									],
+									[
+										2949,
+										2955
+									],
+									[
+										2971,
+										2977
+									],
+									[
+										2998,
+										3004
+									],
+									[
+										3073,
+										3079
+									],
+									[
+										3154,
+										3160
+									],
+									[
+										3225,
+										3231
+									],
+									[
+										3313,
+										3319
+									],
+									[
+										3344,
+										3350
+									],
+									[
+										3359,
+										3365
+									],
+									[
+										3382,
+										3388
+									],
+									[
+										3600,
+										3606
+									],
+									[
+										3615,
+										3621
+									],
+									[
+										3710,
+										3716
+									],
+									[
+										3725,
+										3731
+									],
+									[
+										3943,
+										3949
+									],
+									[
+										4127,
+										4133
+									],
+									[
+										4398,
+										4404
+									],
+									[
+										4457,
+										4463
+									],
+									[
+										4586,
+										4592
+									],
+									[
+										4603,
+										4609
+									],
+									[
+										4671,
+										4677
+									],
+									[
+										4782,
+										4788
+									],
+									[
+										4915,
+										4921
+									],
+									[
+										4932,
+										4938
+									],
+									[
+										5199,
+										5205
+									],
+									[
+										5227,
+										5233
+									],
+									[
+										5317,
+										5323
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								126,
+								126
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -321,8 +736,16 @@
 		"selected_items":
 		[
 			[
+				"Magics.py",
+				"Magics/Magics.py"
+			],
+			[
 				"",
-				"magics/src/params/SimplePolyline.xml"
+				"Magics/macro.py"
+			],
+			[
+				"macro",
+				"Magics/macro.py"
 			],
 			[
 				"p",
@@ -681,10 +1104,6 @@
 				"modules/cds/manifests/profiles/common/sshkeys.pp"
 			],
 			[
-				"macro",
-				"python/Magics/macro.py"
-			],
-			[
 				"InputMatrix",
 				"src/decoders/InputMatrix.cc"
 			],
@@ -702,10 +1121,6 @@
 			],
 			[
 				"magics.",
-				"python/Magics.py.in"
-			],
-			[
-				"Magics.py",
 				"python/Magics.py.in"
 			],
 			[
