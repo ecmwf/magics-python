@@ -900,6 +900,11 @@ def wmsstyles(data):
         return {}
 
 
+def known_drivers() :
+    
+    return Magics.known_drivers()
+
+
 def version():
     version = Magics.version()
     return version.decode()

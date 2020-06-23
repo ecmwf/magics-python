@@ -16,6 +16,7 @@ import os
 import numpy as np
 from numpy.ctypeslib import ndpointer
 from functools import partial
+import json
 
 #
 #  This Python interface needs to find the Magics library
@@ -253,6 +254,8 @@ home.argtypes = None
 metanetcdf = dll.py_metanetcdf
 metanetcdf.restype = ctypes.c_char_p
 metanetcdf.argtypes = None
+
+
 
 detect = dll.detect
 detect.restype = ctypes.c_char_p
@@ -563,6 +566,14 @@ def seti(name, value):
     name = string_to_char(name)
     return dll.py_seti(name, value)
 
+def known_drivers():
+    try :
+        drivers = dll.py_knowndrivers()
+        drivers = json.loads(drivers.decode())
+        
+        return drivers["drivers"]
+    except:
+        return "known_drivers is not implemented in this version"
 
 ####################################################################
 @checked_return_code
@@ -680,12 +691,17 @@ try:
     unmute = dll.py_unmute
     unmute.restype = None
     unmute.argtypes = None
+
+    knowndrivers = dll.py_knowndrivers
+    knowndrivers.restype = ctypes.c_char_p
+    knowndrivers.argtypes = None
+
 except:
     set_python = not_implemented
     keep_compatibility = not_implemented
     mute = not_implemented
     unmute = not_implemented
-
+    knowndrivers = not_implemented
 
 
 log = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, c_char_p)
