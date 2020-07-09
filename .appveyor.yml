@@ -62,4 +62,5 @@ test_script:
   - cmd: cd %MAGICS_PYTHON_TESTS%
   - cmd: set PYTHONPATH=%PYTHONPATH%;%MAGICS_PYTHON_SRC%
   - cmd: set REGRESSION_MODE=off
+  - cmd: set PWD=%MAGICS_PYTHON_TESTS%
   - cmd: pytest
