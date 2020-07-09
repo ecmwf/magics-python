@@ -21,7 +21,8 @@ env:
   global:
     - MAGICS_PYTHON_SRC=${TRAVIS_BUILD_DIR}
     - MAGICS_CXX_SRC=${MAGICS_PYTHON_SRC}/../magics
-    - MAGICS_PYTHON_TESTS=${MAGICS_CXX_SRC}/test/python
+    - MAGICS_TESTS_SRC=${MAGICS_PYTHON_SRC}/../magics-test
+    - MAGICS_PYTHON_TESTS=${MAGICS_TESTS_SRC}/test
     - PYTHONPATH=${PYTHONPATH}:${MAGICS_PYTHON_SRC}:.
 
 git:
@@ -43,6 +44,7 @@ before_install:
 install:
   # get magics-cxx for the test/python test scripts
   - git clone --depth 1 https://github.com/ecmwf/magics.git ${MAGICS_CXX_SRC}
+  - git clone --depth 1 https://github.com/ecmwf/magics-test.git ${MAGICS_TESTS_SRC}
   # install deps
   - conda install xarray scipy cftime
   - conda install -c conda-forge magics pytest black
@@ -56,6 +58,7 @@ install:
 script:
   - cd ${MAGICS_PYTHON_SRC}
   - black --check .
+  - cd ${MAGICS_TESTS_SRC}
   - pytest
 
 deploy:
