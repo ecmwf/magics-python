@@ -35,6 +35,7 @@ init:
 
 clone_folder: $(MAGICS_PYTHON_SRC)
 
+
 clone_depth: 1
 
 # scripts that run after cloning repository
