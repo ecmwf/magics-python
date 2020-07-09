@@ -897,6 +897,7 @@ def wmsstyles(data):
         styles = json.loads(styles.decode())
         return styles
     except:
+        Magics.finalize()
         return {}
 
 

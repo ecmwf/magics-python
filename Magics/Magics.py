@@ -255,6 +255,13 @@ metanetcdf = dll.py_metanetcdf
 metanetcdf.restype = ctypes.c_char_p
 metanetcdf.argtypes = None
 
+metagrib = dll.py_metagrib
+metagrib.restype = ctypes.c_char_p
+metagrib.argtypes = None
+
+metainput = dll.py_metainput
+metainput.restype = ctypes.c_char_p
+metainput.argtypes = None
 
 
 detect = dll.detect
