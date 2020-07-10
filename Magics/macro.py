@@ -36,11 +36,14 @@ context = Context()
 def silent():
     context.silent = False
 
+
 def unmute():
     context.silent = False
 
+
 def mute():
     context.silent = True
+
 
 def keep_compatibility():
     Magics.keep_compatibility()
@@ -901,8 +904,8 @@ def wmsstyles(data):
         return {}
 
 
-def known_drivers() :
-    
+def known_drivers():
+
     return Magics.known_drivers()
 
 

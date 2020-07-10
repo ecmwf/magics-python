@@ -218,10 +218,6 @@ def coast():
     return dll.py_coast()
 
 
-
-
-
-
 ####################################################################
 @checked_return_code
 def grib():
@@ -573,14 +569,16 @@ def seti(name, value):
     name = string_to_char(name)
     return dll.py_seti(name, value)
 
+
 def known_drivers():
-    try :
+    try:
         drivers = dll.py_knowndrivers()
         drivers = json.loads(drivers.decode())
-        
+
         return drivers["drivers"]
     except:
         return "known_drivers is not implemented in this version"
+
 
 ####################################################################
 @checked_return_code
@@ -676,10 +674,10 @@ def no_log(a, b):
     print(
         "Log listeners not handled in this version, consider using a version > 4.0.0 "
     )
+
+
 def not_implemented():
-    print(
-        "Not Implemented, consider upgrading a version > 4.4.0 "
-    )
+    print("Not Implemented, consider upgrading a version > 4.4.0 ")
 
 
 try:
