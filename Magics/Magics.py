@@ -16,6 +16,7 @@ import os
 import numpy as np
 from numpy.ctypeslib import ndpointer
 from functools import partial
+import json
 
 #
 #  This Python interface needs to find the Magics library
@@ -249,6 +250,15 @@ home.argtypes = None
 metanetcdf = dll.py_metanetcdf
 metanetcdf.restype = ctypes.c_char_p
 metanetcdf.argtypes = None
+
+metagrib = dll.py_metagrib
+metagrib.restype = ctypes.c_char_p
+metagrib.argtypes = None
+
+metainput = dll.py_metainput
+metainput.restype = ctypes.c_char_p
+metainput.argtypes = None
+
 
 detect = dll.detect
 detect.restype = ctypes.c_char_p
@@ -560,6 +570,16 @@ def seti(name, value):
     return dll.py_seti(name, value)
 
 
+def known_drivers():
+    try:
+        drivers = dll.py_knowndrivers()
+        drivers = json.loads(drivers.decode())
+
+        return drivers["drivers"]
+    except:
+        return "known_drivers is not implemented in this version"
+
+
 ####################################################################
 @checked_return_code
 def set1i(name, data):
@@ -654,6 +674,39 @@ def no_log(a, b):
     print(
         "Log listeners not handled in this version, consider using a version > 4.0.0 "
     )
+
+
+def not_implemented():
+    print("Not Implemented, consider upgrading a version > 4.4.0 ")
+
+
+try:
+    set_python = dll.py_set_python
+    set_python.restype = None
+    set_python.argtypes = None
+
+    keep_compatibility = dll.py_keep_compatibility
+    keep_compatibility.restype = None
+    keep_compatibility.argtypes = None
+
+    mute = dll.py_mute
+    mute.restype = None
+    mute.argtypes = None
+
+    unmute = dll.py_unmute
+    unmute.restype = None
+    unmute.argtypes = None
+
+    knowndrivers = dll.py_knowndrivers
+    knowndrivers.restype = ctypes.c_char_p
+    knowndrivers.argtypes = None
+
+except:
+    set_python = not_implemented
+    keep_compatibility = not_implemented
+    mute = not_implemented
+    unmute = not_implemented
+    knowndrivers = not_implemented
 
 
 log = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, c_char_p)
