@@ -27,6 +27,13 @@ import json
 #  on MacOS the DYLD_LIBRARY_PATH or for *.dylib.
 #
 lib = None
+
+try:
+   import ecmwflibs
+   lib = ecmwflibs.find("MagPlus")
+except Exception:
+   pass
+
 if sys.platform == "darwin":
     for directory in os.environ.get("DYLD_LIBRARY_PATH", "").split(":"):
         fullname = os.path.join(directory, "libMagPlus.dylib")
