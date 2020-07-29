@@ -29,10 +29,11 @@ import json
 lib = None
 
 try:
-   import ecmwflibs
-   lib = ecmwflibs.find("MagPlus")
+    import ecmwflibs
+
+    lib = ecmwflibs.find("MagPlus")
 except Exception:
-   pass
+    pass
 
 if sys.platform == "darwin":
     for directory in os.environ.get("DYLD_LIBRARY_PATH", "").split(":"):
