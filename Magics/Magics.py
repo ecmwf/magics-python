@@ -15,7 +15,6 @@ import os
 
 import numpy as np
 from numpy.ctypeslib import ndpointer
-from functools import partial
 import json
 
 #
@@ -182,7 +181,7 @@ def checked_return_code(fn):
     def wrapped(*args):
         err = fn(*args)
         if err:
-            raise MagicsError(err)
+            raise MagicsError(char_to_string(err))
 
     return wrapped
 
@@ -204,32 +203,46 @@ def return_type(fn, ctype):
 
 ####################################################################
 
+py_open = dll.py_open
+py_open.restype = c_char_p
+
 
 @checked_return_code
 def init():
-    return dll.py_open()
+    return py_open()
 
 
 ####################################################################
+
+py_close = dll.py_close
+py_close.restype = c_char_p
 
 
 @checked_return_code
 def finalize():
-    return dll.py_close()
+    return py_close()
 
 
 ####################################################################
+
+py_coast = dll.py_coast
+py_coast.restype = c_char_p
 
 
 @checked_return_code
 def coast():
-    return dll.py_coast()
+    return py_coast()
 
 
 ####################################################################
+
+py_grib = dll.py_grib
+py_grib.restype = c_char_p
+
+
 @checked_return_code
 def grib():
-    return dll.py_grib()
+    return py_grib()
 
 
 def oldversion():
@@ -276,306 +289,421 @@ detect = convert_strings(detect)
 
 ####################################################################
 
+py_cont = dll.py_cont
+py_cont.restype = c_char_p
+
 
 @checked_return_code
 def cont():
-    return dll.py_cont()
+    return py_cont()
 
 
 ####################################################################
+py_legend = dll.py_legend
+py_legend.restype = c_char_p
 
 
 @checked_return_code
 def legend():
-    return dll.py_legend()
+    return py_legend()
 
 
 ####################################################################
+
+py_odb = dll.py_odb
+py_odb.restype = c_char_p
 
 
 @checked_return_code
 def odb():
-    return dll.py_odb()
+    return py_odb()
 
 
 ####################################################################
+
+py_obs = dll.py_obs
+py_obs.restype = c_char_p
 
 
 @checked_return_code
 def obs():
-    return dll.py_obs()
+    return py_obs()
 
 
 ####################################################################
+
+
+py_raw = dll.py_raw
+py_raw.restype = c_char_p
 
 
 @checked_return_code
 def raw():
-    return dll.py_raw()
+    return py_raw()
 
 
 ####################################################################
+
+py_netcdf = dll.py_netcdf
+py_netcdf.restype = c_char_p
 
 
 @checked_return_code
 def netcdf():
-    return dll.py_netcdf()
+    return py_netcdf()
 
 
 ####################################################################
+
+py_image = dll.py_image
+py_image.restype = c_char_p
 
 
 @checked_return_code
 def image():
-    return dll.py_image()
+    return py_image()
 
 
 ####################################################################
+
+py_plot = dll.py_plot
+py_plot.restype = c_char_p
 
 
 @checked_return_code
 def plot():
-    return dll.py_plot()
+    return py_plot()
 
 
 ####################################################################
+py_text = dll.py_text
+py_text.restype = c_char_p
 
 
 @checked_return_code
 def text():
-    return dll.py_text()
+    return py_text()
 
 
 ####################################################################
+
+py_wind = dll.py_wind
+py_wind.restype = c_char_p
 
 
 @checked_return_code
 def wind():
-    return dll.py_wind()
+    return py_wind()
 
 
 ####################################################################
+
+py_line = dll.py_line
+py_line.restype = c_char_p
 
 
 @checked_return_code
 def line():
-    return dll.py_line()
+    return py_line()
 
 
 ####################################################################
+
+py_symb = dll.py_symb
+py_symb.restype = c_char_p
 
 
 @checked_return_code
 def symb():
-    return dll.py_symb()
+    return py_symb()
 
 
 ####################################################################
+py_boxplot = dll.py_boxplot
+py_boxplot.restype = c_char_p
 
 
 @checked_return_code
 def boxplot():
-    return dll.py_boxplot()
+    return py_boxplot()
 
 
 ####################################################################
+
+py_taylor = dll.py_taylor
+py_taylor.restype = c_char_p
 
 
 @checked_return_code
 def taylor():
-    return dll.py_taylor()
+    return py_taylor()
 
 
 ####################################################################
+
+py_tephi = dll.py_tephi
+py_tephi.restype = c_char_p
 
 
 @checked_return_code
 def tephi():
-    return dll.py_tephi()
+    return py_tephi()
 
 
 ####################################################################
+
+py_graph = dll.py_graph
+py_graph.restype = c_char_p
 
 
 @checked_return_code
 def graph():
-    return dll.py_graph()
+    return py_graph()
 
 
 ####################################################################
+
+py_axis = dll.py_axis
+py_axis.restype = c_char_p
 
 
 @checked_return_code
 def axis():
-    return dll.py_axis()
+    return py_axis()
 
 
 ####################################################################
+
+
+py_geo = dll.py_geo
+py_geo.restype = c_char_p
 
 
 @checked_return_code
 def geo():
-    return dll.py_geo()
+    return py_geo()
 
 
 ####################################################################
+py_import = dll.py_import
+py_import.restype = c_char_p
 
 
 @checked_return_code
 def mimport():
-    return dll.py_import()
+    return py_import()
 
 
 ####################################################################
+py_info = dll.py_info
+py_info.restype = c_char_p
 
 
 @checked_return_code
 def info():
-    return dll.py_info()
+    return py_info()
 
 
 ####################################################################
+
+py_input = dll.py_input
+py_input.restype = c_char_p
 
 
 @checked_return_code
 def minput():
-    return dll.py_input()
+    return py_input()
 
 
 ####################################################################
+py_eps = dll.py_eps
+py_eps.restype = c_char_p
 
 
 @checked_return_code
 def eps():
-    return dll.py_eps()
+    return py_eps()
 
 
 ####################################################################
 ###
 ###  Please note: these two functions changed compared to the previous SWIG based Python interface
 ###
+
+py_metgraph = dll.py_metgraph
+py_metgraph.restype = c_char_p
+
+
 @checked_return_code
 def metgraph():
-    return dll.py_metgraph()
+    return py_metgraph()
+
+
+py_epsinput = dll.py_epsinput
+py_epsinput.restype = c_char_p
 
 
 @checked_return_code
 def epsinput():
-    return dll.py_epsinput()
+    return py_epsinput()
 
 
 ####################################################################
 ###
 ###  Please note: this function was called mmetbufr to the previous SWIG based Python interface
 ###
+
+py_metbufr = dll.py_metbufr
+py_metbufr.restype = c_char_p
+
+
 @checked_return_code
 def metbufr():
-    return dll.py_metbufr()
+    return py_metbufr()
 
 
 ####################################################################
+
+py_epsgraph = dll.py_epsgraph
+py_epsgraph.restype = c_char_p
 
 
 @checked_return_code
 def epsgraph():
-    return dll.py_epsgraph()
+    return py_epsgraph()
 
 
 ####################################################################
+
+py_epscloud = dll.py_epscloud
+py_epscloud.restype = c_char_p
 
 
 @checked_return_code
 def epscloud():
-    return dll.py_epscloud()
+    return py_epscloud()
 
 
 ####################################################################
+py_epslight = dll.py_epslight
+py_epslight.restype = c_char_p
 
 
 @checked_return_code
 def epslight():
-    return dll.py_epslight()
+    return py_epslight()
 
 
 ####################################################################
+
+py_epsplumes = dll.py_epsplumes
+py_epsplumes.restype = c_char_p
 
 
 @checked_return_code
 def epsplumes():
-    return dll.py_epsplumes()
+    return py_epsplumes()
 
 
 ####################################################################
+py_epswind = dll.py_epswind
+py_epswind.restype = c_char_p
 
 
 @checked_return_code
 def epswind():
-    return dll.py_epswind()
+    return py_epswind()
 
 
 ####################################################################
+py_epswave = dll.py_epswave
+py_epswave.restype = c_char_p
 
 
 @checked_return_code
 def epswave():
-    return dll.py_epswave()
+    return py_epswave()
 
 
 ####################################################################
+
+py_epsbar = dll.py_epsbar
+py_epsbar.restype = c_char_p
 
 
 @checked_return_code
 def epsbar():
-    return dll.py_epsbar()
+    return py_epsbar()
 
 
 ####################################################################
+
+py_epsshading = dll.py_epsshading
+py_epsshading.restype = c_char_p
 
 
 @checked_return_code
 def epsshading():
-    return dll.py_epsshading()
+    return py_epsshading()
 
 
 ####################################################################
+
+py_wrepjson = dll.py_wrepjson
+py_wrepjson.restype = c_char_p
 
 
 @checked_return_code
 def wrepjson():
-    return dll.py_wrepjson()
+    return py_wrepjson()
 
 
 ####################################################################
+
+
+py_geojson = dll.py_geojson
+py_geojson.restype = c_char_p
 
 
 @checked_return_code
 def geojson():
-    return dll.py_geojson()
+    return py_geojson()
 
 
 ####################################################################
+
+py_mapgen = dll.py_mapgen
+py_mapgen.restype = c_char_p
 
 
 @checked_return_code
 def mapgen():
-    return dll.py_mapgen()
+    return py_mapgen()
 
 
 ####################################################################
+
+
+py_table = dll.py_table
+py_table.restype = c_char_p
 
 
 @checked_return_code
 def mtable():
-    return dll.py_table()
+    return py_table()
 
 
 ####################################################################
+
+py_seti = dll.py_seti
+py_seti.restype = c_char_p
+# py_seti.argtypes = (c_char,)
 
 
 @checked_return_code
 def seti(name, value):
     name = string_to_char(name)
-    return dll.py_seti(name, value)
+    return py_seti(name, value)
 
 
 def known_drivers():
@@ -584,11 +712,16 @@ def known_drivers():
         drivers = json.loads(drivers.decode())
 
         return drivers["drivers"]
-    except:
+    except Exception:
         return "known_drivers is not implemented in this version"
 
 
 ####################################################################
+py_set1i = dll.py_set1i
+py_set1i.restype = c_char_p
+# py_set1i.argtypes = (c_char_p, c_int_p, c_int)
+
+
 @checked_return_code
 def set1i(name, data):
     #    array = np.empty((size,), dtype=np.float64)
@@ -597,8 +730,7 @@ def set1i(name, data):
     size = len(data)
     name = string_to_char(name)
     array_p = (ctypes.c_int * size)(*data)
-    return dll.py_set1i(ctypes.c_char_p(name), array_p, size)
-    return None
+    return py_set1i(ctypes.c_char_p(name), array_p, size)
 
 
 ####################################################################
@@ -617,12 +749,17 @@ setr.argtypes = (c_char_p, c_double)
 setr = convert_strings(setr)
 
 ####################################################################
+py_set1r = dll.py_set1r
+py_set1r.restype = c_char_p
+# py_set1r.argtypes = (c_char_p, c_double_p, c_int)
+
+
 @checked_return_code
 def set1r(name, data):
     size = len(data)
     name = string_to_char(name)
     array_p = (ctypes.c_double * size)(*data)
-    return dll.py_set1r(ctypes.c_char_p(name), array_p, size)
+    return py_set1r(ctypes.c_char_p(name), array_p, size)
 
 
 ####################################################################
@@ -641,6 +778,12 @@ setc.argtypes = (c_char_p, c_char_p)
 setc = convert_strings(setc)
 
 ####################################################################
+
+py_set1c = dll.py_set1c
+py_set1c.restype = c_char_p
+# py_set1c.argtypes = (c_char_p, c_char_p, c_int)
+
+
 @checked_return_code
 def set1c(name, data):
     new_data = []
@@ -648,7 +791,7 @@ def set1c(name, data):
         new_data.append(string_to_char(s))
     name = string_to_char(name)
     data_p = (c_char_p * (len(new_data)))(*new_data)
-    return dll.py_set1c(ctypes.c_char_p(name), data_p, len(new_data))
+    return py_set1c(ctypes.c_char_p(name), data_p, len(new_data))
 
 
 ####################################################################
@@ -670,9 +813,7 @@ reset = convert_strings(reset)
 
 class MagicsError(Exception):
     def __init__(self, err):
-        super(MagicsError, self).__init__(
-            "Magics Error - No Plot Produced!!! (%s)" % err
-        )
+        super(MagicsError, self).__init__(str(err))
 
 
 ####################################################################
