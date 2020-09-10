@@ -254,12 +254,12 @@ try:
     version = dll.version
     version.restype = ctypes.c_char_p
     version.argtypes = None
-except:
+except Exception:
     version = oldversion
 
 try:
     tile = dll.py_tile
-except:
+except Exception:
     print("Tile not enabled: You are using an old version of magics ( < 4.1.0)")
     tile = oldversion
 
@@ -850,7 +850,7 @@ try:
     knowndrivers.restype = ctypes.c_char_p
     knowndrivers.argtypes = None
 
-except:
+except Exception:
     set_python = not_implemented
     keep_compatibility = not_implemented
     mute = not_implemented
@@ -876,7 +876,7 @@ try:
     debug_log = dll.mag_add_debug_listener
     debug_log.restype = None
     debug_log.argtypes = (ctypes.c_void_p, log)
-except:
+except Exception:
     error_log = no_log
     warning_log = no_log
     debug_log = no_log
