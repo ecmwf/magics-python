@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+        path: magics-python
     - name: checkout test
       uses: actions/checkout@v2
       with: 
@@ -23,8 +24,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ecmwflibs pytest
+        pip install ecmwflibs pytest 
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        pytest
+        pip install magics-python
+        cd magics-test
+        pytest 
