@@ -33,9 +33,9 @@ jobs:
         cd $GITHUB_WORKSPACE/magics-python
         pip install .
         echo $GITHUB_WORKSPACE/magics-test
-        echo $MAGICS_PYTHON_TESTS
+        ls $MAGICS_PYTHON_TESTS
         cd $GITHUB_WORKSPACE/magics-test
         pytest 
       env:
-        MAGICS_PYTHON_TESTS: %GITHUB_WORKSPACE%/magics-test/test/gallery
+        MAGICS_PYTHON_TESTS: ${{ GITHUB_WORKSPACE }}/magics-test/test/gallery
       
