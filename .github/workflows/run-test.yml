@@ -25,11 +25,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ecmwflibs pytest 
+        pip install ecmwflibs pytest wheel
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Test with pytest
+    - name: Running full test suite
       run: |
         cd $GITHUB_WORKSPACE/magics-python
         pip install .
         cd $GITHUB_WORKSPACE/magics-test
         pytest 
+      env:
+        MAGICS_PYTHON_TESTS: $GITHUB_WORKSPACE/magics-test/test/gallery
+      
