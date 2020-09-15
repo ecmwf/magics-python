@@ -7,11 +7,15 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: psf/black@stable
+      - name: Set up Python 
+        uses: actions/setup-python@v2
+      - name: Install dependencies
+        run: |
+         python -m pip install --upgrade pip
+         pip install black
       - name: lint
         run: |
           black --check .
