@@ -28,6 +28,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        pip install magics-python
-        cd magics-test
+        cd $GITHUB_WORKSPACE/magics-python
+        pip install .
+        cd $GITHUB_WORKSPACE/magics-test
         pytest 
