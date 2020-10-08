@@ -456,14 +456,14 @@ class Action(object):
                 type = self.find_type(self.args[key])
                 if type == "int":
                     if dim == 2:
-                        Magics.set2i(key, numpy.int64(data), size[0], size[1])
+                        Magics.set2i(key, data.astype(numpy.int64), size[0], size[1])
                     else:
-                        Magics.set1i(key, numpy.int64(data), size[0])
+                        Magics.set1i(key, data.astype(numpy.int64), size[0])
                 elif type == "float":
                     if dim == 2:
-                        Magics.set2r(key, numpy.float64(data), size[1], size[0])
+                        Magics.set2r(key, data.astype(numpy.float64), size[1], size[0])
                     else:
-                        Magics.set1r(key, numpy.float64(data))
+                        Magics.set1r(key, data.astype(numpy.float64), size[0])
                 else:
                     print("can not interpret type %s for %s ???->", (type, key))
             else:
