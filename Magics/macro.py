@@ -463,7 +463,7 @@ class Action(object):
                     if dim == 2:
                         Magics.set2r(key, data.astype(numpy.float64), size[1], size[0])
                     else:
-                        Magics.set1r(key, data.astype(numpy.float64), size[0])
+                        Magics.set1r(key, data.astype(numpy.float64))
                 else:
                     print("can not interpret type %s for %s ???->", (type, key))
             else:
