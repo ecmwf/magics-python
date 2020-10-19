@@ -70,7 +70,7 @@ else:
         else:
             fullname = os.path.join(os.environ.get("MAGPLUS_HOME", ""), "lib64/libMagPlus.so")
             if os.path.exists(fullname):
-            lib = fullname
+                lib = fullname
 
 
 #
