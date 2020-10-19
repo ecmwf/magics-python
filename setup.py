@@ -26,7 +26,7 @@ def read(fname):
 
 
 
-version = "1.5.2"
+version = "1.5.3"
 
 
 setuptools.setup(
@@ -55,6 +55,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Operating System :: OS Independent",
