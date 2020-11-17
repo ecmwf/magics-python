@@ -102,7 +102,12 @@ def xyplot(data, contour=None, output=None):
 
 def graph(x, y, title="", graph=None, colour="ecmwf_blue"):
 
-    default = {"graph": {"graph_line_colour": "ecmwf_blue", "graph_line_thickness": 2,}}
+    default = {
+        "graph": {
+            "graph_line_colour": "ecmwf_blue",
+            "graph_line_thickness": 2,
+        }
+    }
 
     x[0] = x[0] * 1.0
     y[0] = y[0] * 1.0
@@ -248,7 +253,10 @@ defaults = {
             "eps_grey_legend": "off",
             "legend": "off",
         },
-        "epsclim": {"eps_shade_colour": colour, "eps_shade_line_thickness": 4,},
+        "epsclim": {
+            "eps_shade_colour": colour,
+            "eps_shade_line_thickness": 4,
+        },
     },
 }
 
