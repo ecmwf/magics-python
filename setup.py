@@ -25,7 +25,6 @@ def read(fname):
     return io.open(file_path, encoding="utf-8").read()
 
 
-
 version = "1.5.3"
 
 
@@ -40,8 +39,12 @@ setuptools.setup(
     url="https://github.com/ecmwf/magics-python",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=["numpy",],
-    tests_require=["pytest",],
+    install_requires=[
+        "numpy",
+    ],
+    tests_require=[
+        "pytest",
+    ],
     test_suite="tests",
     zip_safe=True,
     keywords="magics visualisation meteorology grib netcdf bufr",

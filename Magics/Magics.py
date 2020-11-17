@@ -68,7 +68,9 @@ else:
         if os.path.exists(fullname):
             lib = fullname
         else:
-            fullname = os.path.join(os.environ.get("MAGPLUS_HOME", ""), "lib64/libMagPlus.so")
+            fullname = os.path.join(
+                os.environ.get("MAGPLUS_HOME", ""), "lib64/libMagPlus.so"
+            )
             if os.path.exists(fullname):
                 lib = fullname
 
@@ -860,6 +862,13 @@ except Exception:
     mute = not_implemented
     unmute = not_implemented
     knowndrivers = not_implemented
+
+try:
+    strict_mode = dll.py_strict_mode
+    strict_mode.restype = None
+    strict_mode.argtypes = None
+except Exception:
+    strict_mode = not_implemented
 
 
 log = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, c_char_p)
