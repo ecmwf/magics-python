@@ -1,14 +1,51 @@
-# This workflows will upload a Python Package using Twine when a release is created
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
-
-name: Upload Python Package
+name: Check and publish
 
 on:
+  push:
+    branches: [ master ]
+
+  pull_request:
+    branches: [ master ]
+
   release:
     types: [created]
 
+
 jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
+
+    name: Python ${{ matrix.python-version }} on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
+
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get tests
+        run: git clone --depth 1 https://github.com/ecmwf/magics-test.git
+
+      - name: Tests
+        run: |
+          python setup.py develop
+          pip install -r test/requirements.txt
+          pytest
+
   deploy:
+
+    if: ${{ github.event_name == 'release' }}
+
+    name: Upload to Pypi
+    needs: checks
 
     runs-on: ubuntu-latest
 
@@ -17,7 +54,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.8'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -27,5 +64,13 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
         twine upload dist/*
+
+    - name: Notify climetlab
+      uses: mvasigh/dispatch-action@main
+      with:
+          token: ${{ secrets.NOTIFY_ECMWFLIBS }}
+          repo: climetlab
+          owner: ecmwf
+          event_type: ecmwf-api-client-updated
