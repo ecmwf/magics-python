@@ -2,4 +2,3 @@ pytest
 xarray
 scipy
 cftime
-ecmwflibs

@@ -19,11 +19,10 @@ jobs:
         # python-version: ["3.6", "3.7", "3.8", "3.9"]
         platform: [ubuntu-latest] #, ubuntu-latest, macos-latest]
         python-version: ["3.8"]
+        method: ["conda", "ecmwflibs"]
 
-    name: Python ${{ matrix.python-version }} on ${{ matrix.platform }}
+    name: Python ${{ matrix.python-version }} on ${{ matrix.platform }} (${{ matrix.method }})
     runs-on: ${{ matrix.platform }}
-
-    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v2
@@ -34,6 +33,13 @@ jobs:
 
       - name: Get tests
         run: git clone --depth 1 https://github.com/ecmwf/magics-test.git
+
+      - if: matrix.method == 'conda'
+        run: |
+          conda install magics
+
+      - if: matrix.method == 'ecmwflibs'
+        run: pip install ecmwflibs
 
       - name: Tests
         run: |
