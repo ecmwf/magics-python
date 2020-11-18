@@ -35,10 +35,14 @@ jobs:
         run: git clone --depth 1 https://github.com/ecmwf/magics-test.git
 
       - if: matrix.method == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge
+
+      - if: matrix.method == 'conda'
         run: |
-          conda install -c conda-forge Magics=4.0.0
-          conda init bash
-          conda activate
+          conda install Magics=4.0.0
 
       - if: matrix.method == 'ecmwflibs'
         run: pip install ecmwflibs
