@@ -40,6 +40,8 @@ jobs:
           python setup.py develop
           pip install -r tests/requirements.txt
           pytest
+        env:
+          MAGICS_PYTHON_TESTS: magics-test/test/gallery
 
   deploy:
     if: ${{ github.event_name == 'release' }}
