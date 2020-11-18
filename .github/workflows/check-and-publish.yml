@@ -43,7 +43,7 @@ jobs:
           conda-channels: anaconda, conda-forge
 
       - if: matrix.method == 'conda'
-        run: conda install Magics=4.0.0
+        run: conda install Magics
 
       - if: matrix.method == 'ecmwflibs'
         name: Install ecmwflibs
@@ -94,7 +94,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        repo: ["climetlab"]
+        repo: ["climetlab", "ecmwflibs"]
 
     steps:
       - name: Notify ${{ matrix.repo }}

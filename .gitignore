@@ -6,7 +6,7 @@ magics/__pycache__
 *.pyc
 build
 dist
-
+*.sublime-workspace
 # Ignore local virtual environment
 venv/
 
