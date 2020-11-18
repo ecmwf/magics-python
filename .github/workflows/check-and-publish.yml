@@ -37,6 +37,7 @@ jobs:
       - if: matrix.method == 'conda'
         run: |
           conda install -c conda-forge Magics=4.0.0
+          conda init bash
           conda activate
 
       - if: matrix.method == 'ecmwflibs'
