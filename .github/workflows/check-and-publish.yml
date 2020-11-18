@@ -16,8 +16,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        # platform: [windows-latest, ubuntu-latest, macos-latest]
+        # python-version: ["3.6", "3.7", "3.8", "3.9"]
+        platform: [windows-latest] #, ubuntu-latest, macos-latest]
+        python-version: ["3.8"]
 
     name: Python ${{ matrix.python-version }} on ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}
@@ -37,7 +39,7 @@ jobs:
       - name: Tests
         run: |
           python setup.py develop
-          pip install -r test/requirements.txt
+          pip install -r tests/requirements.txt
           pytest
 
   deploy:
