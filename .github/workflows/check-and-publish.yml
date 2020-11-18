@@ -35,16 +35,18 @@ jobs:
         run: git clone --depth 1 https://github.com/ecmwf/magics-test.git
 
       - if: matrix.method == 'conda'
-        uses: conda-incubator/setup-miniconda@v2
+        name: Setup conda
+        uses: s-weigand/setup-conda@v1
         with:
+          update-conda: true
           python-version: ${{ matrix.python-version }}
-          channels: conda-forge
+          conda-channels: anaconda, conda-forge
 
       - if: matrix.method == 'conda'
-        run: |
-          conda install Magics=4.0.0
+        run: conda install Magics=4.0.0
 
       - if: matrix.method == 'ecmwflibs'
+        name: Install ecmwflibs
         run: pip install ecmwflibs
 
       - name: Tests
