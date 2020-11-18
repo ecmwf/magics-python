@@ -69,7 +69,11 @@ jobs:
 
   notify:
     if: ${{ github.event_name == 'release' }}
+
+    name: Send notifications
     needs: deploy
+
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
