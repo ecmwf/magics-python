@@ -94,7 +94,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        repo: ["climetlab", "ecmwflibs"]
+        repo:
+          - climetlab
+          - ecmwflibs
 
     steps:
       - name: Notify ${{ matrix.repo }}
