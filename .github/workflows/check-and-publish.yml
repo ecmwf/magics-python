@@ -36,7 +36,8 @@ jobs:
 
       - if: matrix.method == 'conda'
         run: |
-          conda install magics
+          conda install -c conda-forge Magics=4.0.0
+          conda activate
 
       - if: matrix.method == 'ecmwflibs'
         run: pip install ecmwflibs
