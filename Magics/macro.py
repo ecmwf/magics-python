@@ -393,6 +393,27 @@ class Action(object):
         else:
             print(f, "")
 
+    def to_yaml(self):
+
+        def tidy(x):
+            if isinstance(x, (list, tuple)):
+                return [tidy(y) for y in x]
+            if isinstance(x, dict):
+                d = {}
+                for k, v in x.items():
+                    d[k] = tidy(v)
+                return d
+
+            if x == 'on':
+                return True
+
+            if x == 'off':
+                return False
+
+            return x
+
+        return {self.verb: tidy(self.args)}
+
     def clean_object(self, obj):
         if sys.version_info[0] < 3:
             if type(obj) in (int, float, str, bool, numpy.float64, numpy.float32):
@@ -765,6 +786,14 @@ def _execute(o):
 
 
 def _plot(*args):
+
+    if os.environ.get("MAGICS_DUMP_YAML"):
+        import yaml
+        actions = []
+        for n in args:
+            actions.append(n.to_yaml())
+        print(yaml.dump(dict(plot=actions), default_flow_style=False))
+        return
 
     context.set()
     # try :
