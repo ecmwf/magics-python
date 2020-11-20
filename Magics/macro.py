@@ -404,10 +404,10 @@ class Action(object):
                     d[k] = tidy(v)
                 return d
 
-            if x == 'on':
+            if x in ('on', 'true', 'yes'):
                 return True
 
-            if x == 'off':
+            if x in ('off', 'false', 'no'):
                 return False
 
             return x
