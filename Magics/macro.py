@@ -791,7 +791,11 @@ def _plot(*args):
         import yaml
         actions = []
         for n in args:
-            actions.append(n.to_yaml())
+            if isinstance(n, (list, tuple)):
+                for v in n:
+                    actions.append(v.to_yaml())
+            else:
+                actions.append(n.to_yaml())
         print(yaml.dump(dict(plot=actions), default_flow_style=False))
         return
 
