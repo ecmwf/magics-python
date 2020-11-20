@@ -398,11 +398,16 @@ class Action(object):
         def tidy(x):
             if isinstance(x, (list, tuple)):
                 return [tidy(y) for y in x]
+
             if isinstance(x, dict):
                 d = {}
                 for k, v in x.items():
                     d[k] = tidy(v)
                 return d
+
+            # Numpy arrays
+            if hasattr(x, "tolist"):
+                return x.tolist()
 
             if x in ('on', 'true', 'yes'):
                 return True
