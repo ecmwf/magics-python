@@ -394,7 +394,6 @@ class Action(object):
             print(f, "")
 
     def to_yaml(self):
-
         def tidy(x):
             if isinstance(x, (list, tuple)):
                 return [tidy(y) for y in x]
@@ -409,10 +408,10 @@ class Action(object):
             if hasattr(x, "tolist"):
                 return x.tolist()
 
-            if x in ('on', 'true', 'yes'):
+            if x in ("on", "true", "yes"):
                 return True
 
-            if x in ('off', 'false', 'no'):
+            if x in ("off", "false", "no"):
                 return False
 
             return x
@@ -794,6 +793,7 @@ def _plot(*args):
 
     if os.environ.get("MAGICS_DUMP_YAML"):
         import yaml
+
         actions = []
         for n in args:
             if isinstance(n, (list, tuple)):
