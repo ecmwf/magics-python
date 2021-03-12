@@ -10,22 +10,36 @@ import sys
 import os
 import numpy
 import json
+import threading
 
 from . import Magics
 
 
+LOCK = threading.Lock()
+
+ipython_active = None
+try:
+    from IPython import get_ipython
+
+    ipython_active = get_ipython()
+except Exception:
+    pass
+
+
 class Context(object):
     def __init__(self):
-        self.tmp = []
-        Magics.set_python()
-        self.silent = True
+        with LOCK:
+            self.tmp = []
+            Magics.set_python()
+            self.silent = True
 
     def set(self):
-        if self.silent:
-            os.environ["MAGPLUS_WARNING"] = "off"
-            Magics.mute()
-        else:
-            os.environ["MAGPLUS_INFO"] = "on"
+        with LOCK:
+            if self.silent:
+                os.environ["MAGPLUS_WARNING"] = "off"
+                Magics.mute()
+            else:
+                os.environ["MAGPLUS_INFO"] = "on"
 
 
 global context
@@ -46,7 +60,8 @@ def mute():
 
 
 def keep_compatibility():
-    Magics.keep_compatibility()
+    with LOCK:
+        Magics.keep_compatibility()
 
 
 @Magics.log
@@ -889,74 +904,72 @@ class odb_filter(object):
             os.abort()
 
 
-import threading
 import tempfile
-
-
-_MAGICS_LOCK = threading.Lock()
 
 
 def _jplot(*args):
     from IPython.display import Image
 
-    with _MAGICS_LOCK:
-        f, tmp = tempfile.mkstemp(".png")
-        os.close(f)
+    f, tmp = tempfile.mkstemp(".png")
+    os.close(f)
 
-        base, ext = os.path.splitext(tmp)
+    base, ext = os.path.splitext(tmp)
 
-        img = output(
-            output_formats=["png"],
-            output_name_first_page_number="off",
-            output_name=base,
-        )
+    img = output(
+        output_formats=["png"],
+        output_name_first_page_number="off",
+        output_name=base,
+    )
 
-        all = [img]
-        all.extend(args)
+    all = [img]
+    all.extend(args)
 
-        _plot(all)
+    _plot(all)
 
-        image = Image(tmp)
-        os.unlink(tmp)
-        return image
+    image = Image(tmp)
+    os.unlink(tmp)
+    return image
 
 
-try:
-    # This function only seems to be defined in a Jupyter notebook context.
-    get_ipython()
-    plot = _jplot
-except Exception:
-    plot = _plot
+def plot(*args, **kwargs):
+    with LOCK:
+        if ipython_active:
+            return _jplot(*args, **kwargs)
+        else:
+            return _plot(*args, **kwargs)
 
 
 def wmsstyles(data):
-    context.set()
-    try:
-        Magics.init()
-        styles = data.style()
-        Magics.finalize()
-        styles = json.loads(styles.decode())
-        return styles
-    except:
-        Magics.finalize()
-        return {}
+    with LOCK:
+        context.set()
+        try:
+            Magics.init()
+            styles = data.style()
+            Magics.finalize()
+            styles = json.loads(styles.decode())
+            return styles
+        except:
+            Magics.finalize()
+            return {}
 
 
 def known_drivers():
-
-    return Magics.known_drivers()
+    with LOCK:
+        return Magics.known_drivers()
 
 
 def version():
-    version = Magics.version()
-    return version.decode()
+    with LOCK:
+        version = Magics.version()
+        return version.decode()
 
 
 def predefined_areas():
-    home = Magics.home()
-    with open("%s/share/magics/projections.json" % (home.decode())) as input:
-        projections = json.load(input)
-    return projections.keys()
+    with LOCK:
+        home = Magics.home()
+        with open("%s/share/magics/projections.json" % (home.decode())) as input:
+            projections = json.load(input)
+        return projections.keys()
 
 
 def wmscrs():

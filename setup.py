@@ -25,8 +25,12 @@ def read(fname):
     return io.open(file_path, encoding="utf-8").read()
 
 
-version = "1.5.5"
+version = None
+for line in read("Magics/__init__.py").split("\n"):
+    if line.startswith("__version__"):
+        version = line.split("=")[-1].strip()[1:-1]
 
+assert version
 
 setuptools.setup(
     name="Magics",

@@ -3,6 +3,7 @@ import struct
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
+from matplotlib.patches import Circle
 
 LINE_STYLES = ("solid", "dashed", "dotted", "3", "4", "5")
 
@@ -118,6 +119,7 @@ class BinaryDecoder(BinaryReader):
                     edgecolor="none",
                 )
 
+            # print('text', x,y,texts[i])
             self.ax.text(
                 x,
                 y,
@@ -188,6 +190,7 @@ class BinaryDecoder(BinaryReader):
         b = self.readDouble()
         a = self.readDouble()
         self.current_colour = (r, g, b, a)
+        # print('colour', self.current_colour)
 
     def line_style(self):
         self.current_linestyle = LINE_STYLES[self.readInt()]
@@ -228,16 +231,31 @@ class BinaryDecoder(BinaryReader):
                 linestyle=self.current_linestyle,
             )
         )
+        self.ax.set_xlim(min(x), max(x))
+        self.ax.set_ylim(min(y), max(y))
 
     def circle(self):
-        x = self.readDouble()
-        y = self.readDouble()
+
+        x = self.projectX(self.readDouble())
+        y = self.projectX(self.readDouble())
         r = self.readDouble()
         cs = self.readInt()
-        assert False, (x, y, r, cs)
+        return
+        self.ax.add_patch(
+            Circle(
+                (
+                    x,
+                    y,
+                ),
+                r,
+                # color=self.current_colour,
+                # linewidth=self.current_linewidth,
+                # linestyle=self.current_linestyle,
+            )
+        )
 
     def simple_polygon(self):
-        # print("poly_line")
+        # print("simple_polygon")
         n = self.readInt()
         x = self.projectX(self.readDoubleArray(n))
         y = self.projectY(self.readDoubleArray(n))
@@ -252,7 +270,7 @@ class BinaryDecoder(BinaryReader):
         )
 
     def poly_line_2(self):
-        # print("poly_line")
+        # print("poly_line_2")
         n = self.readInt()
         x = self.projectX(self.readDoubleArray(n))
         y = self.projectY(self.readDoubleArray(n))
@@ -267,7 +285,7 @@ class BinaryDecoder(BinaryReader):
         )
 
     def simple_polygon_with_holes(self):
-        # print("simple_polygon")
+        # print("simple_polygon_with_holes")
         n = self.readInt()
         x = self.projectX(self.readDoubleArray(n))
         y = self.projectY(self.readDoubleArray(n))
@@ -326,6 +344,8 @@ class BinaryDecoder(BinaryReader):
 
         self.dimensionX = self.readDouble()
         self.dimensionY = self.readDouble()
+
+        print(self.dimensionX, self.dimensionY)
 
         op = self.readChar()
         while op:
