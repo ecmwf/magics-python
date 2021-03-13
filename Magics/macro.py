@@ -15,7 +15,7 @@ import numpy
 
 from . import Magics
 
-LOCK = threading.Lock()
+LOCK = threading.RLock()
 
 ipython_active = None
 try:
