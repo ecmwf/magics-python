@@ -16,6 +16,7 @@
 
 import io
 import os
+import sys
 
 import setuptools
 
@@ -32,6 +33,10 @@ for line in read("Magics/__init__.py").split("\n"):
 
 assert version
 
+install_requires = ["numpy"]
+if sys.version_info < (3, 7):
+    install_requires = ["numpy<1.20"]
+
 setuptools.setup(
     name="Magics",
     version=version,
@@ -43,9 +48,7 @@ setuptools.setup(
     url="https://github.com/ecmwf/magics-python",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=[
-        "numpy",
-    ],
+    install_requires=install_requires,
     tests_require=[
         "pytest",
     ],
