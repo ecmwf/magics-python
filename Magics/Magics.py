@@ -9,13 +9,12 @@
 
 import ctypes
 import ctypes.util
-
-import sys
+import json
 import os
+import sys
 
 import numpy as np
 from numpy.ctypeslib import ndpointer
-import json
 
 #
 #  This Python interface needs to find the Magics library

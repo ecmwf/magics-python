@@ -9,10 +9,10 @@
 A unittest script which dynamically adds tests based on the contents of the 'gallery'
 directory.
 """
-import os
 import glob
-import unittest
+import os
 import subprocess
+import unittest
 
 
 class MagicsSanityTest(unittest.TestCase):

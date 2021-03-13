@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import struct
+
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import numpy as np
+from matplotlib.lines import Line2D
 from matplotlib.patches import Circle
 
 LINE_STYLES = ("solid", "dashed", "dotted", "3", "4", "5")

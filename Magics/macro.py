@@ -6,14 +6,14 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-import sys
-import os
-import numpy
 import json
+import os
+import sys
 import threading
 
-from . import Magics
+import numpy
 
+from . import Magics
 
 LOCK = threading.Lock()
 
