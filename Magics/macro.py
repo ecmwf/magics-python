@@ -66,22 +66,33 @@ def keep_compatibility():
 
 @Magics.log
 def warning(int, msg):
-    print(msg.decode())
-
+    try:
+        print(msg.decode())
+    except Exception:
+        print(msg)
 
 @Magics.log
 def error(int, msg):
-    print(msg.decode())
+    try:
+        print(msg.decode())
+    except Exception:
+        print(msg)
 
 
 @Magics.log
 def info_log(int, msg):
-    print(msg.decode())
+    try:
+        print(msg.decode())
+    except Exception:
+        print(msg)
 
 
 @Magics.log
 def debug_log(int, msg):
-    print(msg.decode())
+    try:
+        print(msg.decode())
+    except Exception:
+        print(msg)
 
 
 Magics.warning_log(3, warning)
