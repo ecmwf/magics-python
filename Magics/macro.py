@@ -67,14 +67,15 @@ def keep_compatibility():
 @Magics.log
 def warning(int, msg):
     try:
-        print(msg.decode())
+        print(msg.decode().rstrip())
     except Exception:
         print(msg)
+
 
 @Magics.log
 def error(int, msg):
     try:
-        print(msg.decode())
+        print(msg.decode().rstrip())
     except Exception:
         print(msg)
 
@@ -82,7 +83,7 @@ def error(int, msg):
 @Magics.log
 def info_log(int, msg):
     try:
-        print(msg.decode())
+        print(msg.decode().rstrip())
     except Exception:
         print(msg)
 
@@ -90,7 +91,7 @@ def info_log(int, msg):
 @Magics.log
 def debug_log(int, msg):
     try:
-        print(msg.decode())
+        print(msg.decode().rstrip())
     except Exception:
         print(msg)
 

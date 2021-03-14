@@ -134,7 +134,6 @@ def _convert_strings(fn):
             if t is c_char_p:
                 a = string_to_char(a)
             new_args.append(a)
-
         r = fn(*new_args)
         if fn.restype is c_char_p:
             r = char_to_string(r)
@@ -286,11 +285,19 @@ metainput.restype = ctypes.c_char_p
 metainput.argtypes = None
 
 
-detect = dll.detect
-detect.restype = ctypes.c_char_p
-detect.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-detect = convert_strings(detect)
+try:
+    py_detect = dll.py_detect
+    py_detect.restype = ctypes.c_char_p
+    py_detect.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
+    py_detect = convert_strings(py_detect)
 
+    detect = py_detect
+
+except Exception:
+    detect = dll.detect
+    detect.restype = ctypes.c_char_p
+    detect.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
+    detect = convert_strings(detect)
 
 ####################################################################
 
