@@ -13,7 +13,7 @@ import glob
 import os
 import subprocess
 import unittest
-
+import sys
 
 class MagicsSanityTest(unittest.TestCase):
     """
@@ -57,7 +57,7 @@ def generate_test_method(test_name):
             self.addCleanup(cleanup_backup, backup_name, output_name)
 
         # run the test
-        ret = subprocess.call("python {}.py".format(test_name), shell=True)
+        ret = subprocess.call("{} {}.py".format(sys.executable, test_name), shell=True)
         self.assertEqual(ret, 0)
 
         output_exists = os.path.isfile(output_name)
