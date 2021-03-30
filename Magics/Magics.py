@@ -16,82 +16,17 @@ import sys
 import numpy as np
 from numpy.ctypeslib import ndpointer
 
-#
-#  This Python interface needs to find the Magics library
-#
-#  We first search LD_LIBRARY_PATH. If you have strange behaviours,
-#  check your $LD_LIBRARY_PATH.
-#  This is only required on Linux! Therefore we do not have to check
-#  on MacOS the DYLD_LIBRARY_PATH or for *.dylib.
-#
-lib = None
+
 
 try:
-    import ecmwflibs
+    import ecmwflibs as findlibs
+except ImportError:
+    import findlibs
 
-    lib = ecmwflibs.find("MagPlus")
-except Exception:
-    pass
-
-if sys.platform == "darwin":
-    for directory in os.environ.get("DYLD_LIBRARY_PATH", "").split(":"):
-        fullname = os.path.join(directory, "libMagPlus.dylib")
-        if os.path.exists(fullname):
-            lib = fullname
-            break
-
-    if lib is None:
-        fullname = os.path.join(
-            os.environ.get("MAGPLUS_HOME", ""), "lib/libMagPlus.dylib"
-        )
-        if os.path.exists(fullname):
-            lib = fullname
-
-elif sys.platform == "win32":
-    if lib is None:
-        fullname = os.path.join(
-            os.environ.get("MAGPLUS_HOME", ""), "lib/libMagPlus.dll"
-        )
-        if os.path.exists(fullname):
-            lib = fullname
-
-else:
-    for directory in os.environ.get("LD_LIBRARY_PATH", "").split(":"):
-        fullname = os.path.join(directory, "libMagPlus.so")
-        if os.path.exists(fullname):
-            lib = fullname
-            break
-
-    if lib is None:
-        fullname = os.path.join(os.environ.get("MAGPLUS_HOME", ""), "lib/libMagPlus.so")
-        if os.path.exists(fullname):
-            lib = fullname
-        else:
-            fullname = os.path.join(
-                os.environ.get("MAGPLUS_HOME", ""), "lib64/libMagPlus.so"
-            )
-            if os.path.exists(fullname):
-                lib = fullname
-
-
-#
-#  if not overwritten test if instlled version exist and use it
-#
-# if lib is None:
-#    installname = "@CMAKE_INSTALL_PREFIX@/@INSTALL_LIB_DIR@/libMagPlus@CMAKE_SHARED_LIBRARY_SUFFIX@"
-#    if os.path.exists(installname):
-#        lib = installname
-
-#
-# If LD_LIBRARY_PATH does not contain path to Magics and it is not where you installed,
-# we search the standard system locations
-#
+lib = findlibs.find("MagPlus")
 if lib is None:
-    lib = ctypes.util.find_library("MagPlus")
+    raise RuntimeError("Cannot find MagPlus library")
 
-# as last resort throw exception
-if lib is None:
-    raise Exception("Magics library could not be found")
 
 dll = ctypes.CDLL(lib)
 

@@ -37,6 +37,8 @@ install_requires = ["numpy"]
 if sys.version_info < (3, 7):
     install_requires = ["numpy<1.20"]
 
+install_requires += ["findlibs"]
+
 setuptools.setup(
     name="Magics",
     version=version,
