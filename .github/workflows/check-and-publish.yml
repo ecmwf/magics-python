@@ -11,15 +11,18 @@ on:
     types: [created]
 
 jobs:
-
   checks:
     strategy:
       fail-fast: false
       matrix:
         platform: [windows-latest, ubuntu-latest, macos-latest]
-        # platform: [ubuntu-latest]
         python-version: ["3.6", "3.7", "3.8", "3.9"]
         method: ["conda", "ecmwflibs"]
+        exclude:
+        - platform: windows-latest
+          method: conda
+        - platform: macos-latest
+          method: conda
 
     name: Python ${{ matrix.python-version }} on ${{ matrix.platform }} (${{ matrix.method }})
     runs-on: ${{ matrix.platform }}
@@ -66,7 +69,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v2
 
       - name: Set up Python
@@ -76,10 +78,9 @@ jobs:
 
       - name: Check version
         run: |
-           release=${GITHUB_REF##*/}
-           version=$(python setup.py --version)
-           test "$release" == "$version"
-
+          release=${GITHUB_REF##*/}
+          version=$(python setup.py --version)
+          test "$release" == "$version"
 
       - name: Install dependencies
         run: |
