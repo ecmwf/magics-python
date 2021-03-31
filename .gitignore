@@ -19,3 +19,4 @@ docs/build
 docs/_build
 x.*
 magics-test/
+tests.sh
