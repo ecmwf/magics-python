@@ -682,7 +682,7 @@ def set1i(name, data):
 
 ####################################################################
 
-array_2d_int = ndpointer(dtype=np.int, ndim=2, flags="CONTIGUOUS")
+array_2d_int = ndpointer(dtype=int, ndim=2, flags="CONTIGUOUS")
 set2i = dll.py_set2i
 set2i.restype = None
 set2i.argtypes = (c_char_p, array_2d_int, c_int, c_int)
