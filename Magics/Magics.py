@@ -10,13 +10,10 @@
 import ctypes
 import ctypes.util
 import json
-import os
 import sys
 
 import numpy as np
 from numpy.ctypeslib import ndpointer
-
-
 
 try:
     import ecmwflibs as findlibs
@@ -37,7 +34,7 @@ class FILE(ctypes.Structure):
 
 FILE_p = ctypes.POINTER(FILE)
 
-######################## String conversions ##########################
+####################################################################
 
 
 def _string_to_char(x):
@@ -77,14 +74,18 @@ def _convert_strings(fn):
     return wrapped
 
 
+def _noop(x):
+    return x
+
+
 if sys.version_info[0] > 2:
     convert_strings = _convert_strings
     char_to_string = _char_to_string
     string_to_char = _string_to_char
 else:
-    convert_strings = lambda x: x
-    char_to_string = lambda x: x
-    string_to_char = lambda x: x
+    convert_strings = _noop
+    char_to_string = _noop
+    string_to_char = _noop
 
 
 ####################################################################
@@ -473,9 +474,9 @@ def eps():
 
 
 ####################################################################
-###
-###  Please note: these two functions changed compared to the previous SWIG based Python interface
-###
+#
+# Please note: these two functions changed compared to the previous SWIG based Python interface
+#
 
 py_metgraph = dll.py_metgraph
 py_metgraph.restype = c_char_p
@@ -496,9 +497,9 @@ def epsinput():
 
 
 ####################################################################
-###
-###  Please note: this function was called mmetbufr to the previous SWIG based Python interface
-###
+#
+# Please note: this function was called mmetbufr to the previous SWIG based Python interface
+#
 
 py_metbufr = dll.py_metbufr
 py_metbufr.restype = c_char_p
@@ -733,9 +734,7 @@ py_set1c.restype = c_char_p
 
 @checked_return_code
 def set1c(name, data):
-    new_data = []
-    for s in data:
-        new_data.append(string_to_char(s))
+    new_data = [string_to_char(s) for s in data]
     name = string_to_char(name)
     data_p = (c_char_p * (len(new_data)))(*new_data)
     return py_set1c(ctypes.c_char_p(name), data_p, len(new_data))

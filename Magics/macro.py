@@ -9,6 +9,7 @@
 import json
 import os
 import sys
+import tempfile
 import threading
 
 import numpy
@@ -169,257 +170,6 @@ class Action(object):
     def quote(self, v):
         return '"' + v + '"'
 
-    def tohtml(self, file):
-        sep = ""
-        val = "%s(" % self.html
-
-        for key in list(self.args.keys()):
-
-            if isinstance(self.args[key], str):
-                if key == "odb_data":
-                    Magics.setc("odb_filename", self.args[key])
-                else:
-                    val += '%s%s = "%s"' % (sep, key, self.args[key])
-            elif isinstance(self.args[key], int):
-                val += "%s%s = %d" % (sep, key, self.args[key])
-            elif isinstance(self.args[key], float):
-                val += "%s%s = %0.2f" % (sep, key, self.args[key])
-            elif isinstance(self.args[key], list):
-                if isinstance(self.args[key][0], str):
-                    vval = ""
-                    vsep = ""
-                    if len(self.args[key]) < 5:
-                        for v in self.args[key]:
-                            vval += vsep + self.quote(v)
-                            vsep = ", "
-                    else:
-                        vval = (
-                            self.quote(self.args[key][0])
-                            + ", "
-                            + self.quote(self.args[key][1])
-                            + ",...,"
-                            + self.quote(self.args[key][-2])
-                            + ", "
-                            + self.quote(self.args[key][-1])
-                        )
-                    vval += ""
-                    val += "%s%s = [%s]" % (sep, key, vval)
-                elif isinstance(self.args[key][0], int):
-                    vval = ""
-                    vsep = ""
-                    if len(self.args[key]) < 5:
-                        for v in self.args[key]:
-                            vval += vsep + ("%df" % v)
-                            vsep = ", "
-                    else:
-                        vval = (
-                            ("%d" % self.args[key][0])
-                            + ", "
-                            + ("%d" % self.args[key][1])
-                            + ",...,"
-                            + ("%d" % self.args[key][-2])
-                            + ", "
-                            + ("%d" % self.args[key][-1])
-                        )
-                    vval += ""
-                    val += "%s%s = %s" % (sep, key, vval)
-                elif isinstance(self.args[key][0], float):
-                    vval = ""
-                    vsep = ""
-                    if len(self.args[key]) < 5:
-                        for v in self.args[key]:
-                            vval += vsep + ("%0.2f" % v)
-                            vsep = ", "
-                    else:
-                        vval = (
-                            ("%0.2f" % self.args[key][0])
-                            + ", "
-                            + ("%0.2f" % self.args[key][1])
-                            + ",...,"
-                            + ("%0.2f" % self.args[key][-2])
-                            + ", "
-                            + ("%0.2f" % self.args[key][-1])
-                        )
-
-                    vval += ""
-                    val += "%s%s = [%s]" % (sep, key, vval)
-            elif isinstance(self.args[key], numpy.ndarray):
-                type = self.args[key].dtype
-                dim = len(self.args[key].shape)
-                if isinstance(self.args[key][0], int):
-                    if dim == 2:
-                        print("pset2i")
-                    else:
-                        print("pset1i")
-                elif type == "float64" or type == "float32":
-                    if dim == 2:
-                        print("pset2r")
-                    else:
-                        vval = ""
-                        vsep = ""
-                        if len(self.args[key]) < 5:
-                            for v in self.args[key]:
-                                vval += vsep + ("%0.2f" % v)
-                                vsep = ", "
-                        else:
-                            vval = (
-                                ("%0.2f" % self.args[key][0])
-                                + ", "
-                                + ("%0.2f" % self.args[key][1])
-                                + ",...,"
-                                + ("%0.2f" % self.args[key][-2])
-                                + ", "
-                                + ("%0.2f" % self.args[key][-1])
-                            )
-                        vval += ""
-                        val += "%s%s = [%s]" % (sep, key, vval)
-                else:
-                    print("type???->", key)
-            sep = ",\n\t"
-
-        print(file, val + ")\n")
-
-    def tomv4(self, file):
-        sep = "\t"
-        val = "%s,\n" % self.verb.upper()
-
-        for key in list(self.args.keys()):
-            if isinstance(self.args[key], str):
-                if key == "odb_data":
-                    Magics.setc("odb_filename", self.args[key])
-                else:
-                    val += "%s%s = %s" % (sep, key.upper(), self.args[key].upper())
-            elif isinstance(self.args[key], int):
-                val += "%s%s = %d" % (sep, key.upper(), self.args[key])
-            elif isinstance(self.args[key], float):
-                val += "%s%s = %0.2f" % (sep, key.upper(), self.args[key])
-            elif isinstance(self.args[key], list):
-                if isinstance(self.args[key][0], str):
-                    vval = "["
-                    vsep = ""
-                    for v in self.args[key]:
-                        vval += vsep + v
-                        vsep = ", "
-                    vval += "]"
-                    val += "%s%s = %s" % (sep, key.upper(), vval)
-                elif isinstance(self.args[key][0], int):
-                    print("pset1i")
-                elif isinstance(self.args[key][0], float):
-                    print("pset1r")
-            elif isinstance(self.args[key], numpy.ndarray):
-                type = self.args[key].dtype
-                dim = len(self.args[key].shape)
-                if isinstance(self.args[key][0], int):
-                    if dim == 2:
-                        print("pset2i")
-                    else:
-                        print("pset1i")
-                elif type == "float64" or type == "float32":
-                    if dim == 2:
-                        print("pset2r")
-                    else:
-                        vval = "["
-                        vsep = ""
-                        for v in self.args[key]:
-                            vval += vsep + ("%0.2f" % v)
-                            vsep = ", "
-                        vval += "]"
-                        val += "%s%s = %s" % (sep, key.upper(), vval)
-
-                else:
-                    print("type???->", key)
-            sep = ",\n\t"
-
-        print(file, val + "\n")
-
-    def tofortran(self, f):
-        if self.action == Magics.new_page:
-            print(f, '\tcall pnew("page")')
-            return
-        for key in list(self.args.keys()):
-            if isinstance(self.args[key], str):
-                if key == "odb_data":
-                    Magics.setc("odb_filename", self.args[key])
-                else:
-                    print(f, '\tcall psetc("%s", "%s")' % (key, self.args[key]))
-            elif isinstance(self.args[key], int):
-                print(f, '\tcall pseti("%s", %d)' % (key, self.args[key]))
-            elif isinstance(self.args[key], float):
-                print(f, '\tcall psetr("%s", %0.2f)' % (key, self.args[key]))
-            elif isinstance(self.args[key], list):
-                if isinstance(self.args[key][0], str):
-                    nb = 0
-                    for v in self.args[key]:
-                        nb = max(nb, len(v))
-
-                    val = "(/"
-                    sep = ""
-                    newline = 70
-                    for v in self.args[key]:
-                        val += sep + self.quote(v.ljust(nb))
-                        sep = ", "
-                        if len(val) > newline:
-                            sep = ",&\n\t\t"
-                            newline = newline + 70
-                    val += "/)"
-                    print(
-                        f,
-                        '\tcall pset1c("%s", %s, %d)' % (key, val, len(self.args[key])),
-                    )
-                elif isinstance(self.args[key][0], int):
-                    print("pset1i")
-                elif isinstance(self.args[key][0], float):
-                    val = "(/"
-                    sep = ""
-                    for v in self.args[key]:
-                        val += sep + ("%0.2f" % v)
-                        sep = ", "
-                    val += "/)"
-                    print(
-                        f,
-                        '\tcall pset1r("%s", %s, %d)' % (key, val, len(self.args[key])),
-                    )
-            elif isinstance(self.args[key], numpy.ndarray):
-                type = self.args[key].dtype
-                dim = len(self.args[key].shape)
-                if isinstance(self.args[key][0], int):
-                    if dim == 2:
-                        print("pset2i")
-                    else:
-                        print("pset1i")
-                elif type == "float64" or type == "float32":
-                    if dim == 2:
-                        print("pset2r")
-                    else:
-                        val = "(/"
-                        sep = ""
-                        for v in self.args[key]:
-                            val += sep + ("%0.2f" % v)
-                            sep = ", "
-                        val += "/)"
-                        print(
-                            f,
-                            '\tcall pset1r("%s", %s, %d)'
-                            % (key, val, len(self.args[key])),
-                        )
-                elif isinstance(self.args[key][0], int):
-                    print("pset1r")
-                else:
-                    print("type???->", key)
-
-        if (
-            self.action != None
-            and actions[self.verb] != ""
-            and actions[self.verb] != "pinput"
-        ):
-            print(f, "\tcall %s\n" % actions[self.verb])
-            for key in list(self.args.keys()):
-                print(f, "\tcall preset('%s')" % key)
-            print(f, "")
-
-        else:
-            print(f, "")
-
     def to_yaml(self):
         def tidy(x):
             if isinstance(x, (list, tuple)):
@@ -449,10 +199,10 @@ class Action(object):
         if sys.version_info[0] < 3:
             if type(obj) in (int, float, str, bool, numpy.float64, numpy.float32):
                 return obj
-            elif type(obj) == unicode:
+            elif type(obj) == unicode:  # noqa
                 return str(obj)
             elif type(obj) in (list, tuple, set, numpy.ndarray) and len(obj):
-                if type(obj[0]) != unicode:
+                if type(obj[0]) != unicode:  # noqa
                     return obj
                 obj = list(obj)
                 for i, v in enumerate(obj):
@@ -472,7 +222,7 @@ class Action(object):
                 return "float"
         return "int"
 
-    def set(self):
+    def set(self):  # noqa C901
         for key in list(self.args.keys()):
 
             if isinstance(self.args[key], dict):
@@ -528,7 +278,7 @@ class Action(object):
 
         self.set()
 
-        if self.action != None:
+        if self.action is not None:
             if self.action != Magics.new_page:
                 if self.action == Magics.legend:
                     Magics.setc("legend", "on")
@@ -802,7 +552,7 @@ def examine(*args):
     for n in args:
         try:
             n.inspect()
-        except:
+        except Exception:
             break
 
 
@@ -916,9 +666,6 @@ class odb_filter(object):
             os.abort()
 
 
-import tempfile
-
-
 def _jplot(*args):
     from IPython.display import Image
 
@@ -960,7 +707,7 @@ def wmsstyles(data):
             Magics.finalize()
             styles = json.loads(styles.decode())
             return styles
-        except:
+        except Exception:
             Magics.finalize()
             return {}
 

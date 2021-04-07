@@ -97,7 +97,7 @@ class BinaryDecoder(BinaryReader):
             r = self.readDouble()
             g = self.readDouble()
             b = self.readDouble()
-            s = self.readDouble()
+            s = self.readDouble()  # noqa
             m = self.readInt()
             texts.append(self.readString(m))
 
@@ -240,7 +240,7 @@ class BinaryDecoder(BinaryReader):
         x = self.projectX(self.readDouble())
         y = self.projectX(self.readDouble())
         r = self.readDouble()
-        cs = self.readInt()
+        cs = self.readInt()  # noqa
         return
         self.ax.add_patch(
             Circle(

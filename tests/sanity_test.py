@@ -12,8 +12,9 @@ directory.
 import glob
 import os
 import subprocess
-import unittest
 import sys
+import unittest
+
 
 class MagicsSanityTest(unittest.TestCase):
     """

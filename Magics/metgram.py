@@ -273,7 +273,7 @@ class ps(object):
         self.definition["format"] = "ps"
 
     def execute(self):
-        if magics["drivers"] == None:
+        if magics["drivers"] is None:
             magics["drivers"] = []
         magics["drivers"].append(self.definition)
         return page()

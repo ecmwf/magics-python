@@ -11,7 +11,7 @@ from . import macro
 
 def substitute(default, user):
     out = default
-    if user != None:
+    if user is not None:
         for key in user:
             out[key] = user[key]
     return out
@@ -53,7 +53,7 @@ def geoplot(
 
     # Define the title
     title = macro.mtext(text_lines=title, text_font_size=0.8, text_justification="left")
-    if output == None:
+    if output is None:
         return macro.plot(projection, background, data, contour, foreground, title)
 
     return macro.plot(output, projection, background, data, contour, foreground, title)
@@ -92,7 +92,7 @@ def xyplot(data, contour=None, output=None):
 
     # Define the title
     title = macro.mtext(text_font_size=0.8, text_justification="left")
-    if output == None:
+    if output is None:
         return macro.plot(
             output, projection, vertical, horizontal, data, contour, title
         )
@@ -306,7 +306,8 @@ def epswave(parameter, input, **args):
         text_justification="left",
         text_lines=[
             "ENS Meteogram",
-            "<json_info key='station_name'/><json_info key='location'/><json_info key='grid_point'/><json_info key='height'/>",
+            "<json_info key='station_name'/><json_info key='location'/>",
+            "<json_info key='grid_point'/><json_info key='height'/>",
             "<json_info key='product_info'/><json_info key='date'/>",
             "<font size='0.5' colour='white'>.</font>",
             "<json_info key='parameter_info'/>",
@@ -376,7 +377,8 @@ def epswind(parameter, input, **args):
         text_justification="left",
         text_lines=[
             "ENS Meteogram",
-            "<json_info key='station_name'/><json_info key='location'/><json_info key='grid_point'/><json_info key='height'/>",
+            "<json_info key='station_name'/><json_info key='location'/>",
+            "<json_info key='grid_point'/><json_info key='height'/>",
             "<json_info key='product_info'/><json_info key='date'/>",
             "<font size='0.5' colour='white'>.</font>",
             "<json_info key='parameter_info'/>",
@@ -465,7 +467,8 @@ def epsgraph(parameter, input, **args):
         text_justification="left",
         text_lines=[
             "ENS Meteogram",
-            "<json_info key='station_name'/><json_info key='location'/><json_info key='grid_point'/><json_info key='height'/>",
+            "<json_info key='station_name'/><json_info key='location'/>",
+            "<json_info key='grid_point'/><json_info key='height'/>",
             "<json_info key='product_info'/><json_info key='date'/>",
             "<font size='0.5' colour='white'>.</font>",
             "<json_info key='parameter_info'/>",

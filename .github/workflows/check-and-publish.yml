@@ -11,6 +11,17 @@ on:
     types: [created]
 
 jobs:
+  quality:
+    name: Code QA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pip install black flake8 isort
+      - run: black --version
+      - run: isort --check --profile=black .
+      - run: black --check .
+      - run: flake8 .
+
   checks:
     strategy:
       fail-fast: false
@@ -18,14 +29,15 @@ jobs:
         platform: [windows-latest, ubuntu-latest, macos-latest]
         python-version: ["3.6", "3.7", "3.8", "3.9"]
         method: ["conda", "ecmwflibs"]
-        exclude:
-        - platform: windows-latest
-          method: conda
-        - platform: macos-latest
-          method: conda
+        # exclude:
+        # - platform: windows-latest
+        #   method: conda
+        # - platform: macos-latest
+        #   method: conda
 
     name: Python ${{ matrix.python-version }} on ${{ matrix.platform }} (${{ matrix.method }})
     runs-on: ${{ matrix.platform }}
+    needs: quality
 
     steps:
       - uses: actions/checkout@v2

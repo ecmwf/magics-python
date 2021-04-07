@@ -1,1 +1,1 @@
-import Magics
+import Magics  # noqa
