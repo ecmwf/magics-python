@@ -557,12 +557,10 @@ def examine(*args):
 
 
 def _execute(o):
-    if isinstance(o, list) or isinstance(o, tuple):
+    if isinstance(o, (list, tuple)):
         for x in o:
             _execute(x)
-
     else:
-
         o.execute()
 
 
@@ -772,3 +770,7 @@ def wmscrs():
             "n_lat": 90.0,
         },
     }
+
+
+def get_library_path():
+    return Magics.get_library_path()
