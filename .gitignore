@@ -7,8 +7,10 @@ magics/__pycache__
 build
 dist
 *.sublime-workspace
+.idea/
 # Ignore local virtual environment
 venv/
+.venv/
 
 # Ignore static typing
 .pytype

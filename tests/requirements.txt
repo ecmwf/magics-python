@@ -1,4 +1,5 @@
 pytest
+pytest-flakes
 xarray
 scipy
 cftime

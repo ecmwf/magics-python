@@ -40,10 +40,10 @@ and "help wanted" is open to whoever wants to implement it.
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `magics-python` for local development. Please note this documentation assumes
+Ready to contribute? Here's how to set up ``magics-python`` for local development. Please note this documentation assumes
 you already have `virtualenv` and `Git` installed and ready to go.
 
-1. Fork the `magics-python` repo on GitHub.
+1. Fork the ``magics-python`` repo on GitHub.
 2. Clone your fork locally::
 
     $ cd path_for_the_repo
@@ -58,10 +58,10 @@ you already have `virtualenv` and `Git` installed and ready to go.
     This should change the shell to look something like
     (magics-python-env) $
 
-4. Install system dependencies as described in the README.rst file then install a known-good set of python dependencies and the your local copy with::
+4. Install program and dependencies as described in the README.rst file then install a known-good set of Python dependencies and the your local copy with::
 
-    $ pip install -r ci/requirements-tests.txt
-    $ pip install -e .
+    $ pip install --editable=.
+    $ pip install -r tests/requirements.txt
 
 5. Create a branch for local development::
 
@@ -69,10 +69,15 @@ you already have `virtualenv` and `Git` installed and ready to go.
 
    Now you can make your changes locally.
 
-6. The next step would be to run the test cases. `magics-python` uses py.test, you can run PyTest. Before you run pytest you should ensure all dependancies are installed::
+6. The next step would be to run the test cases. ``magics-python`` uses py.test, you can run PyTest::
 
-    $ pip install -r ci/requirements-dev.txt
-    $ pytest -v --flakes
+    # First, install some fixtures the test suite needs to run.
+    $ git clone --depth 1 https://github.com/ecmwf/magics-test.git
+    $ export MAGICS_PYTHON_TESTS=magics-test/test/gallery
+
+    # Invoke test suite.
+    export MAGPLUS_HOME=/usr/local/opt/magics-4.9.3
+    $ pytest -vvv --flakes
 
 7. Before raising a pull request you should also run tox. This will run the tests across different versions of Python::
 
