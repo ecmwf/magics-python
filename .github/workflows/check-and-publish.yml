@@ -132,3 +132,36 @@ jobs:
           repo: ${{ matrix.repo }}
           owner: ecmwf
           event_type: magics-python-updated
+
+  dispatch:
+    name: dispatch
+    needs:
+    - quality
+    - checks
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Run Regression Tests
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.GH_PAT }}
+        repository: ecmwf/magics-test
+        event-type: magics-python-updated
+        client-payload: '{"magics_python_ref": "${{ github.ref }}", "magics_python_sha": "${{ github.sha }}"}'
+
+  notify-teams:
+    name: notify
+    runs-on: ubuntu-20.04
+    needs:
+    - quality
+    - checks
+    - deploy
+    - notify
+    - dispatch
+    if: always() && github.ref == 'refs/heads/master'
+    steps:
+    - name: Notify Teams
+      uses: ecmwf-actions/notify-teams@v1
+      with:
+        incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+        needs_context: ${{ toJSON(needs) }}
+        workflow_id: check-and-publish.yml
