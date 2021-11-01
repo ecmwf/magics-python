@@ -43,6 +43,10 @@ You may run a simple selfcheck command to ensure that your system is set up corr
     Found: Magics '4.0.0'.
     Your system is ready.
 
+If it does not work out of the box, try setting up the path to your MagPlus installation beforehand::
+
+    $ export MAGPLUS_HOME=/usr/local/opt/magics-4.9.3
+
 
 Usage
 -----
@@ -54,8 +58,6 @@ a 2m temperature grib file::
 
 
 You may try out the high level API in a python interpreter::
-
-
 
    from Magics import macro as magics
 
