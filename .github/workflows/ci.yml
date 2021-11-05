@@ -1,0 +1,244 @@
+name: ci
+
+# Controls when the workflow will run
+on:
+
+  # Trigger the workflow on all pushes
+  push:
+    branches:
+    - '**'
+    tags:
+    - '**'
+
+  # Allow workflow to be dispatched on demand
+  workflow_dispatch: ~
+
+jobs:
+  qa:
+    name: qa
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install black flake8 isort
+
+    - name: Check isort
+      run: isort --check .
+
+    - name: Check black
+      run: black --check .
+
+    - name: Check flake8
+      run: flake8 .
+
+  ci:
+    name: ci
+    needs: qa
+    strategy:
+      matrix:
+        name:
+        - gnu-10@ubuntu-20.04
+        - clang-12@ubuntu-20.04
+        - gnu-10@ubuntu-18.04
+        - clang-9@ubuntu-18.04
+        # Currently disabled because of dynamic library linking issues
+        # - gnu-10@macos-10.15
+        - clang-12@macos-10.15
+        include:
+        - name: gnu-10@ubuntu-20.04
+          os: ubuntu-20.04
+          compiler: gnu-10
+          compiler_cc: gcc-10
+          compiler_cxx: g++-10
+          compiler_fc: gfortran-10
+        - name: clang-12@ubuntu-20.04
+          os: ubuntu-20.04
+          compiler: clang-12
+          compiler_cc: clang-12
+          compiler_cxx: clang++-12
+          compiler_fc: gfortran-10
+        - name: gnu-10@ubuntu-18.04
+          os: ubuntu-18.04
+          compiler: gnu-10
+          compiler_cc: gcc-10
+          compiler_cxx: g++-10
+          compiler_fc: gfortran-10
+        - name: clang-9@ubuntu-18.04
+          os: ubuntu-18.04
+          compiler: clang-9
+          compiler_cc: clang-9
+          compiler_cxx: clang++-9
+          compiler_fc: gfortran-9
+        # Currently disabled because of dynamic library linking issues
+        # - name: gnu-10@macos-10.15
+        #   os: macos-10.15
+        #   compiler: gnu-10
+        #   compiler_cc: gcc-10
+        #   compiler_cxx: g++-10
+        #   compiler_fc: gfortran-10
+        # Xcode compiler requires empty environment variables, so we pass null (~) here
+        - name: clang-12@macos-10.15
+          os: macos-10.15
+          compiler: clang-12
+          compiler_cc: ~
+          compiler_cxx: ~
+          compiler_fc: gfortran-10
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Install System Dependencies (Ubuntu)
+      shell: bash -eux {0}
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get -q -y update
+        [[ "${{ matrix.os }}" == "ubuntu-18.04" ]] && NETCDF_PACKAGE=13 || NETCDF_PACKAGE=15
+        sudo apt-get -q -y install libnetcdf$NETCDF_PACKAGE libnetcdf-dev libpango1.0-dev libcurl4-openssl-dev
+
+    - name: Install System Dependencies (macOS)
+      shell: bash -eux {0}
+      if: startsWith(matrix.os, 'macos')
+      run: brew install netcdf pango
+
+    - name: Install Dependencies
+      id: install-dependencies
+      uses: ecmwf-actions/build-package@v2
+      with:
+        self_build: false
+        dependencies: |
+          ecmwf/ecbuild
+          ecmwf/eccodes
+          OSGeo/PROJ@refs/tags/8.1.1
+          ecmwf/magics
+        dependency_branch: develop
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install findlibs numpy pytest
+
+    - name: Verify Source Distribution
+      shell: bash -eux {0}
+      run: |
+        python setup.py sdist --dist-dir=${{ runner.temp }} --formats=gztar
+        python -m pip install ${{ runner.temp }}/$(python setup.py --name)-$(python setup.py --version).tar.gz
+
+    - name: Run Tests
+      env:
+        LD_LIBRARY_PATH: ${{ steps.install-dependencies.outputs.lib_path }}
+      shell: bash -eux {0}
+      run: |
+        DYLD_LIBRARY_PATH=${{ env.LD_LIBRARY_PATH }}
+        LIBRARY_PATHS=(${DYLD_LIBRARY_PATH//:/ })
+        export MAGPLUS_DIR="${LIBRARY_PATHS[0]}/../"
+        python -m Magics selfcheck
+        python -m pytest
+
+  deploy:
+    name: deploy
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: ci
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Setup Python Environment
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel twine
+
+    # Checks if the release version matches version declared in the package.
+    #   Make sure to fail gracefully and continue on error, so we don't abort the complete workflow.
+    - name: Check Version
+      id: check-version
+      shell: bash -eux {0}
+      continue-on-error: true
+      run: |
+        release=${GITHUB_REF##*/}
+        version=$(python setup.py --version)
+        test "$release" == "$version"
+
+    # Build the source distribution and publish it on PyPI.
+    #   Run this step only if the previous one was successful.
+    - name: Build and Publish
+      if: steps.check-version.outcome == 'success'
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      shell: bash -eux {0}
+      run: |
+        python setup.py sdist
+        twine upload dist/*
+
+  notify:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    name: notify
+    needs: deploy
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        repo:
+        - climetlab
+        - ecmwflibs
+    steps:
+    - name: Notify ${{ matrix.repo }}
+      uses: mvasigh/dispatch-action@main
+      with:
+        token: ${{ secrets.NOTIFY_ECMWFLIBS }}
+        repo: ${{ matrix.repo }}
+        owner: ecmwf
+        event_type: magics-python-updated
+
+  dispatch:
+    name: dispatch
+    needs:
+    - qa
+    - ci
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Run Regression Tests
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.GH_PAT }}
+        repository: ecmwf/magics-test
+        event-type: magics-python-updated
+        client-payload: '{"magics_python_ref": "${{ github.ref }}", "magics_python_sha": "${{ github.sha }}"}'
+
+  notify-teams:
+    name: notify-teams
+    runs-on: ubuntu-20.04
+    needs:
+    - qa
+    - ci
+    - deploy
+    - notify
+    - dispatch
+    if: always() && github.ref == 'refs/heads/master'
+    steps:
+    - name: Notify Teams
+      uses: ecmwf-actions/notify-teams@v1
+      with:
+        incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+        needs_context: ${{ toJSON(needs) }}
