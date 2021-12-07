@@ -24,23 +24,19 @@ The package is installed from PyPI with::
 System dependencies
 ~~~~~~~~~~~~~~~~~~~
 
-The python module depends on the ECMWF *Magics* library
-that must be installed on the system and accessible as a shared library.
-Some Linux distributions ship a binary version that may be installed with the standard package manager.
-On Ubuntu 18.04 use the command::
+The python module depends on the ECMWF *Magics* and *eccodes* libraries
 
-    $ sudo apt-get install libmagplus3v5
+They can be installed from PyPI with::
+     $ pip install ecmwflibs
 
-As an alternative you may install the official source distribution
-by following the instructions at
-https://software.ecmwf.int/magics/Installation+Guide
 
-Note that *Magics* support for the Windows operating system is experimental.
 
 You may run a simple selfcheck command to ensure that your system is set up correctly::
 
     $ python -m Magics selfcheck
-    Found: Magics '4.0.0'.
+    Found: Magics 'Magics 4.10.0'.
+    Library: /usr/local/lib/python3.9/site-packages/ecmwflibs/.dylibs/libMagPlus.dylib
+    Magics home: /usr/local/lib/python3.9/site-packages/ecmwflibs
     Your system is ready.
 
 
