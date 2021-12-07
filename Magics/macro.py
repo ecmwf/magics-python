@@ -724,9 +724,9 @@ def version():
 def predefined_areas():
     with LOCK:
         home = Magics.home()
-        with open("%s/share/magics/projections.json" % (home.decode())) as input:
+        with open("%s/share/magics/styles/projections.json" % (home.decode())) as input:
             projections = json.load(input)
-        return projections.keys()
+        return list(projections.keys())
 
 
 def wmscrs():
