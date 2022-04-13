@@ -244,6 +244,11 @@ class Action(object):
             elif isinstance(self.args[key], list) and len(self.args[key]):
                 if isinstance(self.args[key][0], str):
                     Magics.set1c(key, self.args[key])
+                elif isinstance(self.args[key][0], dict):
+                    np = []
+                    for p in self.args[key]:
+                        np.append(json.dumps(p))
+                    Magics.set1c(key, np)
                 else:
                     type = self.find_type(self.args[key])
                     if type == "int":
@@ -749,18 +754,26 @@ def wmscrs():
                 "n_lat": 20048966.10,
             },
             {
-                "name": "EPSG:3857",
-                "w_lon": -20026376.39,
-                "s_lat": -20048966.10,
-                "e_lon": 20026376.39,
-                "n_lat": 20048966.10,
-            },
-            {
                 "name": "EPSG:32661",
                 "w_lon": 1994055.62,
                 "s_lat": 5405875.53,
                 "e_lon": 2000969.46,
                 "n_lat": 2555456.55,
+            },
+            {
+                "name": "EPSG:32762",
+                "w_lon": 1999030.54,
+                "s_lat": 1444543.45,
+                "e_lon": 2005944.38,
+                "n_lat": -1405875.53,
+            },
+            {  # 1896628.62,1507846.05,4662111.45,6829874.45
+                # 1896628.62,1507846.05,4662111.45,6829874.45
+                "name": "EPSG:3035",
+                "w_lon": 1896628.62,
+                "s_lat": 1507846.05,
+                "e_lon": 4662111.45,
+                "n_lat": 6829874.45,
             },
         ],
         "geographic_bounding_box": {
