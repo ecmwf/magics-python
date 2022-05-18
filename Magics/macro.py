@@ -15,6 +15,7 @@ import threading
 import numpy
 
 from . import Magics
+from . import binary
 
 LOCK = threading.RLock()
 
@@ -692,11 +693,42 @@ def _jplot(*args):
     os.unlink(tmp)
     return image
 
+def _mplot(*args):
+    
+
+    f, tmp = tempfile.mkstemp(".mgb")
+    os.close(f)
+
+    base, ext = os.path.splitext(tmp)
+
+    img = output(
+        output_formats=["mgb"],
+        output_name_first_page_number="off",
+        output_name=base,
+    )
+
+    all = [img]
+    all.extend(args)
+
+    _plot(all)
+
+    binary.plot_mgb(tmp)
+    os.unlink(tmp)
+    
+
+
 
 def plot(*args, **kwargs):
     with LOCK:
         if ipython_active:
             return _jplot(*args, **kwargs)
+        else:
+            return _plot(*args, **kwargs)
+
+def matplotlib_plot(*args, **kwargs):
+    with LOCK:
+        if ipython_active:
+            return _mplot(*args, **kwargs)
         else:
             return _plot(*args, **kwargs)
 
