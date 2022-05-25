@@ -699,21 +699,32 @@ def _mplot(*args):
     f, tmp = tempfile.mkstemp(".mgb")
     os.close(f)
 
+    g, meta = tempfile.mkstemp(".json")
+    os.close(g)
+
     base, ext = os.path.splitext(tmp)
 
     img = output(
         output_formats=["mgb"],
         output_name_first_page_number="off",
         output_name=base,
+        metadata_path=meta
+
     )
 
     all = [img]
     all.extend(args)
 
     _plot(all)
-
     binary.plot_mgb(tmp)
     os.unlink(tmp)
+    
+    with open(meta) as g:
+        metadata = json.load(g)
+    
+    os.unlink(meta)
+    
+    return metadata
     
 
 
