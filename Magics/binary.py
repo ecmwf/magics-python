@@ -21,46 +21,84 @@ V_ALIGN = (
 
 
 class BinaryReader:
+    '''
+    Class which contains functions for reading
+    data types stored in C ++ binary format.
+    '''
     def __init__(self, path):
+        '''
+        Init function which reads the binary format file.
+        '''
         self.f = open(path, "rb")
 
-    def readChar(self):
+    def read_char(self):
+        '''
+        Function to read Character data type.
+        '''
         return self.f.read(1)
 
-    def readInt(self):
+    def read_int(self):
+        '''
+        Function to read Integer data type.
+        '''
         return struct.unpack("i", self.f.read(4))[0]
 
-    def readDouble(self):
+    def read_double(self):
+        '''
+        Function to read Double data type.
+        '''
         return struct.unpack("d", self.f.read(8))[0]
 
-    def readBool(self):
+    def read_bool(self):
+        '''
+        Function to read Boolean data type.
+        '''
         return struct.unpack("c", self.f.read(1))[0] == b"\x01"
 
-    def readString(self, n=None):
+    def read_string(self, n=None):
+        '''
+        Function to read String data type.
+        '''
         if n is None:
-            n = self.readInt()
+            n = self.read_int()
         return self.f.read(n).decode()
 
-    def readDoubleArray(self, n):
+    def read_double_array(self, n):
+        '''
+        Function to read Array of Double data type.
+        '''
         return np.fromfile(self.f, float, n)
 
 
 class Layout:
-    def __init__(self, x, y, width, height, minX, minY, maxX, maxY):
+    '''
+    Class to store the layout of C++ binary format file i.e.
+    get attributes for plotting such as ranges of X andd Y coordinates,
+    width and height.
+    '''
+    def __init__(self, x, y, width, height, min_x, min_y, max_x, max_y):
+        '''
+        Init function.
+        '''
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.minX = minX
-        self.minY = minY
-        self.maxX = maxX
-        self.maxY = maxY
-
-        # print('Layout', x, y, width, height, minX, minY, maxX, maxY)
+        self.min_x = min_x
+        self.min_y = min_y
+        self.max_x = max_x
+        self.max_y = max_y
 
 
 class BinaryDecoder(BinaryReader):
+    '''
+    Class to decode a C++ binary format file and
+    convert it into matplotlib axes.
+    '''
     def __init__(self, path):
+        '''
+        Init function.
+        '''
         super().__init__(path)
         self.current_colour = "k"
         self.current_linewidth = 1.0
@@ -69,41 +107,45 @@ class BinaryDecoder(BinaryReader):
         self.stack = []
 
         #
-        self.dimensionX = None  # Will be read from file
-        self.dimensionY = None  # Will be read from file
-        self.offsetX = 0.0
-        self.offsetY = 0.0
-        self.coordRatioX = 1.0
-        self.coordRatioY = 1.0
+        self.dimension_x = None  # Will be read from file
+        self.dimension_y = None  # Will be read from file
+        self.offset_x = 0.0
+        self.offset_y = 0.0
+        self.coord_ratio_x = 1.0
+        self.coord_ratio_y = 1.0
 
     def text(self):
+        '''
+        Function to read text from binary format and
+        convert them to matplotlib Text object.
+        '''
         # print("text")
-        size = self.readInt()
+        size = self.read_int()
         # assert size == 1
-        r = self.readDouble()
-        g = self.readDouble()
-        b = self.readDouble()
+        r = self.read_double()
+        g = self.read_double()
+        b = self.read_double()
 
-        angle = -self.readDouble() * 180 / 3.1416
-        blank = self.readBool()
-        horizontal = self.readInt()
-        vertical = self.readInt()
+        angle = -self.read_double() * 180 / 3.1416
+        blank = self.read_bool()
+        horizontal = self.read_int()
+        vertical = self.read_int()
 
-        n = self.readInt()
+        n = self.read_int()
 
         texts = []
 
         for i in range(n):
-            r = self.readDouble()
-            g = self.readDouble()
-            b = self.readDouble()
-            s = self.readDouble()  # noqa
-            m = self.readInt()
-            texts.append(self.readString(m))
+            r = self.read_double()
+            g = self.read_double()
+            b = self.read_double()
+            s = self.read_double()  # noqa
+            m = self.read_int()
+            texts.append(self.read_string(m))
 
         for i in range(size):
-            x = self.projectX(self.readDouble())
-            y = self.projectY(self.readDouble())
+            x = self.project_x(self.read_double())
+            y = self.project_y(self.read_double())
 
             props = dict(
                 ha=H_ALIGN[horizontal],
@@ -131,98 +173,145 @@ class BinaryDecoder(BinaryReader):
             )
 
     def project(self):
+        '''
+        Function to project the plot properties from
+        C++ binary format to matplotlib format.
+        '''
         self.stack.append(
             (
-                self.dimensionX,
-                self.dimensionY,
-                self.offsetX,
-                self.offsetY,
-                self.coordRatioX,
-                self.coordRatioY,
+                self.dimension_x,
+                self.dimension_y,
+                self.offset_x,
+                self.offset_y,
+                self.coord_ratio_x,
+                self.coord_ratio_y,
             )
         )
 
         layout = Layout(
-            self.readDouble(),
-            self.readDouble(),
-            self.readDouble(),
-            self.readDouble(),
-            self.readDouble(),
-            self.readDouble(),
-            self.readDouble(),
-            self.readDouble(),
+            self.read_double(),
+            self.read_double(),
+            self.read_double(),
+            self.read_double(),
+            self.read_double(),
+            self.read_double(),
+            self.read_double(),
+            self.read_double(),
         )
 
-        self.offsetX += layout.x * 0.01 * self.dimensionX
-        self.offsetY += layout.y * 0.01 * self.dimensionY
-        self.dimensionX = layout.width * 0.01 * self.dimensionX
-        self.dimensionY = layout.height * 0.01 * self.dimensionY
+        self.offset_x += layout.x * 0.01 * self.dimension_x
+        self.offset_y += layout.y * 0.01 * self.dimension_y
+        self.dimension_x = layout.width * 0.01 * self.dimension_x
+        self.dimension_y = layout.height * 0.01 * self.dimension_y
 
-        sumX = layout.maxX - layout.minX
-        sumY = layout.maxY - layout.minY
+        sum_x = layout.max_x - layout.min_x
+        sum_y = layout.max_y - layout.min_y
 
-        if sumX != 0 and sumY != 0:
-            self.coordRatioX = self.dimensionX / sumX
-            self.coordRatioY = self.dimensionY / sumY
+        if sum_x != 0 and sum_y != 0:
+            self.coord_ratio_x = self.dimension_x / sum_x
+            self.coord_ratio_y = self.dimension_y / sum_y
 
-        self.offsetX = self.projectX(-layout.minX)
-        self.offsetY = self.projectY(-layout.minY)
+        self.offset_x = self.project_x(-layout.min_x)
+        self.offset_y = self.project_y(-layout.min_y)
 
-    def projectX(self, x):
-        return self.coordRatioX * x + self.offsetX
+    def project_x(self, x):
+        '''
+        Function to project X coordinate from C++ binary format
+        coordinate system to matplotlib coordinate system.
+        '''
+        return self.coord_ratio_x * x + self.offset_x
 
-    def projectY(self, y):
-        return self.coordRatioY * y + self.offsetY
+    def project_y(self, y):
+        '''
+        Function to project Y coordinate from C++ binary format
+        coordinate system to matplotlib coordinate system.
+        '''
+        return self.coord_ratio_y * y + self.offset_y
 
     def unproject(self):
+        '''
+        Function to project the plot properties from
+        matplotlib format back to C++ binary format.
+        '''
         (
-            self.dimensionX,
-            self.dimensionY,
-            self.offsetX,
-            self.offsetY,
-            self.coordRatioX,
-            self.coordRatioY,
+            self.dimension_x,
+            self.dimension_y,
+            self.offset_x,
+            self.offset_y,
+            self.coord_ratio_x,
+            self.coord_ratio_y,
         ) = self.stack.pop()
-        # print("Pop")
 
     def colour(self):
-        r = self.readDouble()
-        g = self.readDouble()
-        b = self.readDouble()
-        a = self.readDouble()
+        '''
+        Function to read colour from binary format and
+        convert them to matplotlib colour format i.e.
+        R, G, B, A.
+        '''
+        r = self.read_double()
+        g = self.read_double()
+        b = self.read_double()
+        a = self.read_double()
         self.current_colour = (r, g, b, a)
-        # print('colour', self.current_colour)
 
     def line_style(self):
-        self.current_linestyle = LINE_STYLES[self.readInt()]
-        self.current_linewidth = self.readDouble()
+        '''
+        Function to read line properties from binary format and
+        convert them to matplotlib compatible format.
+        '''
+        self.current_linestyle = LINE_STYLES[self.read_int()]
+        self.current_linewidth = self.read_double()
 
     def line_width(self):
-        self.current_linewidth = self.readDouble()
+        '''
+        Function to read and store line width from
+        binary format.
+        '''
+        self.current_linewidth = self.read_double()
 
     def new_page(self):
-        pass
+        '''
+        TODO
+        '''
+        raise NotImplementedError('new_page() function not implemented!')
 
     def end_page(self):
-        pass
+        '''
+        TODO
+        '''
+        raise NotImplementedError('end_page() function not implemented!')
 
     def arrows(self):
-        assert False
+        '''
+        TODO
+        '''
+        raise NotImplementedError('arrows() function not implemented!')
 
     def flags(self):
-        assert False
+        '''
+        TODO
+        '''
+        raise NotImplementedError('flags() function not implemented!')
 
     def pixmap(self):
-        assert False
+        '''
+        TODO
+        '''
+        raise NotImplementedError('pixmap() function not implemented!')
 
     def image(self):
-        assert False
+        '''
+        TODO
+        '''
+        raise NotImplementedError('image() function not implemented!')
 
     def poly_line(self):
-        # print("poly_line")
-        n = self.readInt()
-        x = self.projectX(self.readDoubleArray(n))
-        y = self.projectY(self.readDoubleArray(n))
+        '''
+        Function to create 2D Lines.
+        '''
+        n = self.read_int()
+        x = self.project_x(self.read_double_array(n))
+        y = self.project_y(self.read_double_array(n))
         self.ax.add_line(
             Line2D(
                 x,
@@ -236,11 +325,13 @@ class BinaryDecoder(BinaryReader):
         self.ax.set_ylim(min(y), max(y))
 
     def circle(self):
-
-        x = self.projectX(self.readDouble())
-        y = self.projectX(self.readDouble())
-        r = self.readDouble()
-        cs = self.readInt()  # noqa
+        '''
+        Function to create a circle.
+        '''
+        x = self.project_x(self.read_double())
+        y = self.project_y(self.read_double())
+        r = self.read_double()
+        cs = self.read_int()  # noqa
         return
         self.ax.add_patch(
             Circle(
@@ -256,10 +347,12 @@ class BinaryDecoder(BinaryReader):
         )
 
     def simple_polygon(self):
-        # print("simple_polygon")
-        n = self.readInt()
-        x = self.projectX(self.readDoubleArray(n))
-        y = self.projectY(self.readDoubleArray(n))
+        '''
+        Function to create a simple polygon.
+        '''
+        n = self.read_int()
+        x = self.project_x(self.read_double_array(n))
+        y = self.project_y(self.read_double_array(n))
         self.ax.add_line(
             Line2D(
                 x,
@@ -271,10 +364,12 @@ class BinaryDecoder(BinaryReader):
         )
 
     def poly_line_2(self):
-        # print("poly_line_2")
-        n = self.readInt()
-        x = self.projectX(self.readDoubleArray(n))
-        y = self.projectY(self.readDoubleArray(n))
+        '''
+        Function to create 2D Lines.
+        '''
+        n = self.read_int()
+        x = self.project_x(self.read_double_array(n))
+        y = self.project_y(self.read_double_array(n))
         self.ax.add_line(
             Line2D(
                 x,
@@ -286,28 +381,35 @@ class BinaryDecoder(BinaryReader):
         )
 
     def simple_polygon_with_holes(self):
-        # print("simple_polygon_with_holes")
-        n = self.readInt()
-        x = self.projectX(self.readDoubleArray(n))
-        y = self.projectY(self.readDoubleArray(n))
+        '''
+        Function to create simple polygon with holes.
+        '''
+        n = self.read_int()
+        x = self.project_x(self.read_double_array(n))
+        y = self.project_y(self.read_double_array(n))
 
         # Holes
-        for j in range(self.readInt()):
-            n = self.readInt()
+        for j in range(self.read_int()):
+            n = self.read_int()
             # hole_x =
-            self.readDoubleArray(n)
+            self.read_double_array(n)
             # hole_y =
-            self.readDoubleArray(n)
+            self.read_double_array(n)
 
         # Fill colour
-        r = self.readDouble()
-        g = self.readDouble()
-        b = self.readDouble()
-        a = self.readDouble()
+        r = self.read_double()
+        g = self.read_double()
+        b = self.read_double()
+        a = self.read_double()
 
         self.ax.fill(x, y, color=(r, g, b, a))
 
     def plot(self, axes):
+        '''
+        Function to plot on the matplotlib axes.
+        Args:
+        axes() : matplotlib axes to plot the figure on.
+        '''
 
         self.ax = axes
 
@@ -332,31 +434,40 @@ class BinaryDecoder(BinaryReader):
         }
 
         # Magic
-        assert self.readString(6) == "MAGICS"
+        assert self.read_string(6) == "MAGICS"
 
         # Endianess
-        assert self.readInt() == 10
+        assert self.read_int() == 10
 
         # Version
-        self.readInt()
+        self.read_int()
 
         # header length
-        self.readInt()
+        self.read_int()
 
-        self.dimensionX = self.readDouble()
-        self.dimensionY = self.readDouble()
+        self.dimension_x = self.read_double()
+        self.dimension_y = self.read_double()
 
-        print(self.dimensionX, self.dimensionY)
+        print(self.dimension_x, self.dimension_y)
 
-        op = self.readChar()
+        op = self.read_char()
         while op:
             DECODERS[op]()
-            op = self.readChar()
+            op = self.read_char()
 
         # self.ax.set_xlim(min(x), max(x))
         # self.ax.set_ylim(min(y), max(y))
 
 
-def plot_mgb(path):
+def plot_mgb(path, axes=None):
+    '''
+    API function to to read a mgb file
+    and plot it on matplotlib axes.
+    Args:
+    axes() : matplotlib axes to plot the figure on.
+    '''
     decoder = BinaryDecoder(path)
-    decoder.plot(plt.gca())
+    if axes:
+        decoder.plot(axes)
+    else:
+        decoder.plot(plt.gca())
