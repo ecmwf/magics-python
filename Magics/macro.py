@@ -693,7 +693,7 @@ def _jplot(*args):
     os.unlink(tmp)
     return image
 
-def _mplot(*args):
+def _mplot(*args, **kwargs):
     
 
     f, tmp = tempfile.mkstemp(".mgb")
@@ -716,7 +716,10 @@ def _mplot(*args):
     all.extend(args)
 
     _plot(all)
-    binary.plot_mgb(tmp)
+    if 'axes' in kwargs:
+        binary.plot_mgb(tmp, kwargs['axes'])
+    else:
+        binary.plot_mgb(tmp)
     os.unlink(tmp)
     
     with open(meta) as g:
