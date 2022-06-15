@@ -113,6 +113,12 @@ class BinaryDecoder(BinaryReader):
         self.offset_y = 0.0
         self.coord_ratio_x = 1.0
         self.coord_ratio_y = 1.0
+        # variables to set limits of plot
+        # based on poly_line()
+        self.min_x = np.Inf
+        self.max_x = -np.Inf
+        self.min_y = np.Inf
+        self.max_y = -np.Inf
 
     def text(self):
         '''
@@ -321,8 +327,14 @@ class BinaryDecoder(BinaryReader):
                 linestyle=self.current_linestyle,
             )
         )
-        self.ax.set_xlim(min(x), max(x))
-        self.ax.set_ylim(min(y), max(y))
+        if min(x) < self.min_x:
+            self.min_x = min(x)
+        if max(x) > self.max_x:
+            self.max_x = max(x)
+        if min(y) < self.min_y:
+            self.min_y = min(y)
+        if max(y) > self.max_y:
+            self.max_y = max(y)
 
     def circle(self):
         '''
@@ -448,15 +460,15 @@ class BinaryDecoder(BinaryReader):
         self.dimension_x = self.read_double()
         self.dimension_y = self.read_double()
 
-        print(self.dimension_x, self.dimension_y)
+        # print(self.dimension_x, self.dimension_y)
 
         op = self.read_char()
         while op:
             DECODERS[op]()
             op = self.read_char()
 
-        # self.ax.set_xlim(min(x), max(x))
-        # self.ax.set_ylim(min(y), max(y))
+        self.ax.set_xlim(self.min_x, self.max_x)
+        self.ax.set_ylim(self.min_y, self.max_y)
 
 
 def plot_mgb(path, axes=None):
