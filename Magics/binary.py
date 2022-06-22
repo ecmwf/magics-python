@@ -1,10 +1,13 @@
-#!/usr/bin/env python3
+"""Binary Driver"""
 import struct
-
+import math
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.patches import Circle
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from collections import namedtuple
 
 LINE_STYLES = ("solid", "dashed", "dotted", "3", "4", "5")
 
@@ -470,8 +473,84 @@ class BinaryDecoder(BinaryReader):
         self.ax.set_xlim(self.min_x, self.max_x)
         self.ax.set_ylim(self.min_y, self.max_y)
 
+class ColorBar():
+    """
+    Class to create a colorbar on an axes.
+    """
+    def __init__(self, metadata) -> None:
+        """
+        init function
+        Args:
+        """
+        self.metadata = metadata
+        assert isinstance(self.metadata, dict), "Metadata is not a dictionary"
+        self.plot_colorbar = False
+        self.colorbar_entry_type = namedtuple(
+            typename= "colorbarEntry",
+            field_names=["min", "max"]
+        )
+        self.colorbar_entries = {}
 
-def plot_mgb(path, axes=None):
+    def check_colorbar_available(self):
+        """
+        function to check if colorbar properties
+        are present in the metadata
+        """
+        if 'legend' in self.metadata:
+            if 'legend_entries' in self.metadata['legend']:
+                if len(self.metadata['legend']['legend_entries'])>0:
+                    self.plot_colorbar = True
+
+    def rgba_to_np(self, text):
+        """
+        function to convert RGBA(254,254,223,1) to a numpy array
+        Args:
+            text (string): RGBA string
+        """
+        text = text.replace(' ', '').split('(')[-1].split(')')[0]
+        r, g, b, a = text.split(',')
+        np_array = np.array([int(r), int(g), int(b), int(a)])
+        return np_array
+
+    def get_colorbar_entries(self):
+        """
+        function to process metadata to get
+        colorbar entries
+        """
+        data = self.metadata['legend']['legend_entries']
+        for entry in data:
+            if entry['legend_entry_type'] == 'colorbar':
+                key = self.colorbar_entry_type(
+                    min = math.floor(entry['legend_entry_min_text']),
+                    max = math.ceil(entry['legend_entry_max_text'])
+                )
+                value = entry['legend_entry_colour']
+                self.colorbar_entries[key] = self.rgba_to_np(value)
+
+    def get_colorbar_image_array(self):
+        """
+        function to convert colorbar entries to an image
+        """
+        pass
+
+    def plot_colorbar(self, axes):
+        """
+        function to plot the colorbar on an axes
+        Args:
+            axes (matplotlib.axes._subplots.AxesSubplot):
+                Axes object on which the colorbar will be plotted
+        """
+        if not self.check_colorbar_available():
+            return
+        divider = make_axes_locatable(axes)
+        cax = divider.append_axes('right', size='5%', pad=0.05)
+        img = cax.imshow(
+            self.get_colorbar_image_array()
+        )
+        plt.colorbar(img, cax=cax, orientation='vertical')
+        return axes
+
+def plot_mgb(path, axes=None, **kwargs):
     '''
     API function to to read a mgb file
     and plot it on matplotlib axes.
@@ -479,7 +558,15 @@ def plot_mgb(path, axes=None):
     axes() : matplotlib axes to plot the figure on.
     '''
     decoder = BinaryDecoder(path)
-    if axes:
-        decoder.plot(axes)
-    else:
-        decoder.plot(plt.gca())
+
+    if axes is None:
+        fig, axes = plt.subplots(figsize=(10, 10))
+
+    # Add generating colorbar
+    # plot colorbar
+
+    decoder.plot(axes)
+    # if axes:
+    #     decoder.plot(axes)
+    # else:
+    #     decoder.plot(plt.gca())

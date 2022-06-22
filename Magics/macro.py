@@ -716,19 +716,19 @@ def _mplot(*args, **kwargs):
     all.extend(args)
 
     _plot(all)
-    if 'axes' in kwargs:
-        binary.plot_mgb(tmp, kwargs['axes'])
-    else:
-        binary.plot_mgb(tmp)
-    os.unlink(tmp)
-    
+
     with open(meta) as g:
         metadata = json.load(g)
-    
     os.unlink(meta)
     
+    if 'axes' in kwargs:
+        binary.plot_mgb(tmp, kwargs['axes'], metadata=meta)
+    else:
+        binary.plot_mgb(tmp, metadata=meta)
+    os.unlink(tmp)
+
     return metadata
-    
+
 
 
 
