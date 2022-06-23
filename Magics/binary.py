@@ -164,7 +164,7 @@ class BinaryDecoder(BinaryReader):
 
             if blank:
                 props["bbox"] = dict(
-                    alpha=1,
+                    alpha=0,
                     facecolor="white",
                     #  pad=10,
                     edgecolor="none",
