@@ -1,13 +1,12 @@
 """Binary Driver"""
+from collections import namedtuple
 import struct
 import math
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.patches import Circle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from collections import namedtuple
 
 LINE_STYLES = ("solid", "dashed", "dotted", "3", "4", "5")
 
@@ -477,29 +476,30 @@ class ColorBar():
     """
     Class to create a colorbar on an axes.
     """
-    def __init__(self, metadata) -> None:
+    def __init__(self, metadata, colorbar_width=100) -> None:
         """
         init function
         Args:
         """
         self.metadata = metadata
         assert isinstance(self.metadata, dict), "Metadata is not a dictionary"
-        self.plot_colorbar = False
         self.colorbar_entry_type = namedtuple(
             typename= "colorbarEntry",
             field_names=["min", "max"]
         )
-        self.colorbar_entries = {}
+        self.width = colorbar_width # in pixels
 
     def check_colorbar_available(self):
         """
         function to check if colorbar properties
         are present in the metadata
         """
+        plot_colorbar = False
         if 'legend' in self.metadata:
             if 'legend_entries' in self.metadata['legend']:
                 if len(self.metadata['legend']['legend_entries'])>0:
-                    self.plot_colorbar = True
+                    plot_colorbar = True
+        return plot_colorbar
 
     def rgba_to_np(self, text):
         """
@@ -512,42 +512,57 @@ class ColorBar():
         np_array = np.array([int(r), int(g), int(b), int(a)])
         return np_array
 
-    def get_colorbar_entries(self):
+    def get_colorbar_entries(self, metadata):
         """
         function to process metadata to get
         colorbar entries
         """
-        data = self.metadata['legend']['legend_entries']
+        data = metadata['legend']['legend_entries']
+        colorbar_entries = {}
         for entry in data:
             if entry['legend_entry_type'] == 'colorbar':
                 key = self.colorbar_entry_type(
-                    min = math.floor(entry['legend_entry_min_text']),
-                    max = math.ceil(entry['legend_entry_max_text'])
+                    min = math.floor(float(entry['legend_entry_min_text'])),
+                    max = math.ceil(float(entry['legend_entry_max_text']))
                 )
                 value = entry['legend_entry_colour']
-                self.colorbar_entries[key] = self.rgba_to_np(value)
+                colorbar_entries[key] = self.rgba_to_np(value)
+        return colorbar_entries
 
-    def get_colorbar_image_array(self):
+    def get_colorbar_image_array(self, metadata):
         """
         function to convert colorbar entries to an image
         """
-        pass
+        colorbar_entries = self.get_colorbar_entries(metadata)
+        sorted_entries = dict(sorted(colorbar_entries.items(), key=lambda item: item[0].min))
+        ncols = self.width # Width of the image
+        image_array = None # nrows x ncols x 4
+        for key, value in sorted_entries.items():
+            nrows = key.max - key.min
+            tmp_arr = np.full((nrows, ncols, 4), value)
+            if image_array is None:
+                image_array = tmp_arr
+            else:
+                image_array = np.concatenate(
+                    (tmp_arr, image_array),
+                    axis=0
+                )
+        return image_array
 
-    def plot_colorbar(self, axes):
+    def plot(self, axes):
         """
         function to plot the colorbar on an axes
         Args:
             axes (matplotlib.axes._subplots.AxesSubplot):
                 Axes object on which the colorbar will be plotted
         """
-        if not self.check_colorbar_available():
-            return
-        divider = make_axes_locatable(axes)
-        cax = divider.append_axes('right', size='5%', pad=0.05)
-        img = cax.imshow(
-            self.get_colorbar_image_array()
-        )
-        plt.colorbar(img, cax=cax, orientation='vertical')
+        if self.check_colorbar_available():
+            divider = make_axes_locatable(axes)
+            cax = divider.append_axes('right', size='5%', pad=0.05)
+            img = cax.imshow(
+                self.get_colorbar_image_array(self.metadata)
+            )
+            plt.colorbar(img, cax=cax, orientation='vertical')
         return axes
 
 def plot_mgb(path, axes=None, **kwargs):
@@ -560,13 +575,18 @@ def plot_mgb(path, axes=None, **kwargs):
     decoder = BinaryDecoder(path)
 
     if axes is None:
-        fig, axes = plt.subplots(figsize=(10, 10))
+        _, axes = plt.subplots(figsize=(20, 20))
 
-    # Add generating colorbar
-    # plot colorbar
+    if 'metadata' in kwargs:
+        colorbar = ColorBar(kwargs['metadata'])
+    axes = colorbar.plot(axes)
 
+    axes.tick_params(
+        axis='both',
+        which='both',
+        left=False, bottom=False,
+        labelleft=False, labelbottom=False
+    )
+
+    axes.set_aspect("equal")
     decoder.plot(axes)
-    # if axes:
-    #     decoder.plot(axes)
-    # else:
-    #     decoder.plot(plt.gca())

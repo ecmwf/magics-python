@@ -720,11 +720,11 @@ def _mplot(*args, **kwargs):
     with open(meta) as g:
         metadata = json.load(g)
     os.unlink(meta)
-    
+
     if 'axes' in kwargs:
-        binary.plot_mgb(tmp, kwargs['axes'], metadata=meta)
+        binary.plot_mgb(tmp, axes=kwargs['axes'], metadata=metadata)
     else:
-        binary.plot_mgb(tmp, metadata=meta)
+        binary.plot_mgb(tmp, metadata=metadata)
     os.unlink(tmp)
 
     return metadata
