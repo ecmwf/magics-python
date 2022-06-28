@@ -2,6 +2,7 @@
 from collections import namedtuple
 import struct
 import math
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
@@ -476,7 +477,7 @@ class ColorBar():
     """
     Class to create a colorbar on an axes.
     """
-    def __init__(self, metadata, colorbar_width=100) -> None:
+    def __init__(self, metadata) -> None:
         """
         init function
         Args:
@@ -487,7 +488,6 @@ class ColorBar():
             typename= "colorbarEntry",
             field_names=["min", "max"]
         )
-        self.width = colorbar_width # in pixels
 
     def check_colorbar_available(self):
         """
@@ -535,19 +535,22 @@ class ColorBar():
         """
         colorbar_entries = self.get_colorbar_entries(metadata)
         sorted_entries = dict(sorted(colorbar_entries.items(), key=lambda item: item[0].min))
-        ncols = self.width # Width of the image
-        image_array = None # nrows x ncols x 4
+        image_array = None # nrows x 4
+        ticks = []
         for key, value in sorted_entries.items():
+            ticks.append(key.min)
+            ticks.append(key.max)
             nrows = key.max - key.min
-            tmp_arr = np.full((nrows, ncols, 4), value)
+            tmp_arr = np.full((nrows, 4), value)
             if image_array is None:
                 image_array = tmp_arr
             else:
                 image_array = np.concatenate(
-                    (tmp_arr, image_array),
+                    (image_array, tmp_arr),
                     axis=0
                 )
-        return image_array
+        ticks = np.sort(np.array(list(set(ticks)))) # remove redundant values
+        return image_array, ticks
 
     def plot(self, axes):
         """
@@ -558,11 +561,24 @@ class ColorBar():
         """
         if self.check_colorbar_available():
             divider = make_axes_locatable(axes)
-            cax = divider.append_axes('right', size='5%', pad=0.05)
-            img = cax.imshow(
-                self.get_colorbar_image_array(self.metadata)
+            cax = divider.append_axes('right', size='5%', pad='5%')
+            cbar_arr, cbar_ticks = self.get_colorbar_image_array(self.metadata)
+            # create a copy for later normalization
+            cbar_arr_tmp = np.copy(cbar_arr)
+            cbar_arr_tmp[:, -1] = cbar_arr_tmp[:, -1]*255
+            cmap = matplotlib.colors.ListedColormap(cbar_arr_tmp/255.)
+            norm = matplotlib.colors.Normalize()
+            cbar = plt.colorbar(
+                matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap),
+                cax=cax, orientation='vertical'
             )
-            plt.colorbar(img, cax=cax, orientation='vertical')
+            # colorbar ticks
+            cbar_ticklabels = np.copy(cbar_ticks)
+            cbar_arr_range = 1 # since the colormap is normalized
+            cbar_ticks_range = np.abs(np.max(cbar_ticks) - np.min(cbar_ticks))
+            cbar_ticks = ((cbar_ticks-np.min(cbar_ticks))/cbar_ticks_range)*cbar_arr_range
+            cbar.set_ticks(cbar_ticks)
+            cbar.set_ticklabels(cbar_ticklabels)
         return axes
 
 def plot_mgb(path, axes=None, **kwargs):
@@ -579,7 +595,7 @@ def plot_mgb(path, axes=None, **kwargs):
 
     if 'metadata' in kwargs:
         colorbar = ColorBar(kwargs['metadata'])
-    axes = colorbar.plot(axes)
+        axes = colorbar.plot(axes)
 
     axes.tick_params(
         axis='both',
