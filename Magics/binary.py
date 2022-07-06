@@ -522,8 +522,8 @@ class ColorBar():
         for entry in data:
             if entry['legend_entry_type'] == 'colorbar':
                 key = self.colorbar_entry_type(
-                    min = math.floor(float(entry['legend_entry_min_text'])),
-                    max = math.ceil(float(entry['legend_entry_max_text']))
+                    min = float(entry['legend_entry_min_text']),
+                    max = float(entry['legend_entry_max_text'])
                 )
                 value = entry['legend_entry_colour']
                 colorbar_entries[key] = self.rgba_to_np(value)
@@ -540,7 +540,7 @@ class ColorBar():
         for key, value in sorted_entries.items():
             ticks.append(key.min)
             ticks.append(key.max)
-            nrows = key.max - key.min
+            nrows = int((key.max - key.min)*100) # handling upto 2 decimal points
             tmp_arr = np.full((nrows, 4), value)
             if image_array is None:
                 image_array = tmp_arr
