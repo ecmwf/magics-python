@@ -550,6 +550,14 @@ class ColorBar():
                     axis=0
                 )
         ticks = np.sort(np.array(list(set(ticks)))) # remove redundant values
+        # Limit ticks in continuous legend
+        if 'legend_display_type' in self.metadata['legend'] and 'legend_label_frequency' in self.metadata['legend']:
+            if self.metadata['legend']['legend_display_type'] == 'continuous':
+                tick_frequency = int(self.metadata['legend']['legend_label_frequency']) 
+                tick_idxs = np.arange(0, len(ticks), tick_frequency)
+                tick_idxs = np.append(tick_idxs, [-1]) # appending last tick
+                ticks = ticks[tick_idxs]
+                ticks = np.sort(np.array(list(set(ticks)))) # remove redundant values
         return image_array, ticks
 
     def plot(self, axes):
