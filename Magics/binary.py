@@ -1,10 +1,13 @@
-#!/usr/bin/env python3
+"""Binary Driver"""
+from collections import namedtuple
 import struct
-
+import math
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.patches import Circle
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 LINE_STYLES = ("solid", "dashed", "dotted", "3", "4", "5")
 
@@ -113,6 +116,12 @@ class BinaryDecoder(BinaryReader):
         self.offset_y = 0.0
         self.coord_ratio_x = 1.0
         self.coord_ratio_y = 1.0
+        # variables to set limits of plot
+        # based on poly_line()
+        self.min_x = np.Inf
+        self.max_x = -np.Inf
+        self.min_y = np.Inf
+        self.max_y = -np.Inf
 
     def text(self):
         '''
@@ -156,7 +165,7 @@ class BinaryDecoder(BinaryReader):
 
             if blank:
                 props["bbox"] = dict(
-                    alpha=1,
+                    alpha=0,
                     facecolor="white",
                     #  pad=10,
                     edgecolor="none",
@@ -321,8 +330,14 @@ class BinaryDecoder(BinaryReader):
                 linestyle=self.current_linestyle,
             )
         )
-        self.ax.set_xlim(min(x), max(x))
-        self.ax.set_ylim(min(y), max(y))
+        if min(x) < self.min_x:
+            self.min_x = min(x)
+        if max(x) > self.max_x:
+            self.max_x = max(x)
+        if min(y) < self.min_y:
+            self.min_y = min(y)
+        if max(y) > self.max_y:
+            self.max_y = max(y)
 
     def circle(self):
         '''
@@ -448,18 +463,133 @@ class BinaryDecoder(BinaryReader):
         self.dimension_x = self.read_double()
         self.dimension_y = self.read_double()
 
-        print(self.dimension_x, self.dimension_y)
+        # print(self.dimension_x, self.dimension_y)
 
         op = self.read_char()
         while op:
             DECODERS[op]()
             op = self.read_char()
 
-        # self.ax.set_xlim(min(x), max(x))
-        # self.ax.set_ylim(min(y), max(y))
+        self.ax.set_xlim(self.min_x, self.max_x)
+        self.ax.set_ylim(self.min_y, self.max_y)
 
+class ColorBar():
+    """
+    Class to create a colorbar on an axes.
+    """
+    def __init__(self, metadata) -> None:
+        """
+        init function
+        Args:
+        """
+        self.metadata = metadata
+        assert isinstance(self.metadata, dict), "Metadata is not a dictionary"
+        self.colorbar_entry_type = namedtuple(
+            typename= "colorbarEntry",
+            field_names=["min", "max"]
+        )
 
-def plot_mgb(path, axes=None):
+    def check_colorbar_available(self):
+        """
+        function to check if colorbar properties
+        are present in the metadata
+        """
+        plot_colorbar = False
+        if 'legend' in self.metadata:
+            if 'legend_entries' in self.metadata['legend']:
+                if len(self.metadata['legend']['legend_entries'])>0:
+                    plot_colorbar = True
+        return plot_colorbar
+
+    def rgba_to_np(self, text):
+        """
+        function to convert RGBA(254,254,223,1) to a numpy array
+        Args:
+            text (string): RGBA string
+        """
+        text = text.replace(' ', '').split('(')[-1].split(')')[0]
+        r, g, b, a = text.split(',')
+        np_array = np.array([int(r), int(g), int(b), int(a)])
+        return np_array
+
+    def get_colorbar_entries(self, metadata):
+        """
+        function to process metadata to get
+        colorbar entries
+        """
+        data = metadata['legend']['legend_entries']
+        colorbar_entries = {}
+        for entry in data:
+            if entry['legend_entry_type'] == 'colorbar':
+                key = self.colorbar_entry_type(
+                    min = float(entry['legend_entry_min_text']),
+                    max = float(entry['legend_entry_max_text'])
+                )
+                value = entry['legend_entry_colour']
+                colorbar_entries[key] = self.rgba_to_np(value)
+        return colorbar_entries
+
+    def get_colorbar_image_array(self, metadata):
+        """
+        function to convert colorbar entries to an image
+        """
+        colorbar_entries = self.get_colorbar_entries(metadata)
+        sorted_entries = dict(sorted(colorbar_entries.items(), key=lambda item: item[0].min))
+        image_array = None # nrows x 4
+        ticks = []
+        for key, value in sorted_entries.items():
+            ticks.append(key.min)
+            ticks.append(key.max)
+            nrows = int((key.max - key.min)*100) # handling upto 2 decimal points
+            tmp_arr = np.full((nrows, 4), value)
+            if image_array is None:
+                image_array = tmp_arr
+            else:
+                image_array = np.concatenate(
+                    (image_array, tmp_arr),
+                    axis=0
+                )
+        ticks = np.sort(np.array(list(set(ticks)))) # remove redundant values
+        # Limit ticks in continuous legend
+        if 'legend_display_type' in self.metadata['legend'] and 'legend_label_frequency' in self.metadata['legend']:
+            if self.metadata['legend']['legend_display_type'] == 'continuous':
+                tick_frequency = int(self.metadata['legend']['legend_label_frequency']) 
+                tick_idxs = np.arange(0, len(ticks), tick_frequency)
+                tick_idxs = np.append(tick_idxs, [-1]) # appending last tick
+                ticks = ticks[tick_idxs]
+                ticks = np.sort(np.array(list(set(ticks)))) # remove redundant values
+        return image_array, ticks
+
+    def plot(self, axes):
+        """
+        function to plot the colorbar on an axes
+        Args:
+            axes (matplotlib.axes._subplots.AxesSubplot):
+                Axes object on which the colorbar will be plotted
+        """
+        if self.check_colorbar_available():
+            divider = make_axes_locatable(axes)
+            cax = divider.append_axes('right', size='5%', pad='5%')
+            cbar_arr, cbar_ticks = self.get_colorbar_image_array(self.metadata)
+            # create a copy for later normalization
+            cbar_arr_tmp = np.copy(cbar_arr)
+            cbar_arr_tmp[:, -1] = cbar_arr_tmp[:, -1]*255
+            cmap = matplotlib.colors.ListedColormap(cbar_arr_tmp/255.)
+            norm = matplotlib.colors.Normalize()
+            cbar = plt.colorbar(
+                matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap),
+                cax=cax, orientation='vertical'
+            )
+            # colorbar ticks
+            cbar_ticklabels = np.copy(cbar_ticks)
+            cbar_arr_range = 1 # since the colormap is normalized
+            cbar_ticks_range = np.abs(np.max(cbar_ticks) - np.min(cbar_ticks))
+            cbar_ticks = ((cbar_ticks-np.min(cbar_ticks))/cbar_ticks_range)*cbar_arr_range
+            cbar.set_ticks(cbar_ticks)
+            cbar.set_ticklabels(cbar_ticklabels)
+        return axes
+
+def plot_mgb(path, axes=None, **kwargs):
     '''
     API function to to read a mgb file
     and plot it on matplotlib axes.
@@ -467,7 +597,20 @@ def plot_mgb(path, axes=None):
     axes() : matplotlib axes to plot the figure on.
     '''
     decoder = BinaryDecoder(path)
-    if axes:
-        decoder.plot(axes)
-    else:
-        decoder.plot(plt.gca())
+
+    if axes is None:
+        _, axes = plt.subplots(figsize=(20, 20))
+
+    if 'metadata' in kwargs:
+        colorbar = ColorBar(kwargs['metadata'])
+        axes = colorbar.plot(axes)
+
+    axes.tick_params(
+        axis='both',
+        which='both',
+        left=False, bottom=False,
+        labelleft=False, labelbottom=False
+    )
+
+    axes.set_aspect("equal")
+    decoder.plot(axes)
