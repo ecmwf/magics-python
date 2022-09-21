@@ -215,13 +215,15 @@ class BinaryDecoder(BinaryReader):
 
         sum_x = layout.max_x - layout.min_x
         sum_y = layout.max_y - layout.min_y
+        # 
+        # The reproject method is not needed in the simple case of matplotlib. 
+        # This should be revisited in the future.
+        # if sum_x != 0 and sum_y != 0:
+        #     self.coord_ratio_x = self.dimension_x / sum_x
+        #     self.coord_ratio_y = self.dimension_y / sum_y
 
-        if sum_x != 0 and sum_y != 0:
-            self.coord_ratio_x = self.dimension_x / sum_x
-            self.coord_ratio_y = self.dimension_y / sum_y
-
-        self.offset_x = self.project_x(-layout.min_x)
-        self.offset_y = self.project_y(-layout.min_y)
+        # self.offset_x = self.project_x(-layout.min_x)
+        # self.offset_y = self.project_y(-layout.min_y)
 
     def project_x(self, x):
         '''
@@ -589,28 +591,27 @@ class ColorBar():
             cbar.set_ticklabels(cbar_ticklabels)
         return axes
 
-def plot_mgb(path, axes=None, **kwargs):
+def plot_mgb(path, axes=None, crs=None, **kwargs):
     '''
     API function to to read a mgb file
     and plot it on matplotlib axes.
     Args:
     axes() : matplotlib axes to plot the figure on.
     '''
+    
     decoder = BinaryDecoder(path)
-
     if axes is None:
-        _, axes = plt.subplots(figsize=(20, 20))
-
+        fig = plt.figure(figsize=(20, 20))
+        axes = fig.add_subplot(1, 1, 1, projection=crs)
+        # _, axes = plt.subplots(figsize=(20, 20))
     if 'metadata' in kwargs:
         colorbar = ColorBar(kwargs['metadata'])
         axes = colorbar.plot(axes)
-
     axes.tick_params(
         axis='both',
         which='both',
         left=False, bottom=False,
         labelleft=False, labelbottom=False
     )
-
     axes.set_aspect("equal")
     decoder.plot(axes)
