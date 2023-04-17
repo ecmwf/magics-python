@@ -221,11 +221,23 @@ class Action(object):
             if not isinstance(v, int):
                 return "float"
         return "int"
+    
+    def patch_setli(self, param, value):
+        params = Magics.long_parameters()
+        if param in params.keys():
+            if ( value > 2147483647 ):
+                Magics.setli(params[param], value)
+                return True
+        return False
+
 
     def set(self):  # noqa C901
         for key in list(self.args.keys()):
+            
+            if (self.patch_setli(key, self.args[key])):
+                pass
 
-            if isinstance(self.args[key], dict):
+            elif isinstance(self.args[key], dict):
                 Magics.setc(key, json.dumps(self.args[key]))
             elif isinstance(self.args[key], bool):
                 if self.args[key]:

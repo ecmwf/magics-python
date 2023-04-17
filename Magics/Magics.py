@@ -661,6 +661,28 @@ def seti(name, value):
     name = string_to_char(name)
     return py_seti(name, value)
 
+@checked_return_code
+def setli(name, value):
+    name = string_to_char(name)
+    val = (ctypes.c_ulonglong)(value)
+    return py_setli(name, val)
+
+def long_parameters():
+    try:
+        long_parameters = dll.py_long_parameters
+        long_parameters.restype = ctypes.c_char_p
+        long_parameters.argtypes = None
+        params = long_parameters()
+        params = json.loads(params.decode())
+        return params
+    except Exception:
+        return "long_parameters not supported"
+
+py_setli = dll.py_setli
+py_setli.restype = c_char_p
+
+c_ulonglong = ctypes.c_ulonglong
+c_ulonglong_p = ctypes.POINTER(c_ulonglong)
 
 def known_drivers():
     try:
