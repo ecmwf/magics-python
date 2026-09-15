@@ -775,6 +775,13 @@ def wmscrs():
                 "e_lon": 4662111.45,
                 "n_lat": 6829874.45,
             },
+            {  # Equal Earth (WGS84), whole globe in projected metres
+                "name": "ESRI:54035",
+                "w_lon": -17243959.06,
+                "s_lat": -8392927.60,
+                "e_lon": 17243959.06,
+                "n_lat": 8392927.60,
+            },
         ],
         "geographic_bounding_box": {
             "w_lon": -180.0,
