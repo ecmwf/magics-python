@@ -112,7 +112,7 @@ jobs:
 
     - name: Install Dependencies
       id: install-dependencies
-      uses: ecmwf-actions/build-package@v2
+      uses: ecmwf/build-package@v2
       with:
         self_build: false
         dependencies: |
@@ -238,7 +238,7 @@ jobs:
     if: always() && github.ref == 'refs/heads/master'
     steps:
     - name: Notify Teams
-      uses: ecmwf-actions/notify-teams@v1
+      uses: ecmwf/notify-teams@v1
       with:
         incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
         needs_context: ${{ toJSON(needs) }}
